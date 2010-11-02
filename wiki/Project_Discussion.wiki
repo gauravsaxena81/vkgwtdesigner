@@ -1,0 +1,85 @@
+==VkGWT Designer==
+
+===Vision:===
+1.The product should design applications in browser. The real power of VkGWT Designer lies in the fact that new UIs can be made / edited / deleted without having to compile the code. The generated UI can be saved as json and from the same json they can be remade along with the event handling code. Thus, it can be used as a hosted service as well.
+
+2.VkGWT Designer should be extendable. When VkGWTDesigner is used as a plugin, it offers easy interfaces to extend its functionalities. Thus newer components can be added by adding a few classes and attributes of existing components can be exposed or hidden.
+
+===Goals:===
+
+1.To provide interface in the browser to add / remove the components.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/makeComponents.PNG http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/deleteComponents.PNG
+
+
+2.It should be possible to maintain hierarchies of components (just like in DOM) so that attributes and behaviours like drag and drop, styles etc. could be cascaded. As shown in the figure, the outside rectangle is an absolutePanel which contains a VerticalPanel, which in turn contains the button and textbox.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/hierarchy.PNG
+ 
+
+3.To provide an interface to specify event handlers using JavaScript. As show in the figure, a pop up opens to define clickHandler. Here the handler can be written in javascript.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/events.PNG
+
+4.Ability to make higher level abstractions to promote code reuse. As shown in the figure, changeIndex is a user defined function in GWT which is being directly accessed from javascript code.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/customHandlers.PNG
+ 
+
+5.Easy extendibility so that new components / events / functions can be added seamlessly.
+_Sample code inclusion under progress_
+
+6.Provide avenues to style components within the application and also using css
+_Style dialog design under progress_
+
+
+===Use Cases:===
+
+====1. Components====
+	a.Introduce new components maintaining the hierarchy
+
+	b.Re-position the components
+
+	c.Re-size the components
+
+	d.Removal of components
+
+	e.Styling of components
+
+	f.Attributes manipulation on components
+
+	g.Developers are able to make new Components and add it to the designer
+
+
+====2. Styling====
+	a.Style components using a dialog
+
+	b.Css styling by adding class names as attributes
+
+	c.User assistance modules for each style type
+              i.Colour picker for background and foreground colour
+             ii.Font picker for fonts
+            iii.Html constants e.g. small, medium etc for font-size should be available as combo boxes / drop downs
+
+       d.Preview of the affect of style on the component
+
+       e.At any time the style dialog is opened, it reflects the current state of styling of the component
+
+====3.Events====
+       a.Use user-defined functions either in GWT or JavaScript
+
+       b.An easy way to address the components
+
+       c.Write simple JavaScript for event handlers
+
+       d.JavaScript interface allows code prettification 
+
+       e.Developers are able to extend the platform to include more event handlers and to expose more attributes for manipulation of events
+
+
+====4.Saving and reproducing Application====
+       a.When “Save” is pressed, designer produces a json
+
+       b.Interfaces to store this json as a database object, file etc.
+
+       c.Interfaces to render the application using the json from database, files etc.
