@@ -1,3 +1,4 @@
+#labels Phase-Requirements
 ==VkGWT Designer==
 
 ===Vision:===
@@ -12,7 +13,7 @@
 http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/makeComponents.PNG http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/deleteComponents.PNG
 
 
-2.It should be possible to maintain hierarchies of components (just like in DOM) so that attributes and behaviours like drag and drop, styles etc. could be cascaded. As shown in the figure, the outside rectangle is an absolutePanel which contains a VerticalPanel, which in turn contains the button and textbox.
+2.It should be possible to maintain hierarchies of components (just like in DOM) so that attributes and behaviours like drag and drop, styles etc. could be cascaded. As shown in the figure, the outside rectangle is an _AbsolutePanel_ which contains a _VerticalPanel_, which in turn contains the _button_ and _textbox_.
 
 http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/hierarchy.PNG
  
@@ -21,7 +22,7 @@ http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/hierarchy.PNG
 
 http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/events.PNG
 
-4.Ability to make higher level abstractions to promote code reuse. As shown in the figure, changeIndex is a user defined function in GWT which is being directly accessed from javascript code.
+4.Ability to make higher level abstractions to promote code reuse. As shown in the figure, _changeIndex_ is a user defined function in GWT which is being directly accessed from javascript code.
 
 http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/customHandlers.PNG
  
