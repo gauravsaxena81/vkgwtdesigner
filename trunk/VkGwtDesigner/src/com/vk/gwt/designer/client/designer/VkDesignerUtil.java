@@ -1,0 +1,308 @@
+package com.vk.gwt.designer.client.designer;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseMoveEvent;
+import com.google.gwt.event.dom.client.MouseMoveHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.vk.gwt.designer.client.Panels.VkAbsolutePanel;
+import com.vk.gwt.designer.client.Panels.VkVerticalPanel;
+import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
+import com.vk.gwt.designer.client.engine.VkAbsolutePanelEngine;
+import com.vk.gwt.designer.client.engine.VkButtonEngine;
+import com.vk.gwt.designer.client.engine.VkEngine;
+import com.vk.gwt.designer.client.engine.VkTextBoxEngine;
+import com.vk.gwt.designer.client.engine.VkVerticalPanelEngine;
+import com.vk.gwt.designer.client.widgets.VkButton;
+import com.vk.gwt.designer.client.widgets.VkTextBox;
+
+public class VkDesignerUtil {
+	private static int widgetCount = 0;
+	@SuppressWarnings("unchecked")
+	private static Map<String, IWidgetEngine> engineMap = new LinkedHashMap<String, IWidgetEngine>();
+	private static VkAbsolutePanel drawingPanel;
+	private static VkEngine vkEngine = new VkEngine();
+	public native static void addPressAndHoldEvent(Element element, Element menu) /*-{
+		element.onmousedown = function(ev){
+			@com.vk.gwt.designer.client.designer.VkDesignerUtil::setShowMenuFlag(Z)(true);
+			if(element.id != '' && ev.button == 1)
+			{
+				setTimeout(function(){
+					if(showMenuFlag)
+					{
+						if(isChild(ev.target, element))
+						{
+							menu.style.display = "block";
+							menu.style.left = ev.clientX + "px";
+							menu.style.top = ev.clientY + "px";
+						}
+					}
+					else
+						menu.style.display = "none";
+				}, 500);
+			}
+			ev.stopPropagation();
+		};
+		$wnd.document.onmouseup = function(){
+			@com.vk.gwt.designer.client.designer.VkDesignerUtil::setShowMenuFlag(Z)(false);
+		};
+		function isChild(target, parent)
+		{
+			while(target != null)
+			{
+				if(target == parent)
+					return true;
+				else
+					target = target.parentNode;
+			}
+			return false;
+		}
+	}-*/;
+	
+	private native static void setShowMenuFlag(boolean flag)/*-{
+		showMenuFlag = flag;
+	}-*/;
+	private native static boolean getShowMenuFlag()/*-{
+		return showMenuFlag;
+	}-*/;
+
+	public static void addPressAndHoldEvent(final FocusWidget widget, final VkMenu menu) {
+		widget.addMouseDownHandler(new MouseDownHandler() {
+			@Override
+			public void onMouseDown(final MouseDownEvent event) {
+				final int top = event.getClientY();
+				final int left = event.getClientX();
+				setShowMenuFlag(true);
+				final EventTarget eventTarget = event.getNativeEvent().getEventTarget();
+				if(event.getNativeButton() == NativeEvent.BUTTON_MIDDLE)
+				{
+					Timer t = new Timer(){
+						@Override
+						public void run() {
+							if(getShowMenuFlag())
+							{
+								if( Element.as(eventTarget).equals(widget.getElement()))
+								{
+									menu.setVisible(true);
+									menu.focus();
+									DOM.setStyleAttribute(menu.getElement(), "top", top + "px");
+									DOM.setStyleAttribute(menu.getElement(), "left", left + "px");
+									setShowMenuFlag(false);
+								}
+							}
+						}
+					};
+					t.schedule(500);
+					event.stopPropagation();
+				}
+			}
+		});
+		widget.addMouseOutHandler(new MouseOutHandler() {
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				setShowMenuFlag(false);
+			}
+		});
+	}
+	public static int getCumulativeTop(Element invokingWidgetElement) {
+		int top = 0;
+		Element tempWidget = invokingWidgetElement;
+		while(tempWidget != null)
+		{
+			top += tempWidget.getOffsetTop();
+			tempWidget  = (Element) tempWidget.getOffsetParent();
+		}
+		return top;
+	}
+	public static int getCumulativeLeft(Element invokingWidgetElement) {
+		int left = 0;
+		Element tempWidget = invokingWidgetElement;
+		while(tempWidget != null)
+		{
+			left += tempWidget.getOffsetLeft();
+			tempWidget  = (Element) tempWidget.getOffsetParent();
+		}
+		return left;
+	}
+
+	public native static String formatJs(String js) /*-{
+		var idArray = js.match(/&\(.+?\)/g);
+		if(idArray != null)
+			for(var i = 0; i < idArray.length; i++)
+				js = js.replace(idArray[i],"document.getElementById('" + idArray[i].substr(2,idArray[i].length - 3) + "')");
+		return js;
+	}-*/;
+
+	public static void assignId(Widget widget) {
+		widget.getElement().setId(++widgetCount + "");
+	}
+
+	public static void makeMovable(final Widget invokingWidget) {
+		DOM.setStyleAttribute(invokingWidget.getElement(), "position", "absolute");
+		final HTML draggingWidget = new HTML("&nbsp;");
+		DOM.setStyleAttribute(draggingWidget.getElement(), "background", "blue");
+		draggingWidget.getElement().getStyle().setOpacity(0.2);
+		((Panel)invokingWidget.getParent()).add(draggingWidget);
+		DOM.setStyleAttribute(draggingWidget.getElement(), "position", "absolute");
+		draggingWidget.setPixelSize(invokingWidget.getOffsetWidth(), invokingWidget.getOffsetHeight());
+		DOM.setStyleAttribute(draggingWidget.getElement(), "top", VkDesignerUtil.getCumulativeTop(invokingWidget.getElement()) + "px");
+		DOM.setStyleAttribute(draggingWidget.getElement(), "left", VkDesignerUtil.getCumulativeLeft(invokingWidget.getElement()) + "px");
+		DOM.setCapture(draggingWidget.getElement());
+		draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
+			@Override
+			public void onMouseMove(MouseMoveEvent event) {
+				DOM.setStyleAttribute(draggingWidget.getElement(), "top", event.getClientY() - getCumulativeTop(invokingWidget.getParent().getElement()) + "px");
+				DOM.setStyleAttribute(draggingWidget.getElement(), "left", event.getClientX() - getCumulativeLeft(invokingWidget.getParent().getElement())  + "px");
+			}
+		});
+		draggingWidget.addMouseUpHandler(new MouseUpHandler() {
+			@Override
+			public void onMouseUp(MouseUpEvent event) {
+				DOM.releaseCapture(draggingWidget.getElement());
+				DOM.setStyleAttribute(invokingWidget.getElement(), "top", draggingWidget.getElement().getOffsetTop() + "px");
+				DOM.setStyleAttribute(invokingWidget.getElement(), "left", draggingWidget.getElement().getOffsetLeft() + "px");
+				draggingWidget.removeFromParent();
+			}
+		});
+	}
+	public static void addWidget(Widget widget, Panel invokingWidget) {
+		widget.setPixelSize(100, 20);
+		assignId(widget);
+		((Panel)invokingWidget).add(widget);
+		placeAddedElement(widget.getElement(), invokingWidget,0 ,0);
+	}
+	public static void addWidget(Widget widget, Panel invokingWidget, int top, int left) {
+		widget.setPixelSize(100, 20);
+		assignId(widget);
+		((Panel)invokingWidget).add(widget);
+		placeAddedElement(widget.getElement(), invokingWidget, top, left);
+	}
+	private static void placeAddedElement(Element element, Panel invokingWidget, int top, int left) {
+		if(invokingWidget instanceof AbsolutePanel)
+		{
+			DOM.setStyleAttribute(element, "position", "absolute");
+			DOM.setStyleAttribute(element, "top", top + "px");
+			DOM.setStyleAttribute(element, "left", left + "px");
+		}
+	}
+	private static void init()
+	{
+		setUpEngineMap();
+		drawingPanel = new VkAbsolutePanel();
+		drawingPanel.getElement().setId("drawingPanel");
+		drawingPanel.setPixelSize(Window.getClientWidth() - 20, Window.getClientHeight() - 20);
+		DOM.setStyleAttribute(drawingPanel.getElement(), "border", "solid 1px green");
+		RootPanel.get().add(drawingPanel);
+		/*Button saveJson = new Button("Save");
+		RootPanel.get().add(saveJson);
+		saveJson.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				for(int i = 0; i < drawingPanel.getWidgetCount(); i++)
+					if(!drawingPanel.getWidget(i).getElement().getId().isEmpty())
+						Window.alert(drawingPanel.getWidget(i).getElement().getId());
+			}
+		});*/
+	}
+	private static void setUpEngineMap() {
+		engineMap.put(VkButton.NAME, new VkButtonEngine());
+		engineMap.put(VkTextBox.NAME, new VkTextBoxEngine());
+		engineMap.put(VkAbsolutePanel.NAME, new VkAbsolutePanelEngine());
+		engineMap.put(VkVerticalPanel.NAME, new VkVerticalPanelEngine());
+	}
+	@SuppressWarnings("unchecked")
+	public static Map<String, IWidgetEngine> getEngineMap() {
+		return engineMap;
+	}
+	public static VkAbsolutePanel getDrawingPanel() {
+		if(drawingPanel == null)
+			init();
+		return drawingPanel;
+	}
+
+	public static VkEngine getEngine() {
+		return vkEngine;
+	}
+	public static void setEngine(VkEngine newVkEngine) {
+		vkEngine = newVkEngine;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static void executeEvent(String js, DomEvent event) {
+		EventTarget currentEventTarget = event.getNativeEvent().getCurrentEventTarget();
+		Element currentEventTargetElement = currentEventTarget != null ? (Element) Element.as(currentEventTarget) : null;
+		EventTarget eventTarget = event.getNativeEvent().getEventTarget();
+		Element eventTargetElement = eventTarget != null ? (Element) Element.as(eventTarget) : null;
+		EventTarget relativeEventTarget = event.getNativeEvent().getRelatedEventTarget();
+		Element relativeEventTargetElement = relativeEventTarget != null ? (Element) Element.as(relativeEventTarget) : null;
+		//JSNI was not able to work with methods of NativeElement and kept on throwing errors which made no sense.
+		//Have a look at the issue raised at http://stackoverflow.com/questions/4086392/jsni-cannot-find-a-method-in-nativeevent-class-of-gwt 
+		prepareLocalEvent(event, event.getNativeEvent().getAltKey(), event.getNativeEvent().getButton(), event.getNativeEvent().getClientX() 
+				, event.getNativeEvent().getClientY(), event.getNativeEvent().getCtrlKey(), currentEventTargetElement, eventTargetElement
+				, event.getNativeEvent().getKeyCode(), event.getNativeEvent().getMetaKey(), event.getNativeEvent().getMouseWheelVelocityY()
+				, relativeEventTargetElement, event.getNativeEvent().getScreenX(), event.getNativeEvent().getScreenY(),event.getNativeEvent().getShiftKey());
+		final HTML scriptHtml = new HTML("<script> { " + VkDesignerUtil.formatJs(js) + " } </script>");//braces to ensure that none of the variables are declared in window scope
+		VkDesignerUtil.getDrawingPanel().add(scriptHtml);
+		Timer t = new Timer(){
+			@Override
+			public void run() {
+				scriptHtml.removeFromParent();
+			}
+		};
+		t.schedule(200);
+	}
+
+	@SuppressWarnings("unchecked")
+	private native static void prepareLocalEvent(DomEvent event, boolean alt, int buttonNum, int clientx, int clienty, boolean ctrl
+			, Element currentEvtTarget, Element actualEvtTarget, int keycode, boolean meta, int mouseWheelVel, Element relativeEvtTarget, int screenx
+			, int screeny, boolean shift) /*-{
+		$wnd.vkEvent = {};
+		$wnd.vkEvent.altKey = alt;
+		$wnd.vkEvent.button = buttonNum;
+		$wnd.vkEvent.clientX = clientx;
+		$wnd.vkEvent.clientY = clienty;
+		$wnd.vkEvent.ctrlKey = ctrl;
+		$wnd.vkEvent.currentEventTarget = currentEvtTarget;
+		$wnd.vkEvent.eventTarget = actualEvtTarget;
+		$wnd.vkEvent.keyCode = keycode;
+		$wnd.vkEvent.metaKey = meta;
+		$wnd.vkEvent.mouseWheelVelocity = mouseWheelVel;
+		$wnd.vkEvent.relativeEventTarget = relativeEvtTarget;
+		$wnd.vkEvent.screenX = screenx;
+		$wnd.vkEvent.screenY = screeny;
+		$wnd.vkEvent.shiftKey = shift;
+		$wnd.vkEvent.preventDefault = function(){
+			event.@com.google.gwt.event.dom.client.DomEvent::preventDefault()();
+		}
+		$wnd.vkEvent.stopPropagation = function(){
+			event.@com.google.gwt.event.dom.client.DomEvent::stopPropagation()();
+		}
+	}-*/;
+
+	public static void centerDialog(Panel dialog) {
+			dialog.setVisible(true);
+			DOM.setStyleAttribute(dialog.getElement(), "top", 
+					(VkDesignerUtil.getDrawingPanel().getOffsetHeight() / 2 - dialog.getOffsetHeight() / 2) +  "px");
+			DOM.setStyleAttribute(dialog.getElement(), "left", 
+					(VkDesignerUtil.getDrawingPanel().getOffsetWidth() / 2 - dialog.getOffsetWidth() / 2) +  "px");
+	}
+}
