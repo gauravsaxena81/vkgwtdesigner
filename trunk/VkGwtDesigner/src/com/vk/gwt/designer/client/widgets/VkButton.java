@@ -30,7 +30,6 @@ import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
-import com.vk.gwt.designer.client.api.attributes.HasVkChangeHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
@@ -79,7 +78,6 @@ public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers
 	private String focusJs = "";
 	private String blurJs = "";
 	private String clickJs = "";
-	private String changeJs = "";
 	
 	public VkButton() {
 		super();
@@ -126,10 +124,7 @@ public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers
 			return focusJs;
 		else if(widget instanceof HasVkBlurHandler)
 			return blurJs;
-		else if(widget instanceof HasVkChangeHandler)
-			return changeJs;
 		else return "";
-		
 	}
 	@Override
 	public void addHtml(String html) {

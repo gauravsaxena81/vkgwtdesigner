@@ -328,9 +328,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						int initialWidth = invokingWidget.getOffsetWidth();
 						//This is necessary because offsetWidth contains all the decorations but when width is set, the figure is assumed to be independent 
 						//of decorations
-						String borderWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderWidth");
-						String paddingWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "padding");
-						String marginWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "margin");
+						String borderTopWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderTopWidth");
+						String borderBottomWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderBottomWidth");
+						String borderLeftWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderLeftWidth");
+						String borderRightWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderRightWidth");
+						String padding = DOM.getStyleAttribute(invokingWidget.getElement(), "padding");
+						String margin = DOM.getStyleAttribute(invokingWidget.getElement(), "margin");
 						DOM.setStyleAttribute(invokingWidget.getElement(), "borderWidth", "0px");
 						DOM.setStyleAttribute(invokingWidget.getElement(), "padding", "0px");
 						DOM.setStyleAttribute(invokingWidget.getElement(), "margin", "0px");
@@ -340,9 +343,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						DOM.setStyleAttribute(invokingWidget.getElement(), "height", draggingWidget.getOffsetHeight() 
 								- initialHeight + invokingWidget.getOffsetHeight() + "px");
 						
-						DOM.setStyleAttribute(invokingWidget.getElement(), "borderWidth", borderWidth);
-						DOM.setStyleAttribute(invokingWidget.getElement(), "padding", paddingWidth);
-						DOM.setStyleAttribute(invokingWidget.getElement(), "margin", marginWidth);
+						DOM.setStyleAttribute(invokingWidget.getElement(), "borderTopWidth", borderTopWidth);
+						DOM.setStyleAttribute(invokingWidget.getElement(), "borderBottomWidth", borderBottomWidth);
+						DOM.setStyleAttribute(invokingWidget.getElement(), "borderLeftWidth", borderLeftWidth);
+						DOM.setStyleAttribute(invokingWidget.getElement(), "borderRightWidth", borderRightWidth);
+						DOM.setStyleAttribute(invokingWidget.getElement(), "padding", padding);
+						DOM.setStyleAttribute(invokingWidget.getElement(), "margin", margin);
 						draggingWidget.removeFromParent();
 					}
 				});
