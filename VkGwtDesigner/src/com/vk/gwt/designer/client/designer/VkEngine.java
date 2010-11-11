@@ -31,11 +31,13 @@ import com.vk.gwt.designer.client.Panels.VkAbsolutePanel;
 import com.vk.gwt.designer.client.Panels.VkCaptionPanel;
 import com.vk.gwt.designer.client.Panels.VkDeckPanel;
 import com.vk.gwt.designer.client.Panels.VkDisclosurePanel;
+import com.vk.gwt.designer.client.Panels.VkDockPanel;
 import com.vk.gwt.designer.client.Panels.VkVerticalPanel;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkDirection;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
@@ -53,8 +55,10 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseOutHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseOverHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkOpenHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
+import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkWordWrap;
 import com.vk.gwt.designer.client.api.engine.IEngine;
 import com.vk.gwt.designer.client.api.engine.IPanel;
@@ -132,6 +136,8 @@ public class VkEngine implements IEngine{
 			optionList.add(HasVkHorizontalAlignment.NAME);
 		if(invokingWidget instanceof HasVkAnimation)
 			optionList.add(HasVkAnimation.NAME);
+		if(invokingWidget instanceof HasVkVerticalAlignment)
+			optionList.add(HasVkVerticalAlignment.NAME);
 		
 		if(invokingWidget instanceof HasVkBlurHandler)
 			optionList.add(HasVkBlurHandler.NAME);
@@ -157,6 +163,10 @@ public class VkEngine implements IEngine{
 			optionList.add(HasVkMouseOverHandler.NAME);
 		if(invokingWidget instanceof HasVkMouseWheelHandler)
 			optionList.add(HasVkMouseWheelHandler.NAME);
+		if(invokingWidget instanceof HasVkCloseHandler)
+			optionList.add(HasVkCloseHandler.NAME);
+		if(invokingWidget instanceof HasVkOpenHandler)
+			optionList.add(HasVkOpenHandler.NAME);
 		return optionList;
 	};
 	public List<String> getWidgetsList(Widget invokingWidget) {
@@ -174,6 +184,7 @@ public class VkEngine implements IEngine{
 			optionList.add(VkCaptionPanel.NAME);
 			optionList.add(VkDeckPanel.NAME);
 			optionList.add(VkDisclosurePanel.NAME);
+			optionList.add(VkDockPanel.NAME);
 		}
 		return optionList;
 	}
@@ -201,6 +212,8 @@ public class VkEngine implements IEngine{
 			showAddHorizontalAlignmentDialog((HasVkHorizontalAlignment) invokingWidget);
 		else if(attributeName.equals(HasVkAnimation.NAME))
 			showAddAnimationDialog((HasVkAnimation) invokingWidget);
+		else if(attributeName.equals(HasVkVerticalAlignment.NAME))
+			showAddHorizontalAlignmentDialog((HasVkVerticalAlignment) invokingWidget);
 		
 		else if(attributeName.equals(HasVkBlurHandler.NAME))
 			showEventHandlingDialog((HasVkBlurHandler) invokingWidget);
@@ -226,6 +239,28 @@ public class VkEngine implements IEngine{
 			showEventHandlingDialog((HasVkKeyUpHandler) invokingWidget);
 		else if(attributeName.equals(HasVkKeyPressHandler.NAME))
 			showEventHandlingDialog((HasVkKeyPressHandler) invokingWidget);
+		else if(attributeName.equals(HasVkCloseHandler.NAME))
+			showEventHandlingDialog((HasVkCloseHandler) invokingWidget);
+		else if(attributeName.equals(HasVkOpenHandler.NAME))
+			showEventHandlingDialog((HasVkOpenHandler) invokingWidget);
+	}
+	private void showEventHandlingDialog(final HasVkCloseHandler invokingWidget) {
+		showEventRegistrationDialog(invokingWidget, new IEventRegister(){
+			@Override
+			public void registerEvent(String js) {
+				invokingWidget.addCloseHandler(js);
+			}
+		});
+		
+	}
+	private void showEventHandlingDialog(final HasVkOpenHandler invokingWidget) {
+		showEventRegistrationDialog(invokingWidget, new IEventRegister(){
+			@Override
+			public void registerEvent(String js) {
+				invokingWidget.addOpenHandler(js);
+			}
+		});
+		
 	}
 	private void showEventHandlingDialog(final HasVkKeyPressHandler invokingWidget) {
 		showEventRegistrationDialog(invokingWidget, new IEventRegister(){
@@ -459,6 +494,19 @@ public class VkEngine implements IEngine{
 			@Override
 			public void registerEvent(String text) {
 				invokingWidget.addAnimation(Boolean.valueOf(text));
+			}
+		});
+	}
+	private void showAddHorizontalAlignmentDialog(final HasVkVerticalAlignment invokingWidget) {
+		final ListBox listBox = new ListBox(false);
+		listBox.addItem("Top", "top");
+		listBox.addItem("Middle", "middle");
+		listBox.addItem("Bottom", "bottom");
+		listBox.setWidth("100px");
+		showAddListDialog(listBox, new IEventRegister() {
+			@Override
+			public void registerEvent(String text) {
+				invokingWidget.addVerticalAligment(text);
 			}
 		});
 	}

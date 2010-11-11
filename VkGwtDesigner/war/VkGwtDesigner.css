@@ -34,3 +34,5 @@ h1 {
 }
 .VkDesigner-dialog{background: white; border: solid 1px green}
 .gwt-MenuBarPopup{z-index: 2147483647}
+.VkDesigner-styledialog-heading{background: gray; color: white; font-weight: bold;}
+.VkDesigner-styledialog{border: solid 1px green;}

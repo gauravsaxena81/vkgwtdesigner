@@ -28,6 +28,7 @@ import com.vk.gwt.designer.client.Panels.VkAbsolutePanel;
 import com.vk.gwt.designer.client.Panels.VkCaptionPanel;
 import com.vk.gwt.designer.client.Panels.VkDeckPanel;
 import com.vk.gwt.designer.client.Panels.VkDisclosurePanel;
+import com.vk.gwt.designer.client.Panels.VkDockPanel;
 import com.vk.gwt.designer.client.Panels.VkVerticalPanel;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
@@ -36,6 +37,7 @@ import com.vk.gwt.designer.client.engine.VkButtonEngine;
 import com.vk.gwt.designer.client.engine.VkCaptionPanelEngine;
 import com.vk.gwt.designer.client.engine.VkDeckPanelEngine;
 import com.vk.gwt.designer.client.engine.VkDisclosurePanelEngine;
+import com.vk.gwt.designer.client.engine.VkDockPanelEngine;
 import com.vk.gwt.designer.client.engine.VkLabelEngine;
 import com.vk.gwt.designer.client.engine.VkTextBoxEngine;
 import com.vk.gwt.designer.client.engine.VkVerticalPanelEngine;
@@ -241,6 +243,7 @@ public class VkDesignerUtil {
 		engineMap.put(VkCaptionPanel.NAME, new VkCaptionPanelEngine());
 		engineMap.put(VkDeckPanel.NAME, new VkDeckPanelEngine());
 		engineMap.put(VkDisclosurePanel.NAME, new VkDisclosurePanelEngine());
+		engineMap.put(VkDockPanel.NAME, new VkDockPanelEngine());
 	}
 	@SuppressWarnings("unchecked")
 	public static Map<String, IWidgetEngine> getEngineMap() {
@@ -258,7 +261,17 @@ public class VkDesignerUtil {
 	public static void setEngine(VkEngine newVkEngine) {
 		vkEngine = newVkEngine;
 	}
-
+	public static void executeEvent(String js) {
+		final HTML scriptHtml = new HTML("<script> { " + VkDesignerUtil.formatJs(js) + " } </script>");//braces to ensure that none of the variables are declared in window scope
+		VkDesignerUtil.getDrawingPanel().add(scriptHtml);
+		Timer t = new Timer(){
+			@Override
+			public void run() {
+				scriptHtml.removeFromParent();
+			}
+		};
+		t.schedule(200);
+	}
 	@SuppressWarnings("unchecked")
 	public static void executeEvent(String js, DomEvent event) {
 		EventTarget currentEventTarget = event.getNativeEvent().getCurrentEventTarget();

@@ -24,6 +24,12 @@ import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkDirection;
 import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
+import com.vk.gwt.designer.client.api.attributes.HasVkMouseDownHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkMouseMoveHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkMouseOutHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkMouseOverHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.attributes.HasVkWordWrap;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
@@ -82,7 +88,19 @@ public class VkLabel extends Label implements HasVkText, HasVkAllMouseHandlers, 
 	public String getPriorJs(HasVkEventHandler widget) {
 		if(widget instanceof HasVkClickHandler)
 			return clickJs;
-		else
+		else if(widget instanceof HasVkMouseDownHandler)
+			return mouseDownJs;
+		else if(widget instanceof HasVkMouseUpHandler)
+			return mouseUpJs;
+		else if(widget instanceof HasVkMouseOverHandler)
+			return mouseOverJs;
+		else if(widget instanceof HasVkMouseOutHandler)
+			return mouseOutJs;
+		else if(widget instanceof HasVkMouseWheelHandler)
+			return mouseWheelJs;
+		else if(widget instanceof HasVkMouseMoveHandler)
+			return mouseMoveJs;
+		else 
 			return "";
 	}
 	@Override

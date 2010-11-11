@@ -20,8 +20,7 @@ public class VkDisclosurePanelEngine extends VkAbstractWidgetEngine<VkDisclosure
 	@Override
 	public VkDisclosurePanel getWidget() {
 		VkDisclosurePanel widget = new VkDisclosurePanel();
-		DOM.setStyleAttribute(widget.getElement(), "border", "solid 1px green");
-		DOM.setStyleAttribute(widget.getElement(), "padding", "5px");
+		init(widget);
 		return widget;
 	}
 	@Override
@@ -34,7 +33,8 @@ public class VkDisclosurePanelEngine extends VkAbstractWidgetEngine<VkDisclosure
 			listBox.setWidth("100px");
 			showSetOpenDialog(listBox, (VkDisclosurePanel) invokingWidget);
 		}
-		VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+		else
+			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget)

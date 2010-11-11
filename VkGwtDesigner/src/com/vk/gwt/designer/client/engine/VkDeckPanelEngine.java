@@ -22,9 +22,7 @@ public class VkDeckPanelEngine extends VkAbstractWidgetEngine<VkDeckPanel>{
 	@Override
 	public VkDeckPanel getWidget() {
 		VkDeckPanel widget = new VkDeckPanel();
-		widget.setPixelSize(100, 100);
-		DOM.setStyleAttribute(widget.getElement(), "border", "solid 1px green");
-		DOM.setStyleAttribute(widget.getElement(), "padding", "5px");
+		init(widget);
 		return widget;
 	}
 	@Override
@@ -70,7 +68,7 @@ public class VkDeckPanelEngine extends VkAbstractWidgetEngine<VkDeckPanel>{
 					invokingWidget.showWidget(Integer.parseInt(addTextTb.getText()));
 				}catch(NumberFormatException e)
 				{
-					Window.alert("Deck number cannot be non-numeric");
+					Window.alert("Deck number needs to be a positive number or 0");
 				}
 				dialog.removeFromParent();
 			}
