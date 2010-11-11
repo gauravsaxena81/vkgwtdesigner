@@ -30,9 +30,13 @@ http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/customHandlers.PNG
 5.Easy extendibility so that new components / events / functions can be added seamlessly.
 _Sample code inclusion under progress_
 
-6.Provide avenues to style components within the application and also using css
-_Style dialog design under progress_
+6.Provide avenues to style components within the application and also using css. As shown in the figure below it is possible to add css _classname_ as an attribute. This class can then be defined in the application css file.
 
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/classname.PNG
+
+Also, as shown below, it is possible to style the component using the style dialog. The styles are applied to the component as soon as it is provided in the dialog. Thus it provides instant preview of the changes.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/styledialog.PNG
 
 ===Use Cases:===
 
@@ -79,8 +83,10 @@ _Style dialog design under progress_
 
 
 ====4.Saving and reproducing Application====
-       a.When “Save” is pressed, designer produces a json
+       a. When “Save” is pressed, designer produces a json
 
-       b.Interfaces to store this json as a database object, file etc.
+       b. Interfaces to store this json as a database object, file etc
 
-       c.Interfaces to render the application using the json from database, files etc.
+       c.Interfaces to render the application using the json from database, files etc. 
+              i.The reader module will be an independent application which can be used with or without designers
+             ii.The reader module will be made available both as a GWT module and a javascript file which can be used in non-GWT application
