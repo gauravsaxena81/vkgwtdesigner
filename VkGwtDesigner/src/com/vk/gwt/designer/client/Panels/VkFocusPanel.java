@@ -1,4 +1,4 @@
-package com.vk.gwt.designer.client.widgets;
+package com.vk.gwt.designer.client.Panels;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -25,15 +25,15 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FocusPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
-import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
-import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
@@ -44,15 +44,15 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseOverHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
-import com.vk.gwt.designer.client.api.attributes.HasVkText;
+import com.vk.gwt.designer.client.api.engine.IPanel;
+import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.generator.client.Export;
 
-public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers, HasVkAllKeyHandlers, HasVkFocusHandler, HasVkBlurHandler, HasVkHtml
-, HasVkAccessKey, HasVkTabIndex, HasVkEnabled
+public class VkFocusPanel extends FocusPanel implements HasVkWidgets, IPanel, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler,
+HasVkAccessKey, HasVkTabIndex
 {
-	final public static String NAME = "Button";
-
+	public static final String NAME = "Focus Panel";
 	private HandlerRegistration clickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
 	private HandlerRegistration mouseUpHandlerRegistration;
@@ -77,15 +77,14 @@ public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers
 	private String focusJs = "";
 	private String blurJs = "";
 	private String clickJs = "";
-
 	private char accessKey;
-	
-	public VkButton() {
-		super();
-	}
 	@Override
-	public void addText(String text) {
-		setText(text);
+	public void add(Widget widget)
+	{
+		if(getWidget() != null)
+			Window.alert("Focus Panel can contain only one widget");
+		else
+			super.add(widget);
 	}
 	@Override
 	public void addClickHandler(final String js) {
@@ -98,50 +97,6 @@ public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers
 				VkDesignerUtil.executeEvent(clickJs, event);
 			}
 		});
-	}
-	@Override
-	public String getPriorJs(String eventName) {
-		if(eventName.equals(HasVkClickHandler.NAME))
-			return clickJs;
-		else if(eventName.equals(HasVkMouseDownHandler.NAME))
-			return mouseDownJs;
-		else if(eventName.equals(HasVkMouseUpHandler.NAME))
-			return mouseUpJs;
-		else if(eventName.equals(HasVkMouseOverHandler.NAME))
-			return mouseOverJs;
-		else if(eventName.equals(HasVkMouseOutHandler.NAME))
-			return mouseOutJs;
-		else if(eventName.equals(HasVkMouseWheelHandler.NAME))
-			return mouseWheelJs;
-		else if(eventName.equals(HasVkMouseMoveHandler.NAME))
-			return mouseMoveJs;
-		else if(eventName.equals(HasVkKeyUpHandler.NAME))
-			return keyUpJs;
-		else if(eventName.equals(HasVkKeyDownHandler.NAME))
-			return keyDownJs;
-		else if(eventName.equals(HasVkKeyPressHandler.NAME))
-			return keyPressJs;
-		else if(eventName.equals(HasVkFocusHandler.NAME))
-			return focusJs;
-		else if(eventName.equals(HasVkBlurHandler.NAME))
-			return blurJs;
-		else return "";
-	}
-	@Override
-	public void addHtml(String html) {
-		setHTML(html);
-	}
-	@Override
-	public void addAccessKey(char ch) {
-		setAccessKey(ch);
-	}
-	@Override
-	public void addTabIndex(int tabIndex) {
-		setTabIndex(tabIndex);
-	}
-	@Override
-	public void addEnabled(boolean enabled) {
-		setEnabled(enabled);
 	}
 	@Override
 	public void addMouseDownHandler(String js) {
@@ -276,35 +231,47 @@ public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers
 		});
 	}
 	@Override
+	public String getPriorJs(String eventName) {
+		if(eventName.equals(HasVkClickHandler.NAME))
+			return clickJs;
+		else if(eventName.equals(HasVkMouseDownHandler.NAME))
+			return mouseDownJs;
+		else if(eventName.equals(HasVkMouseUpHandler.NAME))
+			return mouseUpJs;
+		else if(eventName.equals(HasVkMouseOverHandler.NAME))
+			return mouseOverJs;
+		else if(eventName.equals(HasVkMouseOutHandler.NAME))
+			return mouseOutJs;
+		else if(eventName.equals(HasVkMouseWheelHandler.NAME))
+			return mouseWheelJs;
+		else if(eventName.equals(HasVkMouseMoveHandler.NAME))
+			return mouseMoveJs;
+		else if(eventName.equals(HasVkKeyUpHandler.NAME))
+			return keyUpJs;
+		else if(eventName.equals(HasVkKeyDownHandler.NAME))
+			return keyDownJs;
+		else if(eventName.equals(HasVkKeyPressHandler.NAME))
+			return keyPressJs;
+		else if(eventName.equals(HasVkFocusHandler.NAME))
+			return focusJs;
+		else if(eventName.equals(HasVkBlurHandler.NAME))
+			return blurJs;
+		else return "";
+	}
+	@Override
+	public void addAccessKey(char key) {
+		setAccessKey(key);
+	}
+	@Override
+	public void addTabIndex(int tabIndex) {
+		setTabIndex(tabIndex);
+	}
+	@Override
 	public char getAccessKey()
 	{
 		return accessKey;
 	}
 	/**************************Export attribute Methods********************************/
-	@Override
-	@Export
-	public void setText(String text)
-	{
-		super.setText(text);
-	}
-	@Override
-	@Export
-	public String getText()
-	{
-		return super.getText();
-	}
-	@Override
-	@Export
-	public void setHTML(String html)
-	{
-		super.setHTML(html);
-	}
-	@Override
-	@Export
-	public String getHTML()
-	{
-		return super.getHTML();
-	}
 	@Override
 	@Export
 	public void setAccessKey(char key)
@@ -323,18 +290,6 @@ public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers
 	public int getTabIndex()
 	{
 		return super.getTabIndex();
-	}
-	@Override
-	@Export
-	public void setEnabled(boolean enabled)
-	{
-		super.setEnabled(enabled);
-	}
-	@Override
-	@Export
-	public boolean isEnabled()
-	{
-		return super.isEnabled();
 	}
 	@Override
 	@Export

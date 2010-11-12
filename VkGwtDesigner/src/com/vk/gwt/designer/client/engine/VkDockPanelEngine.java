@@ -1,6 +1,5 @@
 package com.vk.gwt.designer.client.engine;
 
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.Panels.VkDockPanel;
 import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
@@ -14,7 +13,6 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 	public VkDockPanel getWidget() {
 		VkDockPanel widget = new VkDockPanel();
 		init(widget);
-		DOM.setElementProperty(widget.getElement(), "border", "1");
 		return widget;
 	}
 	@Override

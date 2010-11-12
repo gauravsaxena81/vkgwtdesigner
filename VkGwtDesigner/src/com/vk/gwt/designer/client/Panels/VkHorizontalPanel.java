@@ -4,7 +4,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
@@ -12,24 +11,24 @@ import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.generator.client.Export;
 
-public class VkVerticalPanel extends VerticalPanel implements IPanel,HasVkWidgets, HasVkHorizontalAlignment, HasVkVerticalAlignment{
-	public static final String NAME = "Vertical Panel";
+public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, IPanel, HasVkVerticalAlignment, HasVkHorizontalAlignment {
+	public static final String NAME = "Horizontal Panel";
 	@Override
 	protected void add(Widget child, Element container) 
 	{
 		//So that TD resizes with the widget inside
 		if(getWidgetCount() > 0)
-			DOM.setElementAttribute((Element) getWidget(getWidgetCount() - 1).getElement().getParentElement(), "height", "1px");
+			DOM.setElementAttribute((Element) getWidget(getWidgetCount() - 1).getElement().getParentElement(), "width", "1px");
 		super.add(child, container);
-		DOM.setElementAttribute(container, "height", "*");
-	}
-	@Override
-	public void addHorizontalAlignment(String horizontalAlignment) {
-		setHorizontalAlignment(horizontalAlignment);
+		DOM.setElementAttribute(container, "width", "*");
 	}
 	@Override
 	public void addVerticalAligment(String verticalAlignment) {
 		
+	}
+	@Override
+	public void addHorizontalAlignment(String horizontalAlignment) {
+		setHorizontalAlignment(horizontalAlignment);
 	}
 	/**************************Export attribute Methods********************************/
 	@Override
@@ -68,14 +67,14 @@ public class VkVerticalPanel extends VerticalPanel implements IPanel,HasVkWidget
 	}
 	@Export
 	public void setVerticalAlignment(String verticalAlignment) {
-		if(verticalAlignment.equals(VerticalPanel.ALIGN_MIDDLE.getVerticalAlignString()))
-			setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
-		else if(verticalAlignment.equals(VerticalPanel.ALIGN_TOP.getVerticalAlignString()))
-			setVerticalAlignment(VerticalPanel.ALIGN_TOP);
-		else if(verticalAlignment.equals(VerticalPanel.ALIGN_BOTTOM.getVerticalAlignString()))
-			setVerticalAlignment(VerticalPanel.ALIGN_BOTTOM);
+		if(verticalAlignment.equals(HorizontalPanel.ALIGN_MIDDLE.getVerticalAlignString()))
+			setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
+		else if(verticalAlignment.equals(HorizontalPanel.ALIGN_TOP.getVerticalAlignString()))
+			setVerticalAlignment(HorizontalPanel.ALIGN_TOP);
+		else if(verticalAlignment.equals(HorizontalPanel.ALIGN_BOTTOM.getVerticalAlignString()))
+			setVerticalAlignment(HorizontalPanel.ALIGN_BOTTOM);
 		else 
-			Window.alert("direction can only take one of the following values: " + VerticalPanel.ALIGN_MIDDLE.getVerticalAlignString() + "," 
-				+ VerticalPanel.ALIGN_TOP.getVerticalAlignString() + "," +	VerticalPanel.ALIGN_BOTTOM.getVerticalAlignString());
+			Window.alert("direction can only take one of the following values: " + HorizontalPanel.ALIGN_MIDDLE.getVerticalAlignString() + "," 
+				+ HorizontalPanel.ALIGN_TOP.getVerticalAlignString() + "," +	HorizontalPanel.ALIGN_BOTTOM.getVerticalAlignString());
 	}
 }

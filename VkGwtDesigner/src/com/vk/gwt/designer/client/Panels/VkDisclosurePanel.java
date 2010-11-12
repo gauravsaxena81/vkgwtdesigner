@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
-import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkOpenHandler;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
@@ -45,7 +44,7 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 			Window.alert("Widget added as content of Disclosure Panel");
 		}
 		else
-			Window.alert("Disclosure Panel can add only one widget");
+			Window.alert("Disclosure Panel can add only two widgets");
 	}
 	@Override
 	public void addAnimation(boolean enabled) {
@@ -77,10 +76,10 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 		});
 	}
 	@Override
-	public String getPriorJs(HasVkEventHandler widget) {
-		if(widget instanceof HasVkCloseHandler)
+	public String getPriorJs(String eventName) {
+		if(eventName.equals(HasVkCloseHandler.NAME))
 			return closeJs;
-		else if(widget instanceof HasVkOpenHandler)
+		else if(eventName.equals(HasVkOpenHandler.NAME))
 			return openJs;
 		else
 			return "";

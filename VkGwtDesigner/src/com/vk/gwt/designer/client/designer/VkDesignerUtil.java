@@ -29,6 +29,14 @@ import com.vk.gwt.designer.client.Panels.VkCaptionPanel;
 import com.vk.gwt.designer.client.Panels.VkDeckPanel;
 import com.vk.gwt.designer.client.Panels.VkDisclosurePanel;
 import com.vk.gwt.designer.client.Panels.VkDockPanel;
+import com.vk.gwt.designer.client.Panels.VkFlowPanel;
+import com.vk.gwt.designer.client.Panels.VkFocusPanel;
+import com.vk.gwt.designer.client.Panels.VkFormPanel;
+import com.vk.gwt.designer.client.Panels.VkHorizontalPanel;
+import com.vk.gwt.designer.client.Panels.VkHorizontalSplitPanel;
+import com.vk.gwt.designer.client.Panels.VkHtmlPanel;
+import com.vk.gwt.designer.client.Panels.VkScrollPanel;
+import com.vk.gwt.designer.client.Panels.VkStackPanel;
 import com.vk.gwt.designer.client.Panels.VkVerticalPanel;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
@@ -38,10 +46,20 @@ import com.vk.gwt.designer.client.engine.VkCaptionPanelEngine;
 import com.vk.gwt.designer.client.engine.VkDeckPanelEngine;
 import com.vk.gwt.designer.client.engine.VkDisclosurePanelEngine;
 import com.vk.gwt.designer.client.engine.VkDockPanelEngine;
+import com.vk.gwt.designer.client.engine.VkFlowPanelEngine;
+import com.vk.gwt.designer.client.engine.VkFocusPanelEngine;
+import com.vk.gwt.designer.client.engine.VkFormPanelEngine;
+import com.vk.gwt.designer.client.engine.VkFrameEngine;
+import com.vk.gwt.designer.client.engine.VkHorizontalPanelEngine;
+import com.vk.gwt.designer.client.engine.VkHorizontalSplitPanelEngine;
+import com.vk.gwt.designer.client.engine.VkHtmlPanelEngine;
 import com.vk.gwt.designer.client.engine.VkLabelEngine;
+import com.vk.gwt.designer.client.engine.VkScrollPanelEngine;
+import com.vk.gwt.designer.client.engine.VkStackPanelEngine;
 import com.vk.gwt.designer.client.engine.VkTextBoxEngine;
 import com.vk.gwt.designer.client.engine.VkVerticalPanelEngine;
 import com.vk.gwt.designer.client.widgets.VkButton;
+import com.vk.gwt.designer.client.widgets.VkFrame;
 import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkTextBox;
 
@@ -238,12 +256,21 @@ public class VkDesignerUtil {
 		engineMap.put(VkButton.NAME, new VkButtonEngine());
 		engineMap.put(VkTextBox.NAME, new VkTextBoxEngine());
 		engineMap.put(VkLabel.NAME, new VkLabelEngine());
+		engineMap.put(VkFrame.NAME, new VkFrameEngine());
 		engineMap.put(VkAbsolutePanel.NAME, new VkAbsolutePanelEngine());
 		engineMap.put(VkVerticalPanel.NAME, new VkVerticalPanelEngine());
 		engineMap.put(VkCaptionPanel.NAME, new VkCaptionPanelEngine());
 		engineMap.put(VkDeckPanel.NAME, new VkDeckPanelEngine());
 		engineMap.put(VkDisclosurePanel.NAME, new VkDisclosurePanelEngine());
 		engineMap.put(VkDockPanel.NAME, new VkDockPanelEngine());
+		engineMap.put(VkFlowPanel.NAME, new VkFlowPanelEngine());
+		engineMap.put(VkFocusPanel.NAME, new VkFocusPanelEngine());
+		engineMap.put(VkFormPanel.NAME, new VkFormPanelEngine());
+		engineMap.put(VkHorizontalPanel.NAME, new VkHorizontalPanelEngine());
+		engineMap.put(VkHorizontalSplitPanel.NAME, new VkHorizontalSplitPanelEngine());
+		engineMap.put(VkHtmlPanel.NAME, new VkHtmlPanelEngine());
+		engineMap.put(VkScrollPanel.NAME, new VkScrollPanelEngine());
+		engineMap.put(VkStackPanel.NAME, new VkStackPanelEngine());
 	}
 	@SuppressWarnings("unchecked")
 	public static Map<String, IWidgetEngine> getEngineMap() {

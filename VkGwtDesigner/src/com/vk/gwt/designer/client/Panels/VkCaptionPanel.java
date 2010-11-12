@@ -27,6 +27,14 @@ public class VkCaptionPanel extends CaptionPanel implements IPanel,HasVkWidgets,
 		else
 			super.add(w);
 	}
+	public String getHTML()
+	{
+		return super.getCaptionHTML();
+	}
+	public String getText()
+	{
+		return super.getCaptionText();
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

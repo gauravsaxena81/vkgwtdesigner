@@ -2,15 +2,20 @@ package com.vk.gwt.designer.client.Panels;
 
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
+import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.generator.client.Export;
 
-public class VkDeckPanel extends DeckPanel implements IPanel, HasVkWidgets, HasVkAnimation {
+public class VkDeckPanel extends DeckPanel implements IPanel, HasVkWidgets, HasVkAnimation, HasVkSwitchNumberedWidget {
 	final public static String NAME = "Deck Panel";
 	@Override
 	public void addAnimation(boolean enabled) {
 		setAnimationEnabled(enabled);
+	}
+	@Override
+	public int getCurrentlyShowingWidget() {
+		return getVisibleWidget();
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

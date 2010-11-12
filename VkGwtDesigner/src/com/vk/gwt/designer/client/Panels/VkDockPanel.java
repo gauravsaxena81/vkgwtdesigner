@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -26,6 +27,24 @@ import com.vk.gwt.generator.client.Export;
 
 public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAlignment, HasVkVerticalAlignment,HasVkWidgets {
 	public static final String NAME = "Dock Panel";
+	@Override
+	public void add(Widget widget, DockLayoutConstant direction){
+		super.add(widget, direction);
+		//So that TD resizes with the widget inside
+		for(int i = 0; i < getWidgetCount(); i++)
+		{
+			Element td = (Element) getWidget(i).getElement().getParentElement();
+			if(DOM.getNextSibling(td) != null)
+				DOM.setElementAttribute(td, "width", "1px");
+			else
+				DOM.setElementAttribute(td, "width", "*");
+			Element tr = (Element) td.getParentElement();
+			if(DOM.getNextSibling(tr) != null)
+				DOM.setElementAttribute(td, "height", "1px");
+			else
+				DOM.setElementAttribute(td, "height", "*");
+		}
+	}
 	@Override
 	public void addHorizontalAlignment(String horizontalAlignment) {
 		final ListBox listBox = new ListBox(false);
@@ -97,24 +116,24 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 				if(option.equals("1"))
 				{
 					try{
-						VkDockPanel.super.add(widget, DockPanel.CENTER);
+						VkDockPanel.this.add(widget, DockPanel.CENTER);
 					}catch(IllegalArgumentException e)
 					{
 						Window.alert("Adding more than one Center widgets is not allowed");
 					}
 				}
 				if(option.equals("2"))
-					VkDockPanel.super.add(widget, DockPanel.LINE_START);
+					VkDockPanel.this.add(widget, DockPanel.LINE_START);
 				if(option.equals("3"))
-					VkDockPanel.super.add(widget, DockPanel.LINE_END);
+					VkDockPanel.this.add(widget, DockPanel.LINE_END);
 				if(option.equals("4"))
-					VkDockPanel.super.add(widget, DockPanel.EAST);
+					VkDockPanel.this.add(widget, DockPanel.EAST);
 				if(option.equals("5"))
-					VkDockPanel.super.add(widget, DockPanel.SOUTH);
+					VkDockPanel.this.add(widget, DockPanel.SOUTH);
 				if(option.equals("6"))
-					VkDockPanel.super.add(widget, DockPanel.NORTH);
+					VkDockPanel.this.add(widget, DockPanel.NORTH);
 				if(option.equals("7"))
-					VkDockPanel.super.add(widget, DockPanel.WEST);
+					VkDockPanel.this.add(widget, DockPanel.WEST);
 				dialog.removeFromParent();
 			}
 		});
@@ -215,5 +234,17 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 		else 
 			Window.alert("direction can only take one of the following values: " + DockPanel.ALIGN_CENTER.getTextAlignString() + "," 
 				+ DockPanel.ALIGN_LEFT.getTextAlignString() + "," +	DockPanel.ALIGN_RIGHT.getTextAlignString());
+	}
+	@Override
+	@Export
+	public int getWidgetCount()
+	{
+		return super.getWidgetCount();
+	}
+	@Override
+	@Export
+	public boolean remove(int index)
+	{
+		return super.remove(index);
 	}
 }

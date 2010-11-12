@@ -38,7 +38,6 @@ import com.vk.gwt.designer.client.api.attributes.HasVkChangeHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkDirection;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
-import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
@@ -85,6 +84,7 @@ public class VkTextBox extends TextBox implements HasVkText, HasVkAllKeyHandlers
 	private String blurJs = "";
 	private String clickJs = "";
 	private String changeJs = "";
+	private char accessKey;
 
 	@Override
 	public void addText(String text) {
@@ -268,34 +268,39 @@ public class VkTextBox extends TextBox implements HasVkText, HasVkAllKeyHandlers
 		
 	}
 	@Override
-	public String getPriorJs(HasVkEventHandler widget) {
-		if(widget instanceof HasVkClickHandler)
+	public String getPriorJs(String eventName) {
+		if(eventName.equals(HasVkClickHandler.NAME))
 			return clickJs;
-		else if(widget instanceof HasVkMouseDownHandler)
+		else if(eventName.equals(HasVkMouseDownHandler.NAME))
 			return mouseDownJs;
-		else if(widget instanceof HasVkMouseUpHandler)
+		else if(eventName.equals(HasVkMouseUpHandler.NAME))
 			return mouseUpJs;
-		else if(widget instanceof HasVkMouseOverHandler)
+		else if(eventName.equals(HasVkMouseOverHandler.NAME))
 			return mouseOverJs;
-		else if(widget instanceof HasVkMouseOutHandler)
+		else if(eventName.equals(HasVkMouseOutHandler.NAME))
 			return mouseOutJs;
-		else if(widget instanceof HasVkMouseWheelHandler)
+		else if(eventName.equals(HasVkMouseWheelHandler.NAME))
 			return mouseWheelJs;
-		else if(widget instanceof HasVkMouseMoveHandler)
+		else if(eventName.equals(HasVkMouseMoveHandler.NAME))
 			return mouseMoveJs;
-		else if(widget instanceof HasVkKeyUpHandler)
+		else if(eventName.equals(HasVkKeyUpHandler.NAME))
 			return keyUpJs;
-		else if(widget instanceof HasVkKeyDownHandler)
+		else if(eventName.equals(HasVkKeyDownHandler.NAME))
 			return keyDownJs;
-		else if(widget instanceof HasVkKeyPressHandler)
+		else if(eventName.equals(HasVkKeyPressHandler.NAME))
 			return keyPressJs;
-		else if(widget instanceof HasVkFocusHandler)
+		else if(eventName.equals(HasVkFocusHandler.NAME))
 			return focusJs;
-		else if(widget instanceof HasVkBlurHandler)
+		else if(eventName.equals(HasVkBlurHandler.NAME))
 			return blurJs;
-		else if(widget instanceof HasVkChangeHandler)
+		else if(eventName.equals(HasVkChangeHandler.NAME))
 			return changeJs;
 		else return "";
+	}
+	@Override
+	public char getAccessKey()
+	{
+		return accessKey;
 	}
 	/**************************Export attribute Methods********************************/
 	@Override
@@ -314,6 +319,7 @@ public class VkTextBox extends TextBox implements HasVkText, HasVkAllKeyHandlers
 	@Export
 	public void setAccessKey(char key)
 	{
+		accessKey = key;
 		super.setAccessKey(key);
 	}
 	@Override
