@@ -69,6 +69,8 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		addOperationsItems();
 		List<String> widgetsList = VkDesignerUtil.getEngine().getWidgetsList(invokingWidget);
 		addWidgetsList(widgetsList);
+		List<String> panelsList = VkDesignerUtil.getEngine().getPanelsList(invokingWidget);
+		addPanelsList(panelsList);
 		List<String> attributesList = widgetEngine.getAttributesList(invokingWidget);
 		addAttributesList(attributesList);
 		addSeparator();
@@ -280,6 +282,37 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				widgetsMenu.addItem(widgetName, widgetClickedCommand);
 			}
 			addItem("Widgets", widgetsMenu);
+		}
+	}
+	
+	private void addPanelsList(List<String> widgetsList)
+	{
+		if(widgetsList != null && widgetsList.size() > 0)
+		{
+			MenuBar widgetsMenu = new MenuBar(true){
+				@Override
+				public void selectItem(MenuItem item)
+				{
+					super.selectItem(item);
+					selectedMenuItem = item;
+				}
+			};
+			widgetsMenu.setFocusOnHoverEnabled(false);
+			Command widgetClickedCommand = new Command() {
+				@Override
+				public void execute() {
+					Widget widget = null;
+					widget = VkDesignerUtil.getEngine().getWidget(selectedMenuItem.getText(), invokingWidget);
+					if(widget != null)//cast is safe because the restriction on widgets,  if any, is placed by menu while it shows widget list
+						VkDesignerUtil.addWidget(widget, (IPanel)invokingWidget, VkMenu.this.top, VkMenu.this.left);
+					hideMenu();
+				}
+			};
+			addSeparator();
+			for (String widgetName : widgetsList) {
+				widgetsMenu.addItem(widgetName, widgetClickedCommand);
+			}
+			addItem("Panels", widgetsMenu);
 		}
 	}
 

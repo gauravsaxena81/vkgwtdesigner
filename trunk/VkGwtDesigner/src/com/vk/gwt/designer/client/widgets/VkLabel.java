@@ -22,7 +22,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkDirection;
-import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseMoveHandler;
@@ -85,23 +84,22 @@ public class VkLabel extends Label implements HasVkText, HasVkAllMouseHandlers, 
 		});
 	}
 	@Override
-	public String getPriorJs(HasVkEventHandler widget) {
-		if(widget instanceof HasVkClickHandler)
+	public String getPriorJs(String eventName) {
+		if(eventName.equals(HasVkClickHandler.NAME))
 			return clickJs;
-		else if(widget instanceof HasVkMouseDownHandler)
+		else if(eventName.equals(HasVkMouseDownHandler.NAME))
 			return mouseDownJs;
-		else if(widget instanceof HasVkMouseUpHandler)
+		else if(eventName.equals(HasVkMouseUpHandler.NAME))
 			return mouseUpJs;
-		else if(widget instanceof HasVkMouseOverHandler)
+		else if(eventName.equals(HasVkMouseOverHandler.NAME))
 			return mouseOverJs;
-		else if(widget instanceof HasVkMouseOutHandler)
+		else if(eventName.equals(HasVkMouseOutHandler.NAME))
 			return mouseOutJs;
-		else if(widget instanceof HasVkMouseWheelHandler)
+		else if(eventName.equals(HasVkMouseWheelHandler.NAME))
 			return mouseWheelJs;
-		else if(widget instanceof HasVkMouseMoveHandler)
+		else if(eventName.equals(HasVkMouseMoveHandler.NAME))
 			return mouseMoveJs;
-		else 
-			return "";
+		else return "";
 	}
 	@Override
 	public void addMouseDownHandler(String js) {
@@ -218,9 +216,9 @@ public class VkLabel extends Label implements HasVkText, HasVkAllMouseHandlers, 
 				+ HasDirection.Direction.RTL.toString() + "," +	HasDirection.Direction.DEFAULT.toString());
 	}
 	@Export
-	public String setHorizontalAlignmentString()
+	public String getHorizontalAlignmentString()
 	{
-		return getDirection().toString();
+		return getHorizontalAlignment().getTextAlignString();
 	}
 	@Export
 	public void setHorizontalAlignment(String horizontalAlignment) {
