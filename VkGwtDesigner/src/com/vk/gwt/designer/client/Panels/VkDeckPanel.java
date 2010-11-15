@@ -10,10 +10,6 @@ import com.vk.gwt.generator.client.Export;
 public class VkDeckPanel extends DeckPanel implements IPanel, HasVkWidgets, HasVkAnimation, HasVkSwitchNumberedWidget {
 	final public static String NAME = "Deck Panel";
 	@Override
-	public void addAnimation(boolean enabled) {
-		setAnimationEnabled(enabled);
-	}
-	@Override
 	public int getCurrentlyShowingWidget() {
 		return getVisibleWidget();
 	}

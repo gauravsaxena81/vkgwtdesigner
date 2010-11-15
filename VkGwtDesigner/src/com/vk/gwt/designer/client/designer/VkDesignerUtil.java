@@ -22,7 +22,6 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.Panels.VkAbsolutePanel;
 import com.vk.gwt.designer.client.Panels.VkCaptionPanel;
@@ -37,15 +36,20 @@ import com.vk.gwt.designer.client.Panels.VkHorizontalSplitPanel;
 import com.vk.gwt.designer.client.Panels.VkHtmlPanel;
 import com.vk.gwt.designer.client.Panels.VkScrollPanel;
 import com.vk.gwt.designer.client.Panels.VkStackPanel;
+import com.vk.gwt.designer.client.Panels.VkTabPanel;
 import com.vk.gwt.designer.client.Panels.VkVerticalPanel;
+import com.vk.gwt.designer.client.Panels.VkVerticalSplitPanel;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
 import com.vk.gwt.designer.client.engine.VkAbsolutePanelEngine;
 import com.vk.gwt.designer.client.engine.VkButtonEngine;
 import com.vk.gwt.designer.client.engine.VkCaptionPanelEngine;
+import com.vk.gwt.designer.client.engine.VkCheckboxEngine;
 import com.vk.gwt.designer.client.engine.VkDeckPanelEngine;
 import com.vk.gwt.designer.client.engine.VkDisclosurePanelEngine;
 import com.vk.gwt.designer.client.engine.VkDockPanelEngine;
+import com.vk.gwt.designer.client.engine.VkFileUploadEngine;
+import com.vk.gwt.designer.client.engine.VkFlexTableEngine;
 import com.vk.gwt.designer.client.engine.VkFlowPanelEngine;
 import com.vk.gwt.designer.client.engine.VkFocusPanelEngine;
 import com.vk.gwt.designer.client.engine.VkFormPanelEngine;
@@ -56,20 +60,26 @@ import com.vk.gwt.designer.client.engine.VkHtmlPanelEngine;
 import com.vk.gwt.designer.client.engine.VkLabelEngine;
 import com.vk.gwt.designer.client.engine.VkScrollPanelEngine;
 import com.vk.gwt.designer.client.engine.VkStackPanelEngine;
+import com.vk.gwt.designer.client.engine.VkTabPanelEngine;
 import com.vk.gwt.designer.client.engine.VkTextBoxEngine;
 import com.vk.gwt.designer.client.engine.VkVerticalPanelEngine;
+import com.vk.gwt.designer.client.engine.VkVerticalSplitPanelEngine;
 import com.vk.gwt.designer.client.widgets.VkButton;
+import com.vk.gwt.designer.client.widgets.VkCheckbox;
+import com.vk.gwt.designer.client.widgets.VkFileUpload;
+import com.vk.gwt.designer.client.widgets.VkFlexTable;
 import com.vk.gwt.designer.client.widgets.VkFrame;
 import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkTextBox;
 
 public class VkDesignerUtil {
 	private static int widgetCount = 0;
-	@SuppressWarnings("unchecked")
-	private static Map<String, IWidgetEngine> engineMap = new LinkedHashMap<String, IWidgetEngine>();
+	private static VkMenu menu = new VkMenu();
+	private static Map<String, IWidgetEngine<? extends Widget>> engineMap = new LinkedHashMap<String, IWidgetEngine<? extends Widget>>();
 	private static VkAbsolutePanel drawingPanel;
 	private static VkEngine vkEngine = new VkEngine();
-	public native static void addPressAndHoldEvent(Element element, Element menu) /*-{
+	public native static void addPressAndHoldEvent(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) /*-{
+		var element = widget.@com.google.gwt.user.client.ui.Widget::getElement()();
 		element.onmousedown = function(ev){
 			@com.vk.gwt.designer.client.designer.VkDesignerUtil::setShowMenuFlag(Z)(true);
 			if(element.id != '' && ev.button == 1)
@@ -77,8 +87,13 @@ public class VkDesignerUtil {
 				setTimeout(function(){
 					if(showMenuFlag)
 					{
+						var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
+						menu.@com.vk.gwt.designer.client.designer.VkMenu::setWidgetEngine(Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widgetEngine);
+						menu.@com.vk.gwt.designer.client.designer.VkMenu::setInvokingWidget(Lcom/google/gwt/user/client/ui/Widget;)(widget);
+						menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu()();
 						if(isChild(ev.target, element))
 						{
+							menu = menu.@com.vk.gwt.designer.client.designer.VkMenu::getElement()();
 							menu.style.display = "block";
 							menu.style.left = ev.clientX + "px";
 							menu.style.top = ev.clientY + "px";
@@ -113,7 +128,7 @@ public class VkDesignerUtil {
 		return showMenuFlag;
 	}-*/;
 
-	public static void addPressAndHoldEvent(final FocusWidget widget, final VkMenu menu) {
+	public static void addPressAndHoldEvent(final FocusWidget widget, final IWidgetEngine<? extends Widget> widgetEngine) {
 		widget.addMouseDownHandler(new MouseDownHandler() {
 			@Override
 			public void onMouseDown(final MouseDownEvent event) {
@@ -130,10 +145,12 @@ public class VkDesignerUtil {
 							{
 								if( Element.as(eventTarget).equals(widget.getElement()))
 								{
-									menu.setVisible(true);
-									menu.focus();
-									DOM.setStyleAttribute(menu.getElement(), "top", top + "px");
-									DOM.setStyleAttribute(menu.getElement(), "left", left + "px");
+									getMenu().setInvokingWidget(widget);
+									getMenu().setWidgetEngine(widgetEngine);
+									getMenu().setVisible(true);
+									getMenu().focus();
+									DOM.setStyleAttribute(getMenu().getElement(), "top", top + "px");
+									DOM.setStyleAttribute(getMenu().getElement(), "left", left + "px");
 									setShowMenuFlag(false);
 								}
 							}
@@ -234,13 +251,13 @@ public class VkDesignerUtil {
 	{
 		setUpEngineMap();
 		drawingPanel = new VkAbsolutePanel();
-		VkMenu designerMenu = new VkMenu(drawingPanel, VkDesignerUtil.getEngineMap().get(VkAbsolutePanel.NAME));
-		drawingPanel.add(designerMenu);
-		VkDesignerUtil.addPressAndHoldEvent(drawingPanel.getElement(), designerMenu.getElement());
+		//VkMenu designerMenu = new VkMenu(drawingPanel, VkDesignerUtil.getEngineMap().get(VkAbsolutePanel.NAME));
+		//drawingPanel.add(designerMenu);
+		VkDesignerUtil.addPressAndHoldEvent(drawingPanel, getEngineMap().get(VkAbsolutePanel.NAME));
 		drawingPanel.getElement().setId("drawingPanel");
 		drawingPanel.setPixelSize(Window.getClientWidth() - 20, Window.getClientHeight() - 20);
 		DOM.setStyleAttribute(drawingPanel.getElement(), "border", "solid 1px green");
-		RootPanel.get().add(drawingPanel);
+		drawingPanel.add(menu);
 		/*Button saveJson = new Button("Save");
 		RootPanel.get().add(saveJson);
 		saveJson.addClickHandler(new ClickHandler() {
@@ -257,6 +274,10 @@ public class VkDesignerUtil {
 		engineMap.put(VkTextBox.NAME, new VkTextBoxEngine());
 		engineMap.put(VkLabel.NAME, new VkLabelEngine());
 		engineMap.put(VkFrame.NAME, new VkFrameEngine());
+		engineMap.put(VkCheckbox.NAME, new VkCheckboxEngine());
+		engineMap.put(VkFileUpload.NAME, new VkFileUploadEngine());
+		engineMap.put(VkFlexTable.NAME, new VkFlexTableEngine());
+		
 		engineMap.put(VkAbsolutePanel.NAME, new VkAbsolutePanelEngine());
 		engineMap.put(VkVerticalPanel.NAME, new VkVerticalPanelEngine());
 		engineMap.put(VkCaptionPanel.NAME, new VkCaptionPanelEngine());
@@ -271,10 +292,15 @@ public class VkDesignerUtil {
 		engineMap.put(VkHtmlPanel.NAME, new VkHtmlPanelEngine());
 		engineMap.put(VkScrollPanel.NAME, new VkScrollPanelEngine());
 		engineMap.put(VkStackPanel.NAME, new VkStackPanelEngine());
+		engineMap.put(VkTabPanel.NAME, new VkTabPanelEngine());
+		engineMap.put(VkVerticalSplitPanel.NAME, new VkVerticalSplitPanelEngine());
 	}
-	@SuppressWarnings("unchecked")
-	public static Map<String, IWidgetEngine> getEngineMap() {
+	public static Map<String, IWidgetEngine<? extends Widget>> getEngineMap() {
 		return engineMap;
+	}
+	public static VkMenu getMenu()
+	{
+		return menu;
 	}
 	public static VkAbsolutePanel getDrawingPanel() {
 		if(drawingPanel == null)
@@ -288,7 +314,9 @@ public class VkDesignerUtil {
 	public static void setEngine(VkEngine newVkEngine) {
 		vkEngine = newVkEngine;
 	}
-	public static void executeEvent(String js) {
+	public static void executeEvent(String js, Map<String, String> eventproperties) {
+		if(eventproperties != null)
+			prepareLocalEvent(eventproperties);
 		final HTML scriptHtml = new HTML("<script> { " + VkDesignerUtil.formatJs(js) + " } </script>");//braces to ensure that none of the variables are declared in window scope
 		VkDesignerUtil.getDrawingPanel().add(scriptHtml);
 		Timer t = new Timer(){
@@ -323,7 +351,15 @@ public class VkDesignerUtil {
 		};
 		t.schedule(200);
 	}
-
+	private native static void prepareLocalEvent(Map<String, String> eventProperties) /*-{
+		$wnd.vkEvent = {};
+		var keySetIterator = eventProperties.@java.util.Map::keySet()().@java.util.Set::iterator()();
+		while(keySetIterator.@java.util.Iterator::hasNext()())
+		{
+			var key = keySetIterator.@java.util.Iterator::next()();
+			$wnd.vkEvent[key] = eventProperties.@java.util.Map::get(Ljava/lang/Object;)(key);
+		}
+	}-*/;
 	@SuppressWarnings("unchecked")
 	private native static void prepareLocalEvent(DomEvent event, boolean alt, int buttonNum, int clientx, int clienty, boolean ctrl
 			, Element currentEvtTarget, Element actualEvtTarget, int keycode, boolean meta, int mouseWheelVel, Element relativeEvtTarget, int screenx

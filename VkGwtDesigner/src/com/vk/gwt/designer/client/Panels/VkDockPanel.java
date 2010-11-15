@@ -46,7 +46,7 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 		}
 	}
 	@Override
-	public void addHorizontalAlignment(String horizontalAlignment) {
+	public void setHorizontalAlignment(String horizontalAlignment) {
 		final ListBox listBox = new ListBox(false);
 		listBox.addItem("Left", "left");
 		listBox.addItem("Center", "center");
@@ -60,7 +60,7 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 		});
 	}
 	@Override
-	public void addVerticalAligment(String verticalAlignment) {
+	public void setVerticalAlignment(String verticalAlignment) {
 		final ListBox listBox = new ListBox(false);
 		listBox.addItem("Top", "top");
 		listBox.addItem("Middle", "middle");

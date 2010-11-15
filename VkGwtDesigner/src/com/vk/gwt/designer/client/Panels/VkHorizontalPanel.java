@@ -22,14 +22,6 @@ public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, 
 		super.add(child, container);
 		DOM.setElementAttribute(container, "width", "*");
 	}
-	@Override
-	public void addVerticalAligment(String verticalAlignment) {
-		
-	}
-	@Override
-	public void addHorizontalAlignment(String horizontalAlignment) {
-		setHorizontalAlignment(horizontalAlignment);
-	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
@@ -65,6 +57,7 @@ public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, 
 	{
 		return getVerticalAlignment().getVerticalAlignString();
 	}
+	@Override
 	@Export
 	public void setVerticalAlignment(String verticalAlignment) {
 		if(verticalAlignment.equals(HorizontalPanel.ALIGN_MIDDLE.getVerticalAlignString()))

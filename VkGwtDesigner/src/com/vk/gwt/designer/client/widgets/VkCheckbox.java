@@ -1,4 +1,7 @@
-package com.vk.gwt.designer.client.Panels;
+package com.vk.gwt.designer.client.widgets;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -24,15 +27,17 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.FocusPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkChangeHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
@@ -43,16 +48,14 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseOutHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseOverHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
-import com.vk.gwt.designer.client.api.engine.IPanel;
-import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.generator.client.Export;
 
-public class VkFocusPanel extends FocusPanel implements HasVkWidgets, IPanel, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler,
-HasVkAccessKey, HasVkTabIndex
-{
-	public static final String NAME = "Focus Panel";
+public class VkCheckbox extends CheckBox implements HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler
+, HasVkChangeHandler, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkName{
+	public static final String NAME = "Textbox";
 	private HandlerRegistration clickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
 	private HandlerRegistration mouseUpHandlerRegistration;
@@ -65,6 +68,7 @@ HasVkAccessKey, HasVkTabIndex
 	private HandlerRegistration keyPressHandlerRegistration;
 	private HandlerRegistration focusHandlerRegistration;
 	private HandlerRegistration blurHandlerRegistration;
+	private HandlerRegistration changeHandlerRegistration;
 	private String mouseDownJs = "";
 	private String mouseUpJs = "";
 	private String mouseMoveJs = "";
@@ -77,15 +81,9 @@ HasVkAccessKey, HasVkTabIndex
 	private String focusJs = "";
 	private String blurJs = "";
 	private String clickJs = "";
+	private String changeJs = "";
 	private char accessKey;
-	@Override
-	public void add(Widget widget)
-	{
-		if(getWidget() != null)
-			Window.alert("Focus Panel can contain only one widget");
-		else
-			super.add(widget);
-	}
+
 	@Override
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)
@@ -231,6 +229,21 @@ HasVkAccessKey, HasVkTabIndex
 		});
 	}
 	@Override
+	public void addChangeHandler(String js) {
+		if(changeHandlerRegistration != null)
+			changeHandlerRegistration.removeHandler();
+		changeJs  = js;
+		changeHandlerRegistration = addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				Map<String, String> eventProperties = new HashMap<String, String>();
+				eventProperties.put("value",event.getValue().toString());
+				VkDesignerUtil.executeEvent(changeJs, eventProperties);
+			}
+		});
+		
+	}
+	@Override
 	public String getPriorJs(String eventName) {
 		if(eventName.equals(HasVkClickHandler.NAME))
 			return clickJs;
@@ -256,6 +269,8 @@ HasVkAccessKey, HasVkTabIndex
 			return focusJs;
 		else if(eventName.equals(HasVkBlurHandler.NAME))
 			return blurJs;
+		else if(eventName.equals(HasVkChangeHandler.NAME))
+			return changeJs;
 		else return "";
 	}
 	@Override
@@ -264,6 +279,18 @@ HasVkAccessKey, HasVkTabIndex
 		return accessKey;
 	}
 	/**************************Export attribute Methods********************************/
+	@Override
+	@Export
+	public void setText(String text)
+	{
+		super.setText(text);
+	}
+	@Override
+	@Export
+	public String getText()
+	{
+		return super.getText();
+	}
 	@Override
 	@Export
 	public void setAccessKey(char key)
@@ -285,8 +312,32 @@ HasVkAccessKey, HasVkTabIndex
 	}
 	@Override
 	@Export
+	public void setEnabled(boolean enabled)
+	{
+		super.setEnabled(enabled);
+	}
+	@Override
+	@Export
+	public boolean isEnabled()
+	{
+		return super.isEnabled();
+	}
+	@Override
+	@Export
 	public void setFocus(boolean focused)
 	{
 		super.setFocus(focused);
+	}
+	@Override
+	@Export
+	public void setName(String name)
+	{
+		super.setName(name);
+	}
+	@Override
+	@Export
+	public String getName()
+	{
+		return super.getName();
 	}
 }

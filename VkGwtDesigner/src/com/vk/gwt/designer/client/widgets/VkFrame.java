@@ -8,10 +8,6 @@ public class VkFrame extends Frame implements HasVkUrl{
 
 	public static final String NAME = "Frame";
 
-	@Override
-	public void addUrl(String url) {
-		setUrl(url);
-	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

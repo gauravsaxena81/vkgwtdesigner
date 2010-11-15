@@ -84,10 +84,6 @@ public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers
 		super();
 	}
 	@Override
-	public void addText(String text) {
-		setText(text);
-	}
-	@Override
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)
 			clickHandlerRegistration.removeHandler();
@@ -126,22 +122,6 @@ public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers
 		else if(eventName.equals(HasVkBlurHandler.NAME))
 			return blurJs;
 		else return "";
-	}
-	@Override
-	public void addHtml(String html) {
-		setHTML(html);
-	}
-	@Override
-	public void addAccessKey(char ch) {
-		setAccessKey(ch);
-	}
-	@Override
-	public void addTabIndex(int tabIndex) {
-		setTabIndex(tabIndex);
-	}
-	@Override
-	public void addEnabled(boolean enabled) {
-		setEnabled(enabled);
 	}
 	@Override
 	public void addMouseDownHandler(String js) {

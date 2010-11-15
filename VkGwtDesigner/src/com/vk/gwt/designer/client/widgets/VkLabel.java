@@ -55,23 +55,6 @@ public class VkLabel extends Label implements HasVkText, HasVkAllMouseHandlers, 
 		DOM.setStyleAttribute(getElement(), "border", "solid 1px green");
 	}
 	@Override
-	public void addText(String text) {
-		setText(text);
-	}
-	@Override
-	public void addWordWrap(boolean wordWrap) 
-	{
-		setWordWrap(wordWrap);
-	}
-	@Override
-	public void addHorizontalAlignment(String horizontalAlignment) {
-		setHorizontalAlignment(horizontalAlignment);
-	}
-	@Override
-	public void addDirection(String direction) {
-		setDirection(direction);
-	}
-	@Override
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)
 			clickHandlerRegistration.removeHandler();

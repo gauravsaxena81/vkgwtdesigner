@@ -1,5 +1,7 @@
 package com.vk.gwt.designer.client.Panels;
 
+import java.util.Map;
+
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.OpenEvent;
@@ -47,10 +49,6 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 			Window.alert("Disclosure Panel can add only two widgets");
 	}
 	@Override
-	public void addAnimation(boolean enabled) {
-		setAnimationEnabled(enabled);
-	}
-	@Override
 	public void addCloseHandler(String js) {
 		if(closeHandlerRegistration != null)
 			closeHandlerRegistration.removeHandler();
@@ -58,7 +56,7 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 		closeHandlerRegistration = dp.addCloseHandler(new CloseHandler<DisclosurePanel>() {
 			@Override
 			public void onClose(CloseEvent<DisclosurePanel> event) {
-				VkDesignerUtil.executeEvent(closeJs);
+				VkDesignerUtil.executeEvent(closeJs, (Map<String, String>)null);
 			}
 		});
 	}
@@ -71,7 +69,7 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 		openHandlerRegistration = dp.addOpenHandler(new OpenHandler<DisclosurePanel>() {
 			@Override
 			public void onOpen(OpenEvent<DisclosurePanel> event) {
-				VkDesignerUtil.executeEvent(openJs);
+				VkDesignerUtil.executeEvent(openJs, (Map<String, String>)null);
 			}
 		});
 	}

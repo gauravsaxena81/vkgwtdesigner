@@ -49,13 +49,14 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseOutHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseOverHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.generator.client.Export;
 
 public class VkTextBox extends TextBox implements HasVkText, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler
-, HasVkChangeHandler, HasVkDirection, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkMaxLength{
+, HasVkChangeHandler, HasVkDirection, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkMaxLength, HasVkName{
 
 	public static final String NAME = "Textbox";
 	private HandlerRegistration clickHandlerRegistration;
@@ -86,30 +87,6 @@ public class VkTextBox extends TextBox implements HasVkText, HasVkAllKeyHandlers
 	private String changeJs = "";
 	private char accessKey;
 
-	@Override
-	public void addText(String text) {
-		setText(text);
-	}
-	@Override
-	public void addDirection(String direction) {
-		setDirection(direction);
-	}
-	@Override
-	public void addAccessKey(char ch) {
-		setAccessKey(ch);
-	}
-	@Override
-	public void addTabIndex(int tabIndex) {
-		setTabIndex(tabIndex);
-	}
-	@Override
-	public void addEnabled(boolean enabled) {
-		setEnabled(enabled);
-	}
-	@Override
-	public void addMaxLength(int maxLength) {
-		setMaxLength(maxLength);
-	}
 	@Override
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)
@@ -363,6 +340,18 @@ public class VkTextBox extends TextBox implements HasVkText, HasVkAllKeyHandlers
 	public void setMaxLength(int maxLength)
 	{
 		super.setMaxLength(maxLength);
+	}
+	@Override
+	@Export
+	public void setName(String name)
+	{
+		super.setName(name);
+	}
+	@Override
+	@Export
+	public String getName()
+	{
+		return super.getName();
 	}
 	@Export
 	public String getDirectionString()
