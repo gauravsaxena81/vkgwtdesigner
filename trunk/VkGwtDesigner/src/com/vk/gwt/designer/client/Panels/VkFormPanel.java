@@ -1,5 +1,8 @@
 package com.vk.gwt.designer.client.Panels;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
@@ -41,7 +44,9 @@ HasVkUrl{
 		submitCompleteHandler = addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			@Override
 			public void onSubmitComplete(SubmitCompleteEvent event) {
-				VkDesignerUtil.executeEvent(submitCompleteJs);
+				Map<String, String> eventproperties = new HashMap<String, String>();
+				eventproperties.put("resultHtml", event.getResults());
+				VkDesignerUtil.executeEvent(submitCompleteJs, eventproperties);
 			}
 		});
 	}
@@ -68,15 +73,11 @@ HasVkUrl{
 			return "";
 	}
 	@Override
-	public void addTarget(String target) {
+	public void setTarget(String target) {
 		DOM.setElementAttribute(getElement(), "target", target);
 	}
 	@Override
-	public void addMethod(String methodName) {
-		setMethod(methodName);
-	}
-	@Override
-	public void addUrl(String url) {
+	public void setUrl(String url) {
 		setAction(url);
 	}
 	@Override

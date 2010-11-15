@@ -41,9 +41,12 @@ import com.vk.gwt.designer.client.Panels.VkHorizontalSplitPanel;
 import com.vk.gwt.designer.client.Panels.VkHtmlPanel;
 import com.vk.gwt.designer.client.Panels.VkScrollPanel;
 import com.vk.gwt.designer.client.Panels.VkStackPanel;
+import com.vk.gwt.designer.client.Panels.VkTabPanel;
 import com.vk.gwt.designer.client.Panels.VkVerticalPanel;
+import com.vk.gwt.designer.client.Panels.VkVerticalSplitPanel;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
+import com.vk.gwt.designer.client.api.attributes.HasVkBeforeSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
@@ -66,9 +69,11 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseOutHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseOverHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.attributes.HasVkOpenHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkScrollBarShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkScrollHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkSubmitCompleteHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkSubmitHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
@@ -77,14 +82,20 @@ import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.attributes.HasVkUrl;
 import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkWordWrap;
+import com.vk.gwt.designer.client.api.engine.HasVkFileUpload;
 import com.vk.gwt.designer.client.api.engine.IEngine;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.HasVkButton;
+import com.vk.gwt.designer.client.api.widgets.HasVkCheckbox;
+import com.vk.gwt.designer.client.api.widgets.HasVkFlexTable;
 import com.vk.gwt.designer.client.api.widgets.HasVkFrame;
 import com.vk.gwt.designer.client.api.widgets.HasVkLabel;
 import com.vk.gwt.designer.client.api.widgets.HasVkTextBox;
 import com.vk.gwt.designer.client.widgets.VkButton;
+import com.vk.gwt.designer.client.widgets.VkCheckbox;
+import com.vk.gwt.designer.client.widgets.VkFileUpload;
+import com.vk.gwt.designer.client.widgets.VkFlexTable;
 import com.vk.gwt.designer.client.widgets.VkFrame;
 import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkTextBox;
@@ -104,12 +115,12 @@ public class VkEngine implements IEngine{
 		Widget widget= widgetEngine.getWidget();
 		if(widget != null)
 		{
-			VkMenu menu =  new VkMenu(widget, widgetEngine);
-			VkDesignerUtil.getDrawingPanel().add(menu);
+			//VkMenu menu =  new VkMenu(widget, widgetEngine);
+			//VkDesignerUtil.getDrawingPanel().add(menu);
 			if(widget instanceof FocusWidget)
-				VkDesignerUtil.addPressAndHoldEvent((FocusWidget)widget, menu);
+				VkDesignerUtil.addPressAndHoldEvent((FocusWidget)widget, widgetEngine);
 			else
-				VkDesignerUtil.addPressAndHoldEvent(widget.getElement(), menu.getElement());
+				VkDesignerUtil.addPressAndHoldEvent(widget, widgetEngine);
 			if(invokingWidget instanceof IPanel)//all panels
 				addJavascriptAddWidgetFunction((IPanel) invokingWidget);
 			addRemoveJsFunction(widget);
@@ -176,6 +187,8 @@ public class VkEngine implements IEngine{
 			optionList.add(HasVkScrollBarShowing.NAME);
 		if(invokingWidget instanceof HasVkSwitchNumberedWidget)
 			optionList.add(HasVkSwitchNumberedWidget.NAME);
+		if(invokingWidget instanceof HasVkName)
+			optionList.add(HasVkName.NAME);
 		
 		if(invokingWidget instanceof HasVkBlurHandler)
 			optionList.add(HasVkBlurHandler.NAME);
@@ -211,6 +224,10 @@ public class VkEngine implements IEngine{
 			optionList.add(HasVkSubmitCompleteHandler.NAME);
 		if(invokingWidget instanceof HasVkScrollHandler)
 			optionList.add(HasVkScrollHandler.NAME);
+		if(invokingWidget instanceof HasVkBeforeSelectionHandler)
+			optionList.add(HasVkBeforeSelectionHandler.NAME);
+		if(invokingWidget instanceof HasVkSelectionHandler)
+			optionList.add(HasVkSelectionHandler.NAME);
 		return optionList;
 	};
 	public List<String> getWidgetsList(Widget invokingWidget) {
@@ -223,6 +240,12 @@ public class VkEngine implements IEngine{
 			optionList.add(VkLabel.NAME);
 		if(invokingWidget instanceof HasVkFrame)
 			optionList.add(VkFrame.NAME);
+		if(invokingWidget instanceof HasVkCheckbox)
+			optionList.add(VkCheckbox.NAME);
+		if(invokingWidget instanceof HasVkFileUpload)
+			optionList.add(VkFileUpload.NAME);
+		if(invokingWidget instanceof HasVkFlexTable)
+			optionList.add(VkFlexTable.NAME);
 		return optionList;
 	}
 	
@@ -244,6 +267,8 @@ public class VkEngine implements IEngine{
 			optionList.add(VkHtmlPanel.NAME);
 			optionList.add(VkScrollPanel.NAME);
 			optionList.add(VkStackPanel.NAME);
+			optionList.add(VkTabPanel.NAME);
+			optionList.add(VkVerticalSplitPanel.NAME);
 		}
 		return optionList;
 	}
@@ -285,6 +310,8 @@ public class VkEngine implements IEngine{
 			showAddAlwaysShowScrollBarDialog((HasVkScrollBarShowing) invokingWidget);
 		else if(attributeName.equals(HasVkSwitchNumberedWidget.NAME))
 			showAddNumberedWidgetDialog((HasVkSwitchNumberedWidget) invokingWidget);
+		else if(attributeName.equals(HasVkName.NAME))
+			showAddNameDialog((HasVkName) invokingWidget);
 		
 		else if(attributeName.equals(HasVkBlurHandler.NAME))
 			showEventHandlingDialog((HasVkBlurHandler) invokingWidget);
@@ -320,6 +347,26 @@ public class VkEngine implements IEngine{
 			showEventHandlingDialog((HasVkSubmitCompleteHandler) invokingWidget);
 		else if(attributeName.equals(HasVkScrollHandler.NAME))
 			showEventHandlingDialog((HasVkScrollHandler) invokingWidget);
+		else if(attributeName.equals(HasVkBeforeSelectionHandler.NAME))
+			showEventHandlingDialog((HasVkBeforeSelectionHandler) invokingWidget);
+		else if(attributeName.equals(HasVkSelectionHandler.NAME))
+			showEventHandlingDialog((HasVkSelectionHandler) invokingWidget);
+	}
+	private void showEventHandlingDialog(final HasVkSelectionHandler invokingWidget) {
+		showEventRegistrationDialog(invokingWidget, HasVkSelectionHandler.NAME, new IEventRegister(){
+			@Override
+			public void registerEvent(String js) {
+				invokingWidget.addSelectionHandler(js);
+			}
+		});
+	}
+	private void showEventHandlingDialog(final HasVkBeforeSelectionHandler invokingWidget) {
+		showEventRegistrationDialog(invokingWidget, HasVkBeforeSelectionHandler.NAME, new IEventRegister(){
+			@Override
+			public void registerEvent(String js) {
+				invokingWidget.addBeforeSelectionHandler(js);
+			}
+		});
 	}
 	private void showEventHandlingDialog(final HasVkScrollHandler invokingWidget) {
 		showEventRegistrationDialog(invokingWidget, HasVkScrollHandler.NAME, new IEventRegister(){
@@ -480,7 +527,7 @@ public class VkEngine implements IEngine{
 		showAddTextAttributeDialog("Please add text below", addTextTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
-				invokingWidget.addText(text);
+				invokingWidget.setText(text);
 			}
 		});
 	}
@@ -491,7 +538,7 @@ public class VkEngine implements IEngine{
 		showAddTextAttributeDialog("Please add html below", addTextTa, new IEventRegister() {
 			@Override
 			public void registerEvent(String html) {
-				invokingWidget.addHtml(html);
+				invokingWidget.setHTML(html);
 			}
 		});
 	}
@@ -503,7 +550,7 @@ public class VkEngine implements IEngine{
 		showAddTextAttributeDialog("Please add access key below", addTextTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
-				invokingWidget.addAccessKey(addTextTb.getText().charAt(0));
+				invokingWidget.setAccessKey(addTextTb.getText().charAt(0));
 			}
 		});
 	}
@@ -515,7 +562,7 @@ public class VkEngine implements IEngine{
 			@Override
 			public void registerEvent(String text) {
 				try{
-					invokingWidget.addTabIndex(Integer.parseInt(addTextTb.getText()));
+					invokingWidget.setTabIndex(Integer.parseInt(addTextTb.getText()));
 				}
 				catch(NumberFormatException e)
 				{
@@ -536,7 +583,7 @@ public class VkEngine implements IEngine{
 		showAddListDialog("Please choose true to make widget enabled", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
-				invokingWidget.addEnabled(Boolean.valueOf(text));
+				invokingWidget.setEnabled(Boolean.valueOf(text));
 			}
 		});
 	}
@@ -548,7 +595,7 @@ public class VkEngine implements IEngine{
 		showAddListDialog("Please choose true to make text wrap", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
-				invokingWidget.addWordWrap(Boolean.valueOf(text));
+				invokingWidget.setWordWrap(Boolean.valueOf(text));
 			}
 		});
 	}
@@ -568,7 +615,7 @@ public class VkEngine implements IEngine{
 		showAddListDialog("Please set text direction", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
-				invokingWidget.addDirection(text);
+				invokingWidget.setDirection(text);
 			}
 		});
 	}
@@ -580,7 +627,7 @@ public class VkEngine implements IEngine{
 			@Override
 			public void registerEvent(String text) {
 				try{
-					invokingWidget.addMaxLength(Integer.parseInt(addTextTb.getText()));
+					invokingWidget.setMaxLength(Integer.parseInt(addTextTb.getText()));
 				}
 				catch(NumberFormatException e)
 				{
@@ -598,7 +645,7 @@ public class VkEngine implements IEngine{
 		showAddListDialog("Please choose widget's horizontal alignment", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
-				invokingWidget.addHorizontalAlignment(text);
+				invokingWidget.setHorizontalAlignment(text);
 			}
 		});
 	}
@@ -614,7 +661,7 @@ public class VkEngine implements IEngine{
 		showAddListDialog("Please choose true make widget animated", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
-				invokingWidget.addAnimation(Boolean.valueOf(text));
+				invokingWidget.setAnimationEnabled(Boolean.valueOf(text));
 			}
 		});
 	}
@@ -627,7 +674,7 @@ public class VkEngine implements IEngine{
 		showAddListDialog("Please choose widget's vertical alignment", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
-				invokingWidget.addVerticalAligment(text);
+				invokingWidget.setVerticalAlignment(text);
 			}
 		});
 	}
@@ -643,7 +690,7 @@ public class VkEngine implements IEngine{
 		showAddListDialog("Please choose form method", methodLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String method) {
-				invokingWidget.addMethod(method);
+				invokingWidget.setMethod(method);
 			}
 		});
 	}
@@ -655,7 +702,7 @@ public class VkEngine implements IEngine{
 		showAddTextAttributeDialog("Please add url below", actionTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String action) {
-				invokingWidget.addUrl(action);
+				invokingWidget.setUrl(action);
 			}
 		});
 	}
@@ -667,7 +714,7 @@ public class VkEngine implements IEngine{
 		showAddTextAttributeDialog("Please add url below", actionTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String action) {
-				invokingWidget.addImageUrl(action);
+				invokingWidget.setImageUrl(action);
 			}
 		});
 	}
@@ -698,7 +745,7 @@ public class VkEngine implements IEngine{
 		showAddAutoCompleteTextDialog(targetTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String target) {
-				invokingWidget.addTarget(target);
+				invokingWidget.setTarget(target);
 			}
 		});
 	}
@@ -710,7 +757,25 @@ public class VkEngine implements IEngine{
 		showAddTextAttributeDialog("Please provide widget number to show below", actionTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String number) {
-				invokingWidget.showWidget(Integer.parseInt(number));
+				try{
+					invokingWidget.showWidget(Integer.parseInt(number));
+				}
+				catch(NumberFormatException e)
+				{
+					Window.alert("Widget number cannot be non-numeric");
+				}
+			}
+		});
+	}
+	private void showAddNameDialog(final HasVkName invokingWidget) {
+		final TextBox actionTb = new TextBox();
+		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
+		actionTb.setWidth("100px");
+		actionTb.setText(invokingWidget.getName());
+		showAddTextAttributeDialog("Please provide name of widget", actionTb, new IEventRegister() {
+			@Override
+			public void registerEvent(String name) {
+				invokingWidget.setName(name);
 			}
 		});
 	}
@@ -752,7 +817,7 @@ public class VkEngine implements IEngine{
 			}
 		});
 	}
-	void showAddTextAttributeDialog(String heading, final TextBoxBase addTextTa, final IEventRegister eventRegister) {
+	protected void showAddTextAttributeDialog(String heading, final TextBoxBase addTextTa, final IEventRegister eventRegister) {
 		final VerticalPanel dialog = new VerticalPanel();
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		VkDesignerUtil.getDrawingPanel().add(dialog);
@@ -790,7 +855,7 @@ public class VkEngine implements IEngine{
 			}
 		});
 	}
-	void showEventRegistrationDialog(HasVkEventHandler invokingWidget, String eventName, final IEventRegister iEventRegister) {
+	protected void showEventRegistrationDialog(HasVkEventHandler invokingWidget, String eventName, final IEventRegister iEventRegister) {
 		final VerticalPanel dialog = new VerticalPanel();
 		VkDesignerUtil.getDrawingPanel().add(dialog);
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
@@ -889,7 +954,7 @@ public class VkEngine implements IEngine{
 			}
 		});
 	}
-	void showAddAutoCompleteTextDialog(final AutoCompleterTextBox targetTb, final IEventRegister eventRegister) {
+	protected void showAddAutoCompleteTextDialog(final AutoCompleterTextBox targetTb, final IEventRegister eventRegister) {
 		final VerticalPanel dialog = new VerticalPanel();
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		VkDesignerUtil.getDrawingPanel().add(dialog);

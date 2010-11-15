@@ -12,11 +12,11 @@ import com.vk.gwt.generator.client.Export;
 public class VkCaptionPanel extends CaptionPanel implements IPanel,HasVkWidgets, HasVkText, HasVkHtml{
 	public static final String NAME = "Caption Panel";
 	@Override
-	public void addText(String text) {
+	public void setText(String text) {
 		setCaptionText(text);
 	}
 	@Override
-	public void addHtml(String html) {
+	public void setHTML(String html) {
 		setCaptionHTML(html);
 	}
 	@Override

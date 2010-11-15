@@ -4,7 +4,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -19,8 +18,11 @@ import com.vk.gwt.generator.client.Export;
 
 public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IPanel {
 	public static final String NAME = "Html Panel";
+	private String id;
 	public VkHtmlPanel() {
 		super("<div id='html1' style='width: 100%; height: 100%'></div>");
+		id = hashCode() + "";
+		super.getElement().getFirstChildElement().setId(id);
 	}
 	public void add(Widget widget)
 	{
@@ -44,7 +46,7 @@ public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IPanel {
 		};
 		t.schedule(100);
 		dialog.add(new Label("Please provide id of widget in which widget will be contained"));
-		dialog.add(new Label("Use 'html1' as id when adding to html panel itself"));
+		dialog.add(new Label("(Leave the textbox blank, if adding to parent panel itself)"));
 		dialog.add(addTextTa);
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);
@@ -53,13 +55,11 @@ public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IPanel {
 		saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				if(!addTextTa.getText().isEmpty())
-				{
+				if(!addTextTa.getText().trim().isEmpty())
 					VkHtmlPanel.super.add(widget, addTextTa.getText());
-					dialog.removeFromParent();
-				}
 				else
-					Window.alert("Cannot add widget with blank id");
+					VkHtmlPanel.super.add(widget, VkHtmlPanel.this.id);
+				dialog.removeFromParent();
 			}
 		});
 		Button cancelButton = new Button("Cancel");

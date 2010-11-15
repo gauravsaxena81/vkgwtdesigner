@@ -23,14 +23,6 @@ public class VkVerticalPanel extends VerticalPanel implements IPanel,HasVkWidget
 		super.add(child, container);
 		DOM.setElementAttribute(container, "height", "*");
 	}
-	@Override
-	public void addHorizontalAlignment(String horizontalAlignment) {
-		setHorizontalAlignment(horizontalAlignment);
-	}
-	@Override
-	public void addVerticalAligment(String verticalAlignment) {
-		
-	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

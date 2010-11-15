@@ -41,21 +41,15 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private MenuItem selectedMenuItem;
 	private int top;
 	private int left;
-	@SuppressWarnings("unchecked")
-	private IWidgetEngine widgetEngine;
-	
-	private VkMenu(){
-		super(true);
-	}
+	private IWidgetEngine<? extends Widget> widgetEngine;
 
-	@SuppressWarnings("unchecked")
-	public VkMenu(final Widget invokingWidget, IWidgetEngine widgetEngine) {
+	public VkMenu() {
 		super(true);
 		setAutoOpen(true);
 		setAnimationEnabled(true);
 		sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONFOCUS | Event.ONKEYDOWN | Event.ONBLUR);
-		this.invokingWidget = invokingWidget;
-		this.widgetEngine = widgetEngine;
+		//this.invokingWidget = invokingWidget;
+		//this.widgetEngine = widgetEngine;
 		setVisible(false);
 		addBlurHandler(new BlurHandler() {
 			@Override
@@ -66,6 +60,16 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		DOM.setStyleAttribute(getElement(), "position", "absolute");
 		DOM.setStyleAttribute(getElement(), "border", "solid 1px green");
 		DOM.setStyleAttribute(getElement(), "zIndex", Integer.MAX_VALUE + "");
+	}
+	
+	public void setInvokingWidget(Widget invokingWidget) {
+		this.invokingWidget = invokingWidget;
+	}
+	public void setWidgetEngine(IWidgetEngine<? extends Widget> widgetEngine) {
+		this.widgetEngine = widgetEngine;
+	}
+	public void prepareMenu() {
+		clearItems();
 		addOperationsItems();
 		List<String> widgetsList = VkDesignerUtil.getEngine().getWidgetsList(invokingWidget);
 		addWidgetsList(widgetsList);
@@ -76,7 +80,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		addSeparator();
 		addItem("Style", showStyleDialog(invokingWidget));
 	}
-	
+
 	private Command showStyleDialog(final Widget invokingWidget) {
 		return new Command(){
 			@Override
@@ -317,7 +321,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	}
 
 	private void addOperationsItems() {
-		MenuBar operationsMenu = new VkMenu();
+		MenuBar operationsMenu = new MenuBar(true);
 		operationsMenu.setFocusOnHoverEnabled(false);
 		operationsMenu.addItem("Remove", new Command(){
 			@Override
@@ -371,10 +375,8 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						DOM.setStyleAttribute(invokingWidget.getElement(), "padding", "0px");
 						DOM.setStyleAttribute(invokingWidget.getElement(), "margin", "0px");
 						
-						DOM.setStyleAttribute(invokingWidget.getElement(), "width", draggingWidget.getOffsetWidth() 
-								- initialWidth + invokingWidget.getOffsetWidth() + "px");
-						DOM.setStyleAttribute(invokingWidget.getElement(), "height", draggingWidget.getOffsetHeight() 
-								- initialHeight + invokingWidget.getOffsetHeight() + "px");
+						invokingWidget.setWidth(draggingWidget.getOffsetWidth()	- initialWidth + invokingWidget.getOffsetWidth() + "px");
+						invokingWidget.setHeight(draggingWidget.getOffsetHeight() - initialHeight + invokingWidget.getOffsetHeight() + "px");
 						
 						DOM.setStyleAttribute(invokingWidget.getElement(), "borderTopWidth", borderTopWidth);
 						DOM.setStyleAttribute(invokingWidget.getElement(), "borderBottomWidth", borderBottomWidth);

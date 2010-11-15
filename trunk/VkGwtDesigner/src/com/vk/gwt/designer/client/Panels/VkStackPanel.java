@@ -3,6 +3,7 @@ package com.vk.gwt.designer.client.Panels;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.StackPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
@@ -12,6 +13,11 @@ import com.vk.gwt.generator.client.Export;
 
 public class VkStackPanel extends StackPanel implements HasVkWidgets, IPanel, HasVkSwitchNumberedWidget, HasVkHtml, HasVkText {
 	public static final String NAME = "Stack Panel";
+	 @Override
+	 public void add(Widget w) {
+		super.add(w);
+		setHeaderHtml(getWidgetCount()- 1, "Untitled");
+	 }
 	@Override
 	public int getCurrentlyShowingWidget() {
 		return getSelectedIndex();
@@ -27,11 +33,11 @@ public class VkStackPanel extends StackPanel implements HasVkWidgets, IPanel, Ha
 		return DOM.getFirstChild(tdWrapper);
 	}
 	@Override
-	public void addHtml(String html) {
+	public void setHTML(String html) {
 		setHeaderHtml(getSelectedIndex(), html);
 	}
 	@Override
-	public void addText(String text) {
+	public void setText(String text) {
 		setHeaderText(getSelectedIndex(), text);
 	}
 	@Override

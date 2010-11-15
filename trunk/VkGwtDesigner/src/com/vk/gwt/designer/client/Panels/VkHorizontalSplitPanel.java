@@ -36,7 +36,7 @@ public class VkHorizontalSplitPanel extends SimplePanel implements IPanel, HasVk
 			Window.alert("Horizontal Split Panel can add only two widgets");
 	}
 	@Override
-	public void addImageUrl(String url) {
+	public void setImageUrl(String url) {
 		DOM.setStyleAttribute((Element) horizontalSplitPanel.getElement().getFirstChildElement().getFirstChildElement().getNextSiblingElement()
 				.getElementsByTagName("IMG").getItem(0)	, "backgroundImage", "url(\"" + url + "\")");
 	}

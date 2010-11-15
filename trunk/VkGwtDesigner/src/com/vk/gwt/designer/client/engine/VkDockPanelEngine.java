@@ -18,9 +18,9 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 	@Override
 	public void applyAttribute(String attributeName, Widget invokingWidget) {
 		if(attributeName.equals(HasVkHorizontalAlignment.NAME))
-			((VkDockPanel)invokingWidget).addHorizontalAlignment(attributeName);
+			((VkDockPanel)invokingWidget).setHorizontalAlignment(attributeName);
 		else if(attributeName.equals(HasVkVerticalAlignment.NAME))
-			((VkDockPanel)invokingWidget).addVerticalAligment(attributeName);
+			((VkDockPanel)invokingWidget).setVerticalAlignment(attributeName);
 		else
 			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
 	}
