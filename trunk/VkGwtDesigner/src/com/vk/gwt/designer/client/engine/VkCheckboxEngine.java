@@ -7,6 +7,8 @@ public class VkCheckboxEngine extends VkAbstractWidgetEngine<VkCheckbox> {
 
 	@Override
 	public VkCheckbox getWidget() {
-		return new VkCheckbox();
+		VkCheckbox widget = new VkCheckbox();
+		init(widget);
+		return widget;
 	}
 }
