@@ -35,6 +35,7 @@ import com.vk.gwt.designer.client.Panels.VkHorizontalPanel;
 import com.vk.gwt.designer.client.Panels.VkHorizontalSplitPanel;
 import com.vk.gwt.designer.client.Panels.VkHtmlPanel;
 import com.vk.gwt.designer.client.Panels.VkScrollPanel;
+import com.vk.gwt.designer.client.Panels.VkSimplePanel;
 import com.vk.gwt.designer.client.Panels.VkStackPanel;
 import com.vk.gwt.designer.client.Panels.VkTabPanel;
 import com.vk.gwt.designer.client.Panels.VkVerticalPanel;
@@ -59,6 +60,7 @@ import com.vk.gwt.designer.client.engine.VkHorizontalSplitPanelEngine;
 import com.vk.gwt.designer.client.engine.VkHtmlPanelEngine;
 import com.vk.gwt.designer.client.engine.VkLabelEngine;
 import com.vk.gwt.designer.client.engine.VkScrollPanelEngine;
+import com.vk.gwt.designer.client.engine.VkSimplePanelEngine;
 import com.vk.gwt.designer.client.engine.VkStackPanelEngine;
 import com.vk.gwt.designer.client.engine.VkTabPanelEngine;
 import com.vk.gwt.designer.client.engine.VkTextBoxEngine;
@@ -147,6 +149,7 @@ public class VkDesignerUtil {
 								{
 									getMenu().setInvokingWidget(widget);
 									getMenu().setWidgetEngine(widgetEngine);
+									getMenu().prepareMenu();
 									getMenu().setVisible(true);
 									getMenu().focus();
 									DOM.setStyleAttribute(getMenu().getElement(), "top", top + "px");
@@ -214,8 +217,12 @@ public class VkDesignerUtil {
 		draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
 			@Override
 			public void onMouseMove(MouseMoveEvent event) {
-				DOM.setStyleAttribute(draggingWidget.getElement(), "top", event.getClientY() + "px");
-				DOM.setStyleAttribute(draggingWidget.getElement(), "left", event.getClientX() + "px");
+				int top = event.getClientY();
+				int left = event.getClientX();
+				if(top % 2 == 1)
+					DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
+				if(left % 2 == 1)
+					DOM.setStyleAttribute(draggingWidget.getElement(), "left", left + "px");
 			}
 		});
 		draggingWidget.addMouseUpHandler(new MouseUpHandler() {
@@ -294,6 +301,7 @@ public class VkDesignerUtil {
 		engineMap.put(VkStackPanel.NAME, new VkStackPanelEngine());
 		engineMap.put(VkTabPanel.NAME, new VkTabPanelEngine());
 		engineMap.put(VkVerticalSplitPanel.NAME, new VkVerticalSplitPanelEngine());
+		engineMap.put(VkSimplePanel.NAME, new VkSimplePanelEngine());
 	}
 	public static Map<String, IWidgetEngine<? extends Widget>> getEngineMap() {
 		return engineMap;

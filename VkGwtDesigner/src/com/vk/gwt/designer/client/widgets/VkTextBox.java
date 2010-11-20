@@ -52,11 +52,12 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
+import com.vk.gwt.designer.client.api.attributes.HasVkValue;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.generator.client.Export;
 
 public class VkTextBox extends TextBox implements HasVkText, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler
-, HasVkChangeHandler, HasVkDirection, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkMaxLength, HasVkName{
+, HasVkChangeHandler, HasVkDirection, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkMaxLength, HasVkName, HasVkValue<String>{
 
 	public static final String NAME = "Textbox";
 	private HandlerRegistration clickHandlerRegistration;

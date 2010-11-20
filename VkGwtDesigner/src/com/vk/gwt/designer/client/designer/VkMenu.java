@@ -201,6 +201,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Z Index","zIndex"));
 				miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Opacity","opacity"));
 				miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Filter(IE)","filter"));
+				miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "border-collapse(table only)","borderCollapse"));
 				return scrollMiscellaneousHolderPanel;
 			}
 			private Panel addStyleAttribute(Widget invokingWidget, String displayName, String attributeName)
@@ -275,7 +276,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				@Override
 				public void execute() {
 					Widget widget = null;
-					widget = VkDesignerUtil.getEngine().getWidget(selectedMenuItem.getText(), invokingWidget);
+					widget = VkDesignerUtil.getEngine().getWidget(selectedMenuItem.getText());
 					if(widget != null)//cast is safe because the restriction on widgets,  if any, is placed by menu while it shows widget list
 						VkDesignerUtil.addWidget(widget, (IPanel)invokingWidget, VkMenu.this.top, VkMenu.this.left);
 					hideMenu();
@@ -306,7 +307,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				@Override
 				public void execute() {
 					Widget widget = null;
-					widget = VkDesignerUtil.getEngine().getWidget(selectedMenuItem.getText(), invokingWidget);
+					widget = VkDesignerUtil.getEngine().getWidget(selectedMenuItem.getText());
 					if(widget != null)//cast is safe because the restriction on widgets,  if any, is placed by menu while it shows widget list
 						VkDesignerUtil.addWidget(widget, (IPanel)invokingWidget, VkMenu.this.top, VkMenu.this.left);
 					hideMenu();
@@ -327,7 +328,6 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			@Override
 			public void execute() {
 				invokingWidget.removeFromParent();
-				VkMenu.this.removeFromParent();
 				invokingWidget = null;
 			}});
 		operationsMenu.addItem("Move", new Command(){
@@ -351,10 +351,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
 					@Override
 					public void onMouseMove(MouseMoveEvent event) {
-						DOM.setStyleAttribute(draggingWidget.getElement(), "width", event.getClientX() 
-								- invokingWidget.getElement().getAbsoluteLeft() + "px");
-						DOM.setStyleAttribute(draggingWidget.getElement(), "height", event.getClientY() 
-								- invokingWidget.getElement().getAbsoluteTop() + "px");
+						int width = event.getClientX() - invokingWidget.getElement().getAbsoluteLeft();
+						int height = event.getClientY() - invokingWidget.getElement().getAbsoluteTop();
+						if(width % 2 == 0)
+							DOM.setStyleAttribute(draggingWidget.getElement(), "width", width + "px");
+						if(height % 2 == 0)
+							DOM.setStyleAttribute(draggingWidget.getElement(), "height", height + "px");
 					}
 				});
 				draggingWidget.addMouseUpHandler(new MouseUpHandler() {
@@ -374,9 +376,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						DOM.setStyleAttribute(invokingWidget.getElement(), "borderWidth", "0px");
 						DOM.setStyleAttribute(invokingWidget.getElement(), "padding", "0px");
 						DOM.setStyleAttribute(invokingWidget.getElement(), "margin", "0px");
-						
-						invokingWidget.setWidth(draggingWidget.getOffsetWidth()	- initialWidth + invokingWidget.getOffsetWidth() + "px");
-						invokingWidget.setHeight(draggingWidget.getOffsetHeight() - initialHeight + invokingWidget.getOffsetHeight() + "px");
+						int width = draggingWidget.getOffsetWidth()	- initialWidth + invokingWidget.getOffsetWidth();
+						if(width > 0)
+							invokingWidget.setWidth(width + "px");
+						int height = draggingWidget.getOffsetHeight() - initialHeight + invokingWidget.getOffsetHeight();
+						if(height > 0)
+							invokingWidget.setHeight(height + "px");
 						
 						DOM.setStyleAttribute(invokingWidget.getElement(), "borderTopWidth", borderTopWidth);
 						DOM.setStyleAttribute(invokingWidget.getElement(), "borderBottomWidth", borderBottomWidth);

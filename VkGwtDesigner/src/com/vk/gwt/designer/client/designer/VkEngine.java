@@ -18,7 +18,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
@@ -40,6 +39,7 @@ import com.vk.gwt.designer.client.Panels.VkHorizontalPanel;
 import com.vk.gwt.designer.client.Panels.VkHorizontalSplitPanel;
 import com.vk.gwt.designer.client.Panels.VkHtmlPanel;
 import com.vk.gwt.designer.client.Panels.VkScrollPanel;
+import com.vk.gwt.designer.client.Panels.VkSimplePanel;
 import com.vk.gwt.designer.client.Panels.VkStackPanel;
 import com.vk.gwt.designer.client.Panels.VkTabPanel;
 import com.vk.gwt.designer.client.Panels.VkVerticalPanel;
@@ -104,12 +104,12 @@ import com.vk.gwt.generator.client.JsBridgable;
 public class VkEngine implements IEngine{
 	private JsBridgable jsBridgable = GWT.create(JsBridgable.class);
 	
-	protected interface IEventRegister{
+	public interface IEventRegister{
 		public void registerEvent(String js);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Widget getWidget(String widgetName, final Widget invokingWidget)
+	public Widget getWidget(String widgetName)
 	{
 		IWidgetEngine widgetEngine = VkDesignerUtil.getEngineMap().get(widgetName);
 		Widget widget= widgetEngine.getWidget();
@@ -117,12 +117,12 @@ public class VkEngine implements IEngine{
 		{
 			//VkMenu menu =  new VkMenu(widget, widgetEngine);
 			//VkDesignerUtil.getDrawingPanel().add(menu);
-			if(widget instanceof FocusWidget)
+			/*if(widget instanceof FocusWidget)
 				VkDesignerUtil.addPressAndHoldEvent((FocusWidget)widget, widgetEngine);
-			else
+			else*/
 				VkDesignerUtil.addPressAndHoldEvent(widget, widgetEngine);
-			if(invokingWidget instanceof IPanel)//all panels
-				addJavascriptAddWidgetFunction((IPanel) invokingWidget);
+			if(widget instanceof IPanel)//all panels
+				addJavascriptAddWidgetFunction((IPanel) widget);
 			addRemoveJsFunction(widget);
 			jsBridgable.createBridge(widget);
 		}
@@ -132,7 +132,7 @@ public class VkEngine implements IEngine{
 	@SuppressWarnings("unused")
 	private void addWidget(IPanel invokingWidget, String widgetName)
 	{
-		Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName, (Widget) invokingWidget);
+		Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName);
 		if(widget != null)
 			VkDesignerUtil.addWidget(widget, invokingWidget);
 		else
@@ -269,6 +269,7 @@ public class VkEngine implements IEngine{
 			optionList.add(VkStackPanel.NAME);
 			optionList.add(VkTabPanel.NAME);
 			optionList.add(VkVerticalSplitPanel.NAME);
+			optionList.add(VkSimplePanel.NAME);
 		}
 		return optionList;
 	}
@@ -779,7 +780,7 @@ public class VkEngine implements IEngine{
 			}
 		});
 	}
-	void showAddListDialog(String heading, final ListBox listBox, final IEventRegister eventRegister) {
+	public void showAddListDialog(String heading, final ListBox listBox, final IEventRegister eventRegister) {
 		final VerticalPanel dialog = new VerticalPanel();
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		VkDesignerUtil.getDrawingPanel().add(dialog);
@@ -817,7 +818,7 @@ public class VkEngine implements IEngine{
 			}
 		});
 	}
-	protected void showAddTextAttributeDialog(String heading, final TextBoxBase addTextTa, final IEventRegister eventRegister) {
+	public void showAddTextAttributeDialog(String heading, final TextBoxBase addTextTa, final IEventRegister eventRegister) {
 		final VerticalPanel dialog = new VerticalPanel();
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		VkDesignerUtil.getDrawingPanel().add(dialog);
@@ -855,7 +856,7 @@ public class VkEngine implements IEngine{
 			}
 		});
 	}
-	protected void showEventRegistrationDialog(HasVkEventHandler invokingWidget, String eventName, final IEventRegister iEventRegister) {
+	public void showEventRegistrationDialog(HasVkEventHandler invokingWidget, String eventName, final IEventRegister iEventRegister) {
 		final VerticalPanel dialog = new VerticalPanel();
 		VkDesignerUtil.getDrawingPanel().add(dialog);
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
@@ -954,7 +955,7 @@ public class VkEngine implements IEngine{
 			}
 		});
 	}
-	protected void showAddAutoCompleteTextDialog(final AutoCompleterTextBox targetTb, final IEventRegister eventRegister) {
+	public void showAddAutoCompleteTextDialog(final AutoCompleterTextBox targetTb, final IEventRegister eventRegister) {
 		final VerticalPanel dialog = new VerticalPanel();
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		VkDesignerUtil.getDrawingPanel().add(dialog);

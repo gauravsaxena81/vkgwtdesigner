@@ -39,6 +39,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkChangeHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
@@ -50,12 +51,14 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
+import com.vk.gwt.designer.client.api.attributes.HasVkText;
+import com.vk.gwt.designer.client.api.attributes.HasVkValue;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.generator.client.Export;
 
 public class VkCheckbox extends CheckBox implements HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler
-, HasVkChangeHandler, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkName{
-	public static final String NAME = "Textbox";
+, HasVkChangeHandler, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkName, HasVkText, HasVkHtml, HasVkValue<Boolean>{
+	public static final String NAME = "Checkbox";
 	private HandlerRegistration clickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
 	private HandlerRegistration mouseUpHandlerRegistration;
