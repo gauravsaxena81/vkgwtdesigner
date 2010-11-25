@@ -1,7 +1,0 @@
-<module>
-  <!-- Inherit the core Web Toolkit stuff.                  -->
-  <inherits name='com.google.gwt.user.User'/>
-  <generate-with class="com.vk.gwt.generator.rebind.JsBridgeGenerator">
-    <when-type-assignable class="com.vk.gwt.generator.client.JsBridgable"/>
-  </generate-with>
-</module>
