@@ -35,6 +35,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
+import com.vk.gwt.designer.client.widgets.VkMenuBarVertical;
 
 public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private Widget invokingWidget;
@@ -349,14 +350,19 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				VkDesignerUtil.getDrawingPanel().add(draggingWidget);
 				DOM.setStyleAttribute(draggingWidget.getElement(), "position", "absolute");
 				draggingWidget.setPixelSize(invokingWidget.getOffsetWidth(), invokingWidget.getOffsetHeight());
-				DOM.setStyleAttribute(draggingWidget.getElement(), "top", invokingWidget.getElement().getAbsoluteTop() + "px");
-				DOM.setStyleAttribute(draggingWidget.getElement(), "left", invokingWidget.getElement().getAbsoluteLeft() + "px");
+				boolean isAttached = invokingWidget.isAttached();
+				boolean isPopUpMenuBar = invokingWidget instanceof VkMenuBarVertical;
+				//when menubars are added as submenus then on pressing resize they vanish which leads to top and left being evaluated to 0
+				final int top = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getTop() : invokingWidget.getElement().getAbsoluteTop();
+				final int left = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getLeft() : invokingWidget.getElement().getAbsoluteLeft();
+				DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
+				DOM.setStyleAttribute(draggingWidget.getElement(), "left", left + "px");
 				DOM.setCapture(draggingWidget.getElement());
 				draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
 					@Override
 					public void onMouseMove(MouseMoveEvent event) {
-						int width = event.getClientX() - invokingWidget.getElement().getAbsoluteLeft();
-						int height = event.getClientY() - invokingWidget.getElement().getAbsoluteTop();
+						int width = event.getClientX() - left;
+						int height = event.getClientY() - top;
 						if(width % 2 == 0)
 							DOM.setStyleAttribute(draggingWidget.getElement(), "width", width + "px");
 						if(height % 2 == 0)

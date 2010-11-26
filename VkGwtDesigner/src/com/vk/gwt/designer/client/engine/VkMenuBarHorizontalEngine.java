@@ -110,8 +110,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 				
 				@Override
 				public void registerEvent(String js) {
-					VkMenuBarVertical widget = (VkMenuBarVertical)VkDesignerUtil.getEngine().getWidget(VkMenuBarVertical.NAME);
-					VkDesignerUtil.assignId(widget);
+					final VkMenuBarVertical widget = (VkMenuBarVertical)VkDesignerUtil.getEngine().getWidget(VkMenuBarVertical.NAME);
 					menuBar.addItem(new MenuItem(nameTb.getText(), widget));
 				}
 			});

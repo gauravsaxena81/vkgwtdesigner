@@ -60,4 +60,16 @@ public class VkDeckPanel extends DeckPanel implements IPanel, HasVkWidgets, HasV
 	{
 		return super.isVisible();
 	}
+	@Override
+	@Export
+	public void addStyleName(String className)
+	{
+		super.addStyleName(className);
+	}
+	@Override
+	@Export
+	public void removeStyleName(String className)
+	{
+		super.removeStyleName(className);
+	}
 }

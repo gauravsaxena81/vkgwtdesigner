@@ -1,4 +1,4 @@
-package com.vk.gwt.designer.client.widgets;
+package com.vk.gwt.designer.client.Panels;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,30 +7,27 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.MenuBar;
-import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
+import com.vk.gwt.designer.client.api.engine.IPanel;
+import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.generator.client.Export;
 
-public class VkMenuBarHorizontal extends MenuBar implements HasVkCloseHandler, HasVkAnimation{
-	public static final String NAME = "Menu Bar Horizontal";
+public class VkPopUpPanel extends PopupPanel implements HasVkWidgets, IPanel, HasVkCloseHandler, HasVkAnimation {
+	public static final String NAME = "Popup Panel(added to Page)";
 	private HandlerRegistration closeRegistration;
 	private String closeJs = "";
-	public VkMenuBarHorizontal(){}
-	public VkMenuBarHorizontal(boolean b) {
-		super(b);
-	}
-	public MenuItem getMenuItem(int index)
-	{
-		return super.getItems().get(index);
-	}
-	public int getItemCount()
-	{
-		return super.getItems().size();
+	@Override
+	public void add(Widget w) {
+		if(getWidget() != null)
+			Window.alert("VkPopUpPanel can add only one widget");
+		else
+			super.add(w);
 	}
 	@Override
 	public void addCloseHandler(String js) {
@@ -46,7 +43,6 @@ public class VkMenuBarHorizontal extends MenuBar implements HasVkCloseHandler, H
 			}
 		});
 	}
-
 	@Override
 	public String getPriorJs(String eventName) {
 		if(eventName.equals(HasVkCloseHandler.NAME))
@@ -54,33 +50,39 @@ public class VkMenuBarHorizontal extends MenuBar implements HasVkCloseHandler, H
 		else
 			return "";
 	}
-	@Override
-	public void onBrowserEvent(Event event) {
-		super.onBrowserEvent(event);
-		switch (DOM.eventGetType(event)) {
-	      	case Event.ONCLICK:{
-	      		//submenus are always VkMenuBarVertical type
-	    	  	VkMenuBarVertical menu = ((VkMenuBarVertical)getSelectedItem().getSubMenu());
-	    	  	if(menu != null)
-	    	  	{
-		    	  	menu.setTop(menu.getAbsoluteTop());
-		    	  	menu.setLeft(menu.getAbsoluteLeft());
-	    	  	}
-	      	}
-		}
-	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
-	public void setVisible(boolean isVisible)
+	public void center()
 	{
-		super.setVisible(isVisible);
+		RootPanel.get().remove(this);
+		super.center();
+		DOM.setStyleAttribute(getElement(), "display", "");
 	}
 	@Override
 	@Export
-	public boolean isVisible()
+	public void hide() {
+		super.hide();
+		RootPanel.get().add(this);
+		DOM.setStyleAttribute(getElement(), "display", "none");
+	}
+	@Override
+	@Export
+	public boolean isShowing() {
+		return super.isShowing();
+	}
+	@Override
+	@Export
+	public void setPopupPosition(int left, int top) {
+		super.setPopupPosition(left, top);
+	}
+	@Override
+	@Export
+	public void show()
 	{
-		return super.isVisible();
+		RootPanel.get().remove(this);
+		super.show();
+		DOM.setStyleAttribute(getElement(), "display", "");
 	}
 	@Override
 	@Export

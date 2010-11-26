@@ -32,4 +32,16 @@ public class VkFlowPanel extends FlowPanel implements IPanel, HasVkWidgets{
 	{
 		return super.isVisible();
 	}
+	@Override
+	@Export
+	public void addStyleName(String className)
+	{
+		super.addStyleName(className);
+	}
+	@Override
+	@Export
+	public void removeStyleName(String className)
+	{
+		super.removeStyleName(className);
+	}
 }

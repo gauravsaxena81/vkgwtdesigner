@@ -22,6 +22,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.Panels.VkAbsolutePanel;
 import com.vk.gwt.designer.client.Panels.VkCaptionPanel;
@@ -34,6 +35,7 @@ import com.vk.gwt.designer.client.Panels.VkFormPanel;
 import com.vk.gwt.designer.client.Panels.VkHorizontalPanel;
 import com.vk.gwt.designer.client.Panels.VkHorizontalSplitPanel;
 import com.vk.gwt.designer.client.Panels.VkHtmlPanel;
+import com.vk.gwt.designer.client.Panels.VkPopUpPanel;
 import com.vk.gwt.designer.client.Panels.VkScrollPanel;
 import com.vk.gwt.designer.client.Panels.VkSimplePanel;
 import com.vk.gwt.designer.client.Panels.VkStackPanel;
@@ -47,6 +49,7 @@ import com.vk.gwt.designer.client.engine.VkButtonEngine;
 import com.vk.gwt.designer.client.engine.VkCaptionPanelEngine;
 import com.vk.gwt.designer.client.engine.VkCheckboxEngine;
 import com.vk.gwt.designer.client.engine.VkDeckPanelEngine;
+import com.vk.gwt.designer.client.engine.VkDialogBoxEngine;
 import com.vk.gwt.designer.client.engine.VkDisclosurePanelEngine;
 import com.vk.gwt.designer.client.engine.VkDockPanelEngine;
 import com.vk.gwt.designer.client.engine.VkFileUploadEngine;
@@ -67,6 +70,8 @@ import com.vk.gwt.designer.client.engine.VkLabelEngine;
 import com.vk.gwt.designer.client.engine.VkListBoxEngine;
 import com.vk.gwt.designer.client.engine.VkMenuBarHorizontalEngine;
 import com.vk.gwt.designer.client.engine.VkMenuBarVerticalEngine;
+import com.vk.gwt.designer.client.engine.VkPopUpPanelEngine;
+import com.vk.gwt.designer.client.engine.VkPushButtonEngine;
 import com.vk.gwt.designer.client.engine.VkScrollPanelEngine;
 import com.vk.gwt.designer.client.engine.VkSimplePanelEngine;
 import com.vk.gwt.designer.client.engine.VkStackPanelEngine;
@@ -76,6 +81,7 @@ import com.vk.gwt.designer.client.engine.VkVerticalPanelEngine;
 import com.vk.gwt.designer.client.engine.VkVerticalSplitPanelEngine;
 import com.vk.gwt.designer.client.widgets.VkButton;
 import com.vk.gwt.designer.client.widgets.VkCheckbox;
+import com.vk.gwt.designer.client.widgets.VkDialogBox;
 import com.vk.gwt.designer.client.widgets.VkFileUpload;
 import com.vk.gwt.designer.client.widgets.VkFlexTable;
 import com.vk.gwt.designer.client.widgets.VkFrame;
@@ -88,6 +94,7 @@ import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkListBox;
 import com.vk.gwt.designer.client.widgets.VkMenuBarHorizontal;
 import com.vk.gwt.designer.client.widgets.VkMenuBarVertical;
+import com.vk.gwt.designer.client.widgets.VkPushButton;
 import com.vk.gwt.designer.client.widgets.VkTextBox;
 
 public class VkDesignerUtil {
@@ -98,10 +105,10 @@ public class VkDesignerUtil {
 	private static VkEngine vkEngine = new VkEngine();
 	public native static void addPressAndHoldEvent(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) /*-{
 		var element = widget.@com.google.gwt.user.client.ui.Widget::getElement()();
-		if(element.tagName == 'IMG')
+		//if(element.tagName == 'IMG')
 			setTimeout(createMouseDownEvent, 200);//image takes time to load, thus event is not attached successfully if not waited for it
-		else
-			createMouseDownEvent();
+		//else
+		//	createMouseDownEvent();
 		$wnd.document.onmouseup = function(){
 			@com.vk.gwt.designer.client.designer.VkDesignerUtil::setShowMenuFlag(Z)(false);
 		};
@@ -118,11 +125,11 @@ public class VkDesignerUtil {
 		}
 		function createMouseDownEvent()
 		{
-			element.onmousedown = function(ev){
+			element.oncontextmenu = function(ev){
 				@com.vk.gwt.designer.client.designer.VkDesignerUtil::setShowMenuFlag(Z)(true);
-				if(element.id != '' && ev.button == 1)
+				if(element.id != '')
 				{
-					setTimeout(function(){
+					//setTimeout(function(){
 						if(showMenuFlag)
 						{
 							var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
@@ -139,9 +146,10 @@ public class VkDesignerUtil {
 						}
 						else
 							menu.style.display = "none";
-					}, 500);
+					//}, 500);
 				}
 				ev.stopPropagation();
+				return false;
 			};
 		}
 	}-*/;
@@ -265,8 +273,10 @@ public class VkDesignerUtil {
 	}
 	public static void addWidget(Widget widget, IPanel invokingWidget, int top, int left) {
 		widget.setPixelSize(100, 20);
-		assignId(widget);
-		invokingWidget.add(widget);
+		if(!(widget instanceof PopupPanel))//Pop up panels should not be added to DOM
+			invokingWidget.add(widget);
+		else
+			((PopupPanel)widget).center();
 		placeAddedElement(widget.getElement(), invokingWidget, top, left);
 	}
 	private static void placeAddedElement(Element element, IPanel invokingWidget, int top, int left) {
@@ -315,6 +325,8 @@ public class VkDesignerUtil {
 		engineMap.put(VkListBox.NAME, new VkListBoxEngine());
 		engineMap.put(VkMenuBarHorizontal.NAME, new VkMenuBarHorizontalEngine());
 		engineMap.put(VkMenuBarVertical.NAME, new VkMenuBarVerticalEngine());
+		engineMap.put(VkDialogBox.NAME, new VkDialogBoxEngine());
+		engineMap.put(VkPushButton.NAME, new VkPushButtonEngine());
 		
 		engineMap.put(VkAbsolutePanel.NAME, new VkAbsolutePanelEngine());
 		engineMap.put(VkVerticalPanel.NAME, new VkVerticalPanelEngine());
@@ -333,6 +345,7 @@ public class VkDesignerUtil {
 		engineMap.put(VkTabPanel.NAME, new VkTabPanelEngine());
 		engineMap.put(VkVerticalSplitPanel.NAME, new VkVerticalSplitPanelEngine());
 		engineMap.put(VkSimplePanel.NAME, new VkSimplePanelEngine());
+		engineMap.put(VkPopUpPanel.NAME, new VkPopUpPanelEngine());
 	}
 	public static Map<String, IWidgetEngine<? extends Widget>> getEngineMap() {
 		return engineMap;
