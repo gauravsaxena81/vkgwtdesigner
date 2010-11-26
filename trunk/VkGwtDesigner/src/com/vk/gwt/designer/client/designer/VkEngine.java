@@ -4,12 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.DOM;
@@ -37,6 +33,7 @@ import com.vk.gwt.designer.client.Panels.VkFormPanel;
 import com.vk.gwt.designer.client.Panels.VkHorizontalPanel;
 import com.vk.gwt.designer.client.Panels.VkHorizontalSplitPanel;
 import com.vk.gwt.designer.client.Panels.VkHtmlPanel;
+import com.vk.gwt.designer.client.Panels.VkPopUpPanel;
 import com.vk.gwt.designer.client.Panels.VkScrollPanel;
 import com.vk.gwt.designer.client.Panels.VkSimplePanel;
 import com.vk.gwt.designer.client.Panels.VkStackPanel;
@@ -86,6 +83,7 @@ import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.HasVkButton;
 import com.vk.gwt.designer.client.api.widgets.HasVkCheckbox;
+import com.vk.gwt.designer.client.api.widgets.HasVkDialogBox;
 import com.vk.gwt.designer.client.api.widgets.HasVkFileUpload;
 import com.vk.gwt.designer.client.api.widgets.HasVkFlexTable;
 import com.vk.gwt.designer.client.api.widgets.HasVkFrame;
@@ -97,11 +95,12 @@ import com.vk.gwt.designer.client.api.widgets.HasVkImage;
 import com.vk.gwt.designer.client.api.widgets.HasVkLabel;
 import com.vk.gwt.designer.client.api.widgets.HasVkListBox;
 import com.vk.gwt.designer.client.api.widgets.HasVkMenuBarHorizontal;
-import com.vk.gwt.designer.client.api.widgets.HasVkMenuBarVertical;
+import com.vk.gwt.designer.client.api.widgets.HasVkPushButton;
 import com.vk.gwt.designer.client.api.widgets.HasVkTextBox;
 import com.vk.gwt.designer.client.util.VkEventTextArea;
 import com.vk.gwt.designer.client.widgets.VkButton;
 import com.vk.gwt.designer.client.widgets.VkCheckbox;
+import com.vk.gwt.designer.client.widgets.VkDialogBox;
 import com.vk.gwt.designer.client.widgets.VkFileUpload;
 import com.vk.gwt.designer.client.widgets.VkFlexTable;
 import com.vk.gwt.designer.client.widgets.VkFrame;
@@ -113,7 +112,7 @@ import com.vk.gwt.designer.client.widgets.VkImage;
 import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkListBox;
 import com.vk.gwt.designer.client.widgets.VkMenuBarHorizontal;
-import com.vk.gwt.designer.client.widgets.VkMenuBarVertical;
+import com.vk.gwt.designer.client.widgets.VkPushButton;
 import com.vk.gwt.designer.client.widgets.VkTextBox;
 import com.vk.gwt.generator.client.JsBridgable;
 
@@ -136,7 +135,8 @@ public class VkEngine implements IEngine{
 			/*if(widget instanceof FocusWidget)
 				VkDesignerUtil.addPressAndHoldEvent((FocusWidget)widget, widgetEngine);
 			else*/
-				VkDesignerUtil.addPressAndHoldEvent(widget, widgetEngine);
+			VkDesignerUtil.assignId(widget);
+			VkDesignerUtil.addPressAndHoldEvent(widget, widgetEngine);
 			if(widget instanceof IPanel)//all panels
 				addJavascriptAddWidgetFunction((IPanel) widget);
 			addRemoveJsFunction(widget);
@@ -277,8 +277,10 @@ public class VkEngine implements IEngine{
 			optionList.add(VkListBox.NAME);
 		if(invokingWidget instanceof HasVkMenuBarHorizontal)
 			optionList.add(VkMenuBarHorizontal.NAME);
-		if(invokingWidget instanceof HasVkMenuBarVertical)
-			optionList.add(VkMenuBarVertical.NAME);
+		if(invokingWidget instanceof HasVkDialogBox)
+			optionList.add(VkDialogBox.NAME);
+		if(invokingWidget instanceof HasVkPushButton)
+			optionList.add(VkPushButton.NAME);
 		return optionList;
 	}
 	
@@ -303,6 +305,7 @@ public class VkEngine implements IEngine{
 			optionList.add(VkTabPanel.NAME);
 			optionList.add(VkVerticalSplitPanel.NAME);
 			optionList.add(VkSimplePanel.NAME);
+			optionList.add(VkPopUpPanel.NAME);
 		}
 		return optionList;
 	}

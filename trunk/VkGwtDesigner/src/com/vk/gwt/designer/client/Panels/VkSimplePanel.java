@@ -30,4 +30,16 @@ public class VkSimplePanel extends SimplePanel implements HasVkWidgets, IPanel {
 	{
 		return super.isVisible();
 	}
+	@Override
+	@Export
+	public void addStyleName(String className)
+	{
+		super.addStyleName(className);
+	}
+	@Override
+	@Export
+	public void removeStyleName(String className)
+	{
+		super.removeStyleName(className);
+	}
 }

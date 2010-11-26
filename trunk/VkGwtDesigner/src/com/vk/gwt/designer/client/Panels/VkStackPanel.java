@@ -100,4 +100,16 @@ public class VkStackPanel extends StackPanel implements HasVkWidgets, IPanel, Ha
 	{
 		return super.isVisible();
 	}
+	@Override
+	@Export
+	public void addStyleName(String className)
+	{
+		super.addStyleName(className);
+	}
+	@Override
+	@Export
+	public void removeStyleName(String className)
+	{
+		super.removeStyleName(className);
+	}
 }
