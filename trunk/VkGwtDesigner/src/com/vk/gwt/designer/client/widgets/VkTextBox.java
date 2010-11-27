@@ -301,6 +301,41 @@ public class VkTextBox extends TextBox implements HasVkText, HasVkAllKeyHandlers
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
+	public int getCursorPos() {
+		return super.getCursorPos();
+	}
+	@Override
+	@Export
+	public int getSelectionLength() {
+		return super.getSelectionLength();
+	}
+	@Override
+	@Export
+	public String getSelectedText() {
+		return super.getSelectedText();
+	}
+	@Override
+	@Export
+	public void selectAll() {
+		super.selectAll();
+	}
+	@Override
+	@Export
+	public void setSelectionRange(int pos, int length) {
+		super.setSelectionRange(pos, length);
+	}
+	@Override
+	@Export
+	public boolean isReadOnly() {
+		return super.isReadOnly();
+	}
+	@Override
+	@Export
+	public void setReadOnly(boolean readOnly) {
+		super.setReadOnly(readOnly); 
+	}
+	@Override
+	@Export
 	public void setText(String text)
 	{
 		super.setText(text);
