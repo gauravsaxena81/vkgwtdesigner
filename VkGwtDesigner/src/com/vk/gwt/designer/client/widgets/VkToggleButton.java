@@ -25,7 +25,7 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.ToggleButton;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
@@ -48,9 +48,9 @@ import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.generator.client.Export;
 
-public class VkPushButton extends PushButton implements HasVkText, HasVkHtml, HasVkEnabled, HasVkAccessKey, HasVkTabIndex, HasVkAllMouseHandlers, HasVkAllKeyHandlers,
+public class VkToggleButton extends ToggleButton implements HasVkText, HasVkHtml, HasVkEnabled, HasVkAccessKey, HasVkTabIndex, HasVkAllMouseHandlers, HasVkAllKeyHandlers,
 HasVkFocusHandler, HasVkBlurHandler{
-	final public static String NAME = "Push Button";
+	final public static String NAME = "Toggle Button";
 
 	private HandlerRegistration clickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
@@ -275,9 +275,15 @@ HasVkFocusHandler, HasVkBlurHandler{
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
-	public void setText(String text)
+	public boolean isDown()
 	{
-		super.setText(text);
+		return super.isDown();
+	}
+	@Override
+	@Export
+	public void setDown(boolean isDown)
+	{
+		super.setDown(isDown);
 	}
 	@Override
 	@Export
@@ -338,4 +344,5 @@ HasVkFocusHandler, HasVkBlurHandler{
 	{
 		super.removeStyleName(className);
 	}
+
 }

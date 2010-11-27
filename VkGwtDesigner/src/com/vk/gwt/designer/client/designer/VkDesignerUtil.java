@@ -72,11 +72,17 @@ import com.vk.gwt.designer.client.engine.VkMenuBarHorizontalEngine;
 import com.vk.gwt.designer.client.engine.VkMenuBarVerticalEngine;
 import com.vk.gwt.designer.client.engine.VkPopUpPanelEngine;
 import com.vk.gwt.designer.client.engine.VkPushButtonEngine;
+import com.vk.gwt.designer.client.engine.VkRadioButtonEngine;
+import com.vk.gwt.designer.client.engine.VkRichTextAreaEngine;
 import com.vk.gwt.designer.client.engine.VkScrollPanelEngine;
 import com.vk.gwt.designer.client.engine.VkSimplePanelEngine;
 import com.vk.gwt.designer.client.engine.VkStackPanelEngine;
+import com.vk.gwt.designer.client.engine.VkSuggestBoxEngine;
+import com.vk.gwt.designer.client.engine.VkTabBarEngine;
 import com.vk.gwt.designer.client.engine.VkTabPanelEngine;
+import com.vk.gwt.designer.client.engine.VkTextAreaEngine;
 import com.vk.gwt.designer.client.engine.VkTextBoxEngine;
+import com.vk.gwt.designer.client.engine.VkToggleButtonEngine;
 import com.vk.gwt.designer.client.engine.VkVerticalPanelEngine;
 import com.vk.gwt.designer.client.engine.VkVerticalSplitPanelEngine;
 import com.vk.gwt.designer.client.widgets.VkButton;
@@ -95,7 +101,13 @@ import com.vk.gwt.designer.client.widgets.VkListBox;
 import com.vk.gwt.designer.client.widgets.VkMenuBarHorizontal;
 import com.vk.gwt.designer.client.widgets.VkMenuBarVertical;
 import com.vk.gwt.designer.client.widgets.VkPushButton;
+import com.vk.gwt.designer.client.widgets.VkRadioButton;
+import com.vk.gwt.designer.client.widgets.VkRichTextArea;
+import com.vk.gwt.designer.client.widgets.VkSuggestBox;
+import com.vk.gwt.designer.client.widgets.VkTabBar;
+import com.vk.gwt.designer.client.widgets.VkTextArea;
 import com.vk.gwt.designer.client.widgets.VkTextBox;
+import com.vk.gwt.designer.client.widgets.VkToggleButton;
 
 public class VkDesignerUtil {
 	private static int widgetCount = 0;
@@ -327,6 +339,12 @@ public class VkDesignerUtil {
 		engineMap.put(VkMenuBarVertical.NAME, new VkMenuBarVerticalEngine());
 		engineMap.put(VkDialogBox.NAME, new VkDialogBoxEngine());
 		engineMap.put(VkPushButton.NAME, new VkPushButtonEngine());
+		engineMap.put(VkRadioButton.NAME, new VkRadioButtonEngine());
+		engineMap.put(VkRichTextArea.NAME, new VkRichTextAreaEngine());
+		engineMap.put(VkSuggestBox.NAME, new VkSuggestBoxEngine());
+		engineMap.put(VkTabBar.NAME, new VkTabBarEngine());
+		engineMap.put(VkTextArea.NAME, new VkTextAreaEngine());
+		engineMap.put(VkToggleButton.NAME, new VkToggleButtonEngine());
 		
 		engineMap.put(VkAbsolutePanel.NAME, new VkAbsolutePanelEngine());
 		engineMap.put(VkVerticalPanel.NAME, new VkVerticalPanelEngine());
@@ -382,7 +400,7 @@ public class VkDesignerUtil {
 	@SuppressWarnings("unchecked")
 	public static void executeEvent(String js, DomEvent event) {
 		EventTarget currentEventTarget = event.getNativeEvent().getCurrentEventTarget();
-		Element currentEventTargetElement = currentEventTarget != null ? (Element) Element.as(currentEventTarget) : null;
+		Element currentEventTargetElement = currentEventTarget != null && Element.is(currentEventTarget)? (Element) Element.as(currentEventTarget) : null;
 		EventTarget eventTarget = event.getNativeEvent().getEventTarget();
 		Element eventTargetElement = eventTarget != null ? (Element) Element.as(eventTarget) : null;
 		EventTarget relativeEventTarget = event.getNativeEvent().getRelatedEventTarget();

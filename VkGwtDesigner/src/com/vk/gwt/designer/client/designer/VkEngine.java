@@ -55,6 +55,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkFormTarget;
 import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkImageUrl;
+import com.vk.gwt.designer.client.api.attributes.HasVkInitializeHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
@@ -76,6 +77,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.attributes.HasVkUrl;
+import com.vk.gwt.designer.client.api.attributes.HasVkValueChangeHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkWordWrap;
 import com.vk.gwt.designer.client.api.engine.IEngine;
@@ -96,7 +98,12 @@ import com.vk.gwt.designer.client.api.widgets.HasVkLabel;
 import com.vk.gwt.designer.client.api.widgets.HasVkListBox;
 import com.vk.gwt.designer.client.api.widgets.HasVkMenuBarHorizontal;
 import com.vk.gwt.designer.client.api.widgets.HasVkPushButton;
+import com.vk.gwt.designer.client.api.widgets.HasVkRadioButton;
+import com.vk.gwt.designer.client.api.widgets.HasVkRichTextArea;
+import com.vk.gwt.designer.client.api.widgets.HasVkSuggestBox;
+import com.vk.gwt.designer.client.api.widgets.HasVkTabBar;
 import com.vk.gwt.designer.client.api.widgets.HasVkTextBox;
+import com.vk.gwt.designer.client.api.widgets.HasVkToggleButton;
 import com.vk.gwt.designer.client.util.VkEventTextArea;
 import com.vk.gwt.designer.client.widgets.VkButton;
 import com.vk.gwt.designer.client.widgets.VkCheckbox;
@@ -113,7 +120,12 @@ import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkListBox;
 import com.vk.gwt.designer.client.widgets.VkMenuBarHorizontal;
 import com.vk.gwt.designer.client.widgets.VkPushButton;
+import com.vk.gwt.designer.client.widgets.VkRadioButton;
+import com.vk.gwt.designer.client.widgets.VkRichTextArea;
+import com.vk.gwt.designer.client.widgets.VkSuggestBox;
+import com.vk.gwt.designer.client.widgets.VkTabBar;
 import com.vk.gwt.designer.client.widgets.VkTextBox;
+import com.vk.gwt.designer.client.widgets.VkToggleButton;
 import com.vk.gwt.generator.client.JsBridgable;
 
 public class VkEngine implements IEngine{
@@ -245,6 +257,10 @@ public class VkEngine implements IEngine{
 			optionList.add(HasVkBeforeSelectionHandler.NAME);
 		if(invokingWidget instanceof HasVkSelectionHandler)
 			optionList.add(HasVkSelectionHandler.NAME);
+		if(invokingWidget instanceof HasVkInitializeHandlers)
+			optionList.add(HasVkInitializeHandlers.NAME);
+		if(invokingWidget instanceof HasVkInitializeHandlers)
+			optionList.add(HasVkValueChangeHandler.NAME);
 		return optionList;
 	};
 	public List<String> getWidgetsList(Widget invokingWidget) {
@@ -281,6 +297,16 @@ public class VkEngine implements IEngine{
 			optionList.add(VkDialogBox.NAME);
 		if(invokingWidget instanceof HasVkPushButton)
 			optionList.add(VkPushButton.NAME);
+		if(invokingWidget instanceof HasVkRadioButton)
+			optionList.add(VkRadioButton.NAME);
+		if(invokingWidget instanceof HasVkRichTextArea)
+			optionList.add(VkRichTextArea.NAME);
+		if(invokingWidget instanceof HasVkSuggestBox)
+			optionList.add(VkSuggestBox.NAME);
+		if(invokingWidget instanceof HasVkTabBar)
+			optionList.add(VkTabBar.NAME);
+		if(invokingWidget instanceof HasVkToggleButton)
+			optionList.add(VkToggleButton.NAME);
 		return optionList;
 	}
 	
@@ -390,6 +416,26 @@ public class VkEngine implements IEngine{
 			showEventHandlingDialog((HasVkBeforeSelectionHandler) invokingWidget);
 		else if(attributeName.equals(HasVkSelectionHandler.NAME))
 			showEventHandlingDialog((HasVkSelectionHandler) invokingWidget);
+		else if(attributeName.equals(HasVkInitializeHandlers.NAME))
+			showEventHandlingDialog((HasVkInitializeHandlers) invokingWidget);
+		else if(attributeName.equals(HasVkValueChangeHandler.NAME))
+			showEventHandlingDialog((HasVkValueChangeHandler) invokingWidget);
+	}
+	private void showEventHandlingDialog(final HasVkValueChangeHandler invokingWidget) {
+		showEventRegistrationDialog(invokingWidget, HasVkValueChangeHandler.NAME, new IEventRegister(){
+			@Override
+			public void registerEvent(String js) {
+				invokingWidget.addValueChangeHandler(js);
+			}
+		});
+	}
+	private void showEventHandlingDialog(final HasVkInitializeHandlers invokingWidget) {
+		showEventRegistrationDialog(invokingWidget, HasVkInitializeHandlers.NAME, new IEventRegister(){
+			@Override
+			public void registerEvent(String js) {
+				invokingWidget.addInitializeHandler(js);
+			}
+		});
 	}
 	private void showEventHandlingDialog(final HasVkSelectionHandler invokingWidget) {
 		showEventRegistrationDialog(invokingWidget, HasVkSelectionHandler.NAME, new IEventRegister(){

@@ -25,7 +25,7 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
@@ -33,7 +33,6 @@ import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
-import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
@@ -43,15 +42,20 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseOutHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseOverHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
+import com.vk.gwt.designer.client.api.attributes.HasVkValue;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.generator.client.Export;
 
-public class VkPushButton extends PushButton implements HasVkText, HasVkHtml, HasVkEnabled, HasVkAccessKey, HasVkTabIndex, HasVkAllMouseHandlers, HasVkAllKeyHandlers,
-HasVkFocusHandler, HasVkBlurHandler{
-	final public static String NAME = "Push Button";
+public class VkRadioButton extends RadioButton implements HasVkText, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler
+, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkName, HasVkValue<Boolean>{
 
+	public VkRadioButton() {
+		super("");
+	}
+	public static final String NAME = "Radio Button";
 	private HandlerRegistration clickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
 	private HandlerRegistration mouseUpHandlerRegistration;
@@ -76,9 +80,8 @@ HasVkFocusHandler, HasVkBlurHandler{
 	private String focusJs = "";
 	private String blurJs = "";
 	private String clickJs = "";
-
 	private char accessKey;
-	
+
 	@Override
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)
@@ -90,34 +93,6 @@ HasVkFocusHandler, HasVkBlurHandler{
 				VkDesignerUtil.executeEvent(clickJs, event);
 			}
 		});
-	}
-	@Override
-	public String getPriorJs(String eventName) {
-		if(eventName.equals(HasVkClickHandler.NAME))
-			return clickJs;
-		else if(eventName.equals(HasVkMouseDownHandler.NAME))
-			return mouseDownJs;
-		else if(eventName.equals(HasVkMouseUpHandler.NAME))
-			return mouseUpJs;
-		else if(eventName.equals(HasVkMouseOverHandler.NAME))
-			return mouseOverJs;
-		else if(eventName.equals(HasVkMouseOutHandler.NAME))
-			return mouseOutJs;
-		else if(eventName.equals(HasVkMouseWheelHandler.NAME))
-			return mouseWheelJs;
-		else if(eventName.equals(HasVkMouseMoveHandler.NAME))
-			return mouseMoveJs;
-		else if(eventName.equals(HasVkKeyUpHandler.NAME))
-			return keyUpJs;
-		else if(eventName.equals(HasVkKeyDownHandler.NAME))
-			return keyDownJs;
-		else if(eventName.equals(HasVkKeyPressHandler.NAME))
-			return keyPressJs;
-		else if(eventName.equals(HasVkFocusHandler.NAME))
-			return focusJs;
-		else if(eventName.equals(HasVkBlurHandler.NAME))
-			return blurJs;
-		else return "";
 	}
 	@Override
 	public void addMouseDownHandler(String js) {
@@ -252,6 +227,34 @@ HasVkFocusHandler, HasVkBlurHandler{
 		});
 	}
 	@Override
+	public String getPriorJs(String eventName) {
+		if(eventName.equals(HasVkClickHandler.NAME))
+			return clickJs;
+		else if(eventName.equals(HasVkMouseDownHandler.NAME))
+			return mouseDownJs;
+		else if(eventName.equals(HasVkMouseUpHandler.NAME))
+			return mouseUpJs;
+		else if(eventName.equals(HasVkMouseOverHandler.NAME))
+			return mouseOverJs;
+		else if(eventName.equals(HasVkMouseOutHandler.NAME))
+			return mouseOutJs;
+		else if(eventName.equals(HasVkMouseWheelHandler.NAME))
+			return mouseWheelJs;
+		else if(eventName.equals(HasVkMouseMoveHandler.NAME))
+			return mouseMoveJs;
+		else if(eventName.equals(HasVkKeyUpHandler.NAME))
+			return keyUpJs;
+		else if(eventName.equals(HasVkKeyDownHandler.NAME))
+			return keyDownJs;
+		else if(eventName.equals(HasVkKeyPressHandler.NAME))
+			return keyPressJs;
+		else if(eventName.equals(HasVkFocusHandler.NAME))
+			return focusJs;
+		else if(eventName.equals(HasVkBlurHandler.NAME))
+			return blurJs;
+		else return "";
+	}
+	@Override
 	public char getAccessKey()
 	{
 		return accessKey;
@@ -261,16 +264,6 @@ HasVkFocusHandler, HasVkBlurHandler{
 	{
 		accessKey = key;
 		super.setAccessKey(key);
-	}
-	@Override
-	public void setTabIndex(int tabIndex)
-	{
-		super.setTabIndex(tabIndex);
-	}
-	@Override
-	public int getTabIndex()
-	{
-		return super.getTabIndex();
 	}
 	/**************************Export attribute Methods********************************/
 	@Override
@@ -285,20 +278,10 @@ HasVkFocusHandler, HasVkBlurHandler{
 	{
 		return super.getText();
 	}
+	
 	@Override
 	@Export
-	public void setHTML(String html)
-	{
-		super.setHTML(html);
-	}
-	@Override
-	@Export
-	public String getHTML()
-	{
-		return super.getHTML();
-	}
-	@Export
-	public void setButtonEnabled(boolean enabled)
+	public void setEnabled(boolean enabled)
 	{
 		super.setEnabled(enabled);
 	}
@@ -313,6 +296,18 @@ HasVkFocusHandler, HasVkBlurHandler{
 	public void setFocus(boolean focused)
 	{
 		super.setFocus(focused);
+	}
+	@Override
+	@Export
+	public void setName(String name)
+	{
+		super.setName(name);
+	}
+	@Override
+	@Export
+	public String getName()
+	{
+		return super.getName();
 	}
 	@Override
 	@Export
@@ -337,5 +332,9 @@ HasVkFocusHandler, HasVkBlurHandler{
 	public void removeStyleName(String className)
 	{
 		super.removeStyleName(className);
+	}
+	@Override
+	public void setValue(Boolean value) {
+		super.setValue(value);		
 	}
 }
