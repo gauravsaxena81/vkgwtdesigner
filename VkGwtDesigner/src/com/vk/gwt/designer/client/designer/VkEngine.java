@@ -117,6 +117,7 @@ import com.vk.gwt.designer.client.api.widgets.HasVkHyperlink;
 import com.vk.gwt.designer.client.api.widgets.HasVkImage;
 import com.vk.gwt.designer.client.api.widgets.HasVkInlineHTML;
 import com.vk.gwt.designer.client.api.widgets.HasVkInlineHyperlink;
+import com.vk.gwt.designer.client.api.widgets.HasVkInlineLabel;
 import com.vk.gwt.designer.client.api.widgets.HasVkLabel;
 import com.vk.gwt.designer.client.api.widgets.HasVkListBox;
 import com.vk.gwt.designer.client.api.widgets.HasVkMenuBarHorizontal;
@@ -148,6 +149,7 @@ import com.vk.gwt.designer.client.widgets.VkHyperlink;
 import com.vk.gwt.designer.client.widgets.VkImage;
 import com.vk.gwt.designer.client.widgets.VkInlineHTML;
 import com.vk.gwt.designer.client.widgets.VkInlineHyperlink;
+import com.vk.gwt.designer.client.widgets.VkInlineLabel;
 import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkListBox;
 import com.vk.gwt.designer.client.widgets.VkMenuBarHorizontal;
@@ -165,6 +167,13 @@ import com.vk.gwt.designer.client.widgets.VkTree;
 
 
 public class VkEngine implements IEngine{
+	public static final String REMOVE = "Remove";
+	public static final String MOVE = "Move";
+	public static final String RESIZE = "Resize";
+	public static final String COPY = "Copy";
+	public static final String PASTE = "Paste";
+	public static final String SAVE = "Save";
+	public static final String LOAD = "Load";
 	private JsBridgable jsBridgable = GWT.create(JsBridgable.class);
 	
 	public interface IEventRegister{
@@ -214,6 +223,22 @@ public class VkEngine implements IEngine{
 			widget.@com.google.gwt.user.client.ui.Widget::removeFromParent()();
 		});
 	}-*/;
+	public List<String> getOperationsList(Widget invokingWidget) {
+		List<String> operationsList = new ArrayList<String>();
+		operationsList.add(REMOVE);
+		operationsList.add(MOVE);
+		operationsList.add(RESIZE);
+		if(!invokingWidget.getElement().getId().equals("drawingPanel"))
+			operationsList.add(COPY);
+		if(invokingWidget instanceof IPanel)
+			operationsList.add(PASTE);
+		if(invokingWidget.getElement().getId().equals("drawingPanel"));
+		{
+			operationsList.add(SAVE);
+			operationsList.add(LOAD);
+		}
+		return operationsList;
+	}
 	public List<String> getAttributesList(Widget invokingWidget) {
 		List<String> optionList = new ArrayList<String>();
 		optionList.add("Class Name");
@@ -385,6 +410,8 @@ public class VkEngine implements IEngine{
 			optionList.add(VkSubmitButton.NAME);
 		if(invokingWidget instanceof HasVkDecoratedTabBar)
 			optionList.add(VkDecoratedTabBar.NAME);
+		if(invokingWidget instanceof HasVkInlineLabel)
+			optionList.add(VkInlineLabel.NAME);
 		if(invokingWidget instanceof HasVkInlineHTML)
 			optionList.add(VkInlineHTML.NAME);
 		if(invokingWidget instanceof HasVkInlineHyperlink)
@@ -1010,7 +1037,6 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddCaptionTextDialog(final HasVkCaptionText invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
 		actionTb.setWidth("100px");
 		actionTb.setText(invokingWidget.getCaptionText());
 		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
@@ -1022,7 +1048,6 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddCaptionHtmlDialog(final HasVkCaptionHtml invokingWidget) {
 		final TextArea actionTb = new TextArea();
-		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
 		actionTb.setSize("100px","50px");
 		actionTb.setText(invokingWidget.getCaptionHtml());
 		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {

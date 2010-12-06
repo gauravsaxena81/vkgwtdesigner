@@ -26,7 +26,8 @@ public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IPanel {
 	}
 	public void add(Widget widget)
 	{
-		showAddTextAttributeDialog(widget);	
+		if(VkDesignerUtil.isDesignerMode)
+			showAddTextAttributeDialog(widget);	
 	}
 	private void showAddTextAttributeDialog(final Widget widget) {
 		final VerticalPanel dialog = new VerticalPanel();

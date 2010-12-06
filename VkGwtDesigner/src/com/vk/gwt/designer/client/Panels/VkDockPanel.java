@@ -47,45 +47,54 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 	}
 	@Override
 	public void setHorizontalAlignment(String horizontalAlignment) {
-		final ListBox listBox = new ListBox(false);
-		listBox.addItem("Left", "left");
-		listBox.addItem("Center", "center");
-		listBox.addItem("Right", "right");
-		listBox.setWidth("100px");
-		showSetCellAlignmentDialog(listBox, new IAlignment() {
-			@Override
-			public void doAlignment(int widgetIndex, String align) {
-				setCellHorizontalAlignment(widgetIndex, align);
-			}
-		});
+		if(VkDesignerUtil.isDesignerMode)
+		{
+			final ListBox listBox = new ListBox(false);
+			listBox.addItem("Left", "left");
+			listBox.addItem("Center", "center");
+			listBox.addItem("Right", "right");
+			listBox.setWidth("100px");
+			showSetCellAlignmentDialog(listBox, new IAlignment() {
+				@Override
+				public void doAlignment(int widgetIndex, String align) {
+					setCellHorizontalAlignment(widgetIndex, align);
+				}
+			});
+		}
 	}
 	@Override
 	public void setVerticalAlignment(String verticalAlignment) {
-		final ListBox listBox = new ListBox(false);
-		listBox.addItem("Top", "top");
-		listBox.addItem("Middle", "middle");
-		listBox.addItem("Bottom", "bottom");
-		listBox.setWidth("100px");
-		showSetCellAlignmentDialog(listBox, new IAlignment() {
-			@Override
-			public void doAlignment(int widgetIndex, String align) {
-				setCellVerticalAlignment(widgetIndex, align);
-			}
-		});
+		if(VkDesignerUtil.isDesignerMode)
+		{
+			final ListBox listBox = new ListBox(false);
+			listBox.addItem("Top", "top");
+			listBox.addItem("Middle", "middle");
+			listBox.addItem("Bottom", "bottom");
+			listBox.setWidth("100px");
+			showSetCellAlignmentDialog(listBox, new IAlignment() {
+				@Override
+				public void doAlignment(int widgetIndex, String align) {
+					setCellVerticalAlignment(widgetIndex, align);
+				}
+			});
+		}
 	}
 	@Override
 	public void add(Widget widget)
 	{
-		final ListBox listBox = new ListBox(false);
-		listBox.addItem("Center", "1");
-		listBox.addItem("Line Start", "2");
-		listBox.addItem("Line End", "3");
-		listBox.addItem("East", "4");
-		listBox.addItem("South", "5");
-		listBox.addItem("North", "6");
-		listBox.addItem("West", "7");
-		listBox.setWidth("100px");
-		showProvideLayoutDialog(listBox, widget);
+		if(VkDesignerUtil.isDesignerMode)
+		{
+			final ListBox listBox = new ListBox(false);
+			listBox.addItem("Center", "1");
+			listBox.addItem("Line Start", "2");
+			listBox.addItem("Line End", "3");
+			listBox.addItem("East", "4");
+			listBox.addItem("South", "5");
+			listBox.addItem("North", "6");
+			listBox.addItem("West", "7");
+			listBox.setWidth("100px");
+			showProvideLayoutDialog(listBox, widget);
+		}
 	}
 	private void showProvideLayoutDialog(final ListBox listBox, final Widget widget) {
 		final VerticalPanel dialog = new VerticalPanel();
@@ -119,7 +128,8 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 						VkDockPanel.this.add(widget, DockPanel.CENTER);
 					}catch(IllegalArgumentException e)
 					{
-						Window.alert("Adding more than one Center widgets is not allowed");
+						if(VkDesignerUtil.isDesignerMode)
+							Window.alert("Center can contain only one widget");
 					}
 				}
 				if(option.equals("2"))

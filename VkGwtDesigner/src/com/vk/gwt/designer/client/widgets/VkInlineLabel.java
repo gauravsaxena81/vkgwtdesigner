@@ -37,7 +37,7 @@ import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, HasVkAllMouseHandlers, HasVkWordWrap, HasVkHorizontalAlignment, HasVkDirection{
-	final public static String NAME = "Label";
+	final public static String NAME = "Inline Label";
 	private HandlerRegistration clickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
 	private HandlerRegistration mouseUpHandlerRegistration;
@@ -197,7 +197,10 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 	}
 	public String getHorizontalAlignmentString()
 	{
-		return getHorizontalAlignment().getTextAlignString();
+		if(getHorizontalAlignment() != null)
+			return getHorizontalAlignment().getTextAlignString();
+		else
+			return "left";
 	}
 	@Override
 	public String getWidgetName() {

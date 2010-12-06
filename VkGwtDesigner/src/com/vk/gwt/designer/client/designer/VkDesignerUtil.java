@@ -4,14 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.google.gwt.dom.client.EventTarget;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.DOM;
@@ -19,7 +14,6 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -75,6 +69,7 @@ import com.vk.gwt.designer.client.engine.VkHyperlinkEngine;
 import com.vk.gwt.designer.client.engine.VkImageEngine;
 import com.vk.gwt.designer.client.engine.VkInlineHTMLEngine;
 import com.vk.gwt.designer.client.engine.VkInlineHyperlinkEngine;
+import com.vk.gwt.designer.client.engine.VkInlineLabelEngine;
 import com.vk.gwt.designer.client.engine.VkLabelEngine;
 import com.vk.gwt.designer.client.engine.VkListBoxEngine;
 import com.vk.gwt.designer.client.engine.VkMenuBarHorizontalEngine;
@@ -114,6 +109,7 @@ import com.vk.gwt.designer.client.widgets.VkHyperlink;
 import com.vk.gwt.designer.client.widgets.VkImage;
 import com.vk.gwt.designer.client.widgets.VkInlineHTML;
 import com.vk.gwt.designer.client.widgets.VkInlineHyperlink;
+import com.vk.gwt.designer.client.widgets.VkInlineLabel;
 import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkListBox;
 import com.vk.gwt.designer.client.widgets.VkMenuBarHorizontal;
@@ -137,6 +133,7 @@ public class VkDesignerUtil {
 	private static Map<String, IWidgetEngine<? extends Widget>> engineMap = new LinkedHashMap<String, IWidgetEngine<? extends Widget>>();
 	private static VkAbsolutePanel drawingPanel;
 	private static VkEngine vkEngine = new VkEngine();
+	public static boolean isDesignerMode = true;
 	public native static void addPressAndHoldEvent(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) /*-{
 		var element = widget.@com.google.gwt.user.client.ui.Widget::getElement()();
 		//if(element.tagName == 'IMG')
@@ -166,22 +163,21 @@ public class VkDesignerUtil {
 				if(element.id != '')
 				{
 					//setTimeout(function(){
-						if(showMenuFlag)
+					//	if(showMenuFlag)
 						{
 							var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
-							menu.@com.vk.gwt.designer.client.designer.VkMenu::setWidgetEngine(Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widgetEngine);
-							menu.@com.vk.gwt.designer.client.designer.VkMenu::setInvokingWidget(Lcom/google/gwt/user/client/ui/Widget;)(widget);
-							menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu()();
+							menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu(Lcom/google/gwt/user/client/ui/Widget;Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widget, widgetEngine);
 							if(isChild(!!ev.target ? ev.target : ev.srcElement, element))
 							{
 								menu = menu.@com.vk.gwt.designer.client.designer.VkMenu::getElement()();
 								menu.style.display = "block";
 								menu.style.left = ev.clientX + "px";
 								menu.style.top = ev.clientY + "px";
+								menu.focus();
 							}
 						}
-						else
-							menu.style.display = "none";
+						//else
+							//menu.style.display = "none";
 					//}, 500);
 				}
 				if(typeof ev.stopPropagation == 'undefined' || ev.stopPropagation == null)
@@ -193,54 +189,14 @@ public class VkDesignerUtil {
 		}
 	}-*/;
 	
+	@SuppressWarnings("unused")
 	private native static void setShowMenuFlag(boolean flag)/*-{
 		showMenuFlag = flag;
 	}-*/;
+	@SuppressWarnings("unused")
 	private native static boolean getShowMenuFlag()/*-{
 		return showMenuFlag;
 	}-*/;
-
-	public static void addPressAndHoldEvent(final FocusWidget widget, final IWidgetEngine<? extends Widget> widgetEngine) {
-		widget.addMouseDownHandler(new MouseDownHandler() {
-			@Override
-			public void onMouseDown(final MouseDownEvent event) {
-				final int top = event.getClientY();
-				final int left = event.getClientX();
-				setShowMenuFlag(true);
-				final EventTarget eventTarget = event.getNativeEvent().getEventTarget();
-				if(event.getNativeButton() == NativeEvent.BUTTON_MIDDLE)
-				{
-					Timer t = new Timer(){
-						@Override
-						public void run() {
-							if(getShowMenuFlag())
-							{
-								if( Element.as(eventTarget).equals(widget.getElement()))
-								{
-									getMenu().setInvokingWidget(widget);
-									getMenu().setWidgetEngine(widgetEngine);
-									getMenu().prepareMenu();
-									getMenu().setVisible(true);
-									getMenu().focus();
-									DOM.setStyleAttribute(getMenu().getElement(), "top", top + "px");
-									DOM.setStyleAttribute(getMenu().getElement(), "left", left + "px");
-									setShowMenuFlag(false);
-								}
-							}
-						}
-					};
-					t.schedule(500);
-					event.stopPropagation();
-				}
-			}
-		});
-		widget.addMouseOutHandler(new MouseOutHandler() {
-			@Override
-			public void onMouseOut(MouseOutEvent event) {
-				setShowMenuFlag(false);
-			}
-		});
-	}
 	public static int getCumulativeTop(Element invokingWidgetElement) {
 		int top = 0;
 		Element tempWidget = invokingWidgetElement;
@@ -331,23 +287,11 @@ public class VkDesignerUtil {
 	{
 		setUpEngineMap();
 		drawingPanel = new VkAbsolutePanel();
-		//VkMenu designerMenu = new VkMenu(drawingPanel, VkDesignerUtil.getEngineMap().get(VkAbsolutePanel.NAME));
-		//drawingPanel.add(designerMenu);
 		VkDesignerUtil.addPressAndHoldEvent(drawingPanel, getEngineMap().get(VkAbsolutePanel.NAME));
 		drawingPanel.getElement().setId("drawingPanel");
-		drawingPanel.setPixelSize(Window.getClientWidth() - 20, Window.getClientHeight() - 20);
-		DOM.setStyleAttribute(drawingPanel.getElement(), "border", "solid 1px green");
+		drawingPanel.setPixelSize(Window.getClientWidth() - 10, Window.getClientHeight() - 10);
+		DOM.setStyleAttribute(drawingPanel.getElement(), "border", "solid 1px gray");
 		drawingPanel.add(menu);
-		/*Button saveJson = new Button("Save");
-		RootPanel.get().add(saveJson);
-		saveJson.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				for(int i = 0; i < drawingPanel.getWidgetCount(); i++)
-					if(!drawingPanel.getWidget(i).getElement().getId().isEmpty())
-						Window.alert(drawingPanel.getWidget(i).getElement().getId());
-			}
-		});*/
 	}
 	private static void setUpEngineMap() {
 		engineMap.put(VkButton.NAME, new VkButtonEngine());
@@ -379,6 +323,7 @@ public class VkDesignerUtil {
 		engineMap.put(VkResetButton.NAME, new VkResetButtonEngine());
 		engineMap.put(VkSubmitButton.NAME, new VkSubmitButtonEngine());
 		engineMap.put(VkDecoratedTabBar.NAME, new VkDecoratedTabBarEngine());
+		engineMap.put(VkInlineLabel.NAME, new VkInlineLabelEngine());
 		engineMap.put(VkInlineHTML.NAME, new VkInlineHTMLEngine());
 		engineMap.put(VkInlineHyperlink.NAME, new VkInlineHyperlinkEngine());
 		engineMap.put(VkDateBox.NAME, new VkDateBoxEngine());
@@ -407,9 +352,16 @@ public class VkDesignerUtil {
 	public static Map<String, IWidgetEngine<? extends Widget>> getEngineMap() {
 		return engineMap;
 	}
+	public static void setEngineMap(Map<String, IWidgetEngine<? extends Widget>> map) {
+		engineMap = map;
+	}
 	public static VkMenu getMenu()
 	{
 		return menu;
+	}
+	public static void setMenu(VkMenu vkMenu)
+	{
+		menu = vkMenu;
 	}
 	public static VkAbsolutePanel getDrawingPanel() {
 		if(drawingPanel == null)
