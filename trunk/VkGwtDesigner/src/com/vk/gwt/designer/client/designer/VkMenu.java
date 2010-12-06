@@ -22,6 +22,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -31,6 +32,7 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -53,8 +55,6 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		setAutoOpen(true);
 		setAnimationEnabled(true);
 		sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONFOCUS | Event.ONKEYDOWN | Event.ONBLUR);
-		//this.invokingWidget = invokingWidget;
-		//this.widgetEngine = widgetEngine;
 		setVisible(false);
 		addBlurHandler(new BlurHandler() {
 			@Override
@@ -63,19 +63,14 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			}
 		});
 		DOM.setStyleAttribute(getElement(), "position", "absolute");
-		DOM.setStyleAttribute(getElement(), "border", "solid 1px green");
+		DOM.setStyleAttribute(getElement(), "border", "solid 1px gray");
 		DOM.setStyleAttribute(getElement(), "zIndex", Integer.MAX_VALUE + "");
 	}
-	
-	public void setInvokingWidget(Widget invokingWidget) {
+	public void prepareMenu(Widget invokingWidget, IWidgetEngine<? extends Widget> widgetEngine) {
 		this.invokingWidget = invokingWidget;
-	}
-	public void setWidgetEngine(IWidgetEngine<? extends Widget> widgetEngine) {
 		this.widgetEngine = widgetEngine;
-	}
-	public void prepareMenu() {
 		clearItems();
-		addOperationsItems();
+		addOperationsItems(widgetEngine.getOperationsList(invokingWidget));
 		List<String> widgetsList = VkDesignerUtil.getEngine().getWidgetsList(invokingWidget);
 		addWidgetsList(widgetsList);
 		List<String> panelsList = VkDesignerUtil.getEngine().getPanelsList(invokingWidget);
@@ -86,7 +81,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		addItem("Style", showStyleDialog(invokingWidget));
 	}
 
-	private Command showStyleDialog(final Widget invokingWidget) {
+	protected Command showStyleDialog(final Widget invokingWidget) {
 		return new Command(){
 			@Override
 			public void execute() {
@@ -220,7 +215,11 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				final TextBox styleAttributeTextBox = new TextBox();
 				styleAttribute.add(styleAttributeTextBox);
 				applyChangeToWidget(attributeName, styleAttributeTextBox);
-				styleAttributeTextBox.setText(DOM.getStyleAttribute(invokingWidget.getElement(), attributeName));
+				try{//IE throws an exception when it is queried about zIndex - GWT Bug 5548
+					styleAttributeTextBox.setText(DOM.getStyleAttribute(invokingWidget.getElement(), attributeName));
+				}catch(Exception e)	{
+					styleAttributeTextBox.setText(getIEZindex(invokingWidget));
+				}
 				return styleAttribute;
 			}
 
@@ -236,7 +235,11 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		};
 	}
 
-	private void addAttributesList(List<String> attributesList)
+	private native String getIEZindex(Widget widget) /*-{
+		return widget.@com.google.gwt.user.client.ui.Widget::getElement()().style.zIndex + '';
+	}-*/;
+
+	protected void addAttributesList(List<String> attributesList)
 	{
 		if(attributesList != null && attributesList.size() > 0)
 		{
@@ -265,7 +268,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		}
 	}
 	
-	private void addWidgetsList(List<String> widgetsList)
+	protected void addWidgetsList(List<String> widgetsList)
 	{
 		if(widgetsList != null && widgetsList.size() > 0)
 		{
@@ -297,7 +300,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		}
 	}
 	
-	private void addPanelsList(List<String> widgetsList)
+	protected void addPanelsList(List<String> widgetsList)
 	{
 		if(widgetsList != null && widgetsList.size() > 0)
 		{
@@ -329,109 +332,173 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		}
 	}
 
-	private void addOperationsItems() {
+	private void addOperationsItems(List<String> operationsList) {
 		MenuBar operationsMenu = new MenuBar(true);
 		operationsMenu.setFocusOnHoverEnabled(false);
-		operationsMenu.addItem("Remove", new Command(){
-			@Override
-			public void execute() {
-				invokingWidget.removeFromParent();
-				invokingWidget = null;
-			}});
 		operationsMenu.setStyleName("vkgwtdesigner-vertical-menu");
-		operationsMenu.addItem("Move", new Command(){
-			@Override
-			public void execute() {
-				VkDesignerUtil.makeMovable(invokingWidget);
-				hideMenu();
-			}});
-		operationsMenu.addItem("Resize", new Command(){
-			@Override
-			public void execute() {
-				final HTML draggingWidget = new HTML("&nbsp;");
-				DOM.setStyleAttribute(draggingWidget.getElement(), "background", "blue");
-				draggingWidget.getElement().getStyle().setOpacity(0.2);
-				VkDesignerUtil.getDrawingPanel().add(draggingWidget);
-				DOM.setStyleAttribute(draggingWidget.getElement(), "position", "absolute");
-				draggingWidget.setPixelSize(invokingWidget.getOffsetWidth(), invokingWidget.getOffsetHeight());
-				boolean isAttached = invokingWidget.isAttached();
-				boolean isPopUpMenuBar = invokingWidget instanceof VkMenuBarVertical;
-				//when menubars are added as submenus then on pressing resize they vanish which leads to top and left being evaluated to 0
-				final int top = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getTop() : invokingWidget.getElement().getAbsoluteTop();
-				final int left = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getLeft() : invokingWidget.getElement().getAbsoluteLeft();
-				DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
-				DOM.setStyleAttribute(draggingWidget.getElement(), "left", left + "px");
-				DOM.setCapture(draggingWidget.getElement());
-				draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
+		for (int i = 0; i < operationsList.size(); i++) 
+		{
+			if(operationsList.get(i).equals(VkEngine.REMOVE))
+			{
+				operationsMenu.addItem(operationsList.get(i), new Command(){
 					@Override
-					public void onMouseMove(MouseMoveEvent event) {
-						int width = event.getClientX() - left;
-						int height = event.getClientY() - top;
-						if(width % 2 == 0)
-							DOM.setStyleAttribute(draggingWidget.getElement(), "width", width + "px");
-						if(height % 2 == 0)
-							DOM.setStyleAttribute(draggingWidget.getElement(), "height", height + "px");
+					public void execute() {
+						invokingWidget.removeFromParent();
+						invokingWidget = null;
+					}});
+			}
+			else if(operationsList.get(i).equals(VkEngine.MOVE))
+			{
+				operationsMenu.addItem(operationsList.get(i), new Command(){
+					@Override
+					public void execute() {
+						VkDesignerUtil.makeMovable(invokingWidget);
+						hideMenu();
+					}});
+			}
+			else if(operationsList.get(i).equals(VkEngine.RESIZE))
+			{
+				operationsMenu.addItem(operationsList.get(i), new Command(){
+					@Override
+					public void execute() {
+						final HTML draggingWidget = new HTML("&nbsp;");
+						DOM.setStyleAttribute(draggingWidget.getElement(), "background", "blue");
+						draggingWidget.getElement().getStyle().setOpacity(0.2);
+						VkDesignerUtil.getDrawingPanel().add(draggingWidget);
+						DOM.setStyleAttribute(draggingWidget.getElement(), "position", "absolute");
+						draggingWidget.setPixelSize(invokingWidget.getOffsetWidth(), invokingWidget.getOffsetHeight());
+						boolean isAttached = invokingWidget.isAttached();
+						boolean isPopUpMenuBar = invokingWidget instanceof VkMenuBarVertical;
+						//when menubars are added as submenus then on pressing resize they vanish which leads to top and left being evaluated to 0
+						final int top = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getTop() : invokingWidget.getElement().getAbsoluteTop();
+						final int left = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getLeft() : invokingWidget.getElement().getAbsoluteLeft();
+						DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
+						DOM.setStyleAttribute(draggingWidget.getElement(), "left", left + "px");
+						DOM.setCapture(draggingWidget.getElement());
+						draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
+							@Override
+							public void onMouseMove(MouseMoveEvent event) {
+								int width = event.getClientX() - left;
+								int height = event.getClientY() - top;
+								if(width % 2 == 0)
+									DOM.setStyleAttribute(draggingWidget.getElement(), "width", width + "px");
+								if(height % 2 == 0)
+									DOM.setStyleAttribute(draggingWidget.getElement(), "height", height + "px");
+							}
+						});
+						draggingWidget.addMouseUpHandler(new MouseUpHandler() {
+							@Override
+							public void onMouseUp(MouseUpEvent event) {
+								DOM.releaseCapture(draggingWidget.getElement());
+								int initialHeight = invokingWidget.getOffsetHeight();
+								int initialWidth = invokingWidget.getOffsetWidth();
+								//This is necessary because offsetWidth contains all the decorations but when width is set, the figure is assumed to be independent 
+								//of decorations
+								String borderTopWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderTopWidth");
+								String borderBottomWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderBottomWidth");
+								String borderLeftWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderLeftWidth");
+								String borderRightWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderRightWidth");
+								String padding = DOM.getStyleAttribute(invokingWidget.getElement(), "padding");
+								String margin = DOM.getStyleAttribute(invokingWidget.getElement(), "margin");
+								DOM.setStyleAttribute(invokingWidget.getElement(), "borderWidth", "0px");
+								DOM.setStyleAttribute(invokingWidget.getElement(), "padding", "0px");
+								DOM.setStyleAttribute(invokingWidget.getElement(), "margin", "0px");
+								int width = draggingWidget.getOffsetWidth()	- initialWidth + invokingWidget.getOffsetWidth();
+								if(width > 0)
+									invokingWidget.setWidth(width + "px");
+								int height = draggingWidget.getOffsetHeight() - initialHeight + invokingWidget.getOffsetHeight();
+								if(height > 0)
+									invokingWidget.setHeight(height + "px");
+								
+								DOM.setStyleAttribute(invokingWidget.getElement(), "borderTopWidth", borderTopWidth);
+								DOM.setStyleAttribute(invokingWidget.getElement(), "borderBottomWidth", borderBottomWidth);
+								DOM.setStyleAttribute(invokingWidget.getElement(), "borderLeftWidth", borderLeftWidth);
+								DOM.setStyleAttribute(invokingWidget.getElement(), "borderRightWidth", borderRightWidth);
+								DOM.setStyleAttribute(invokingWidget.getElement(), "padding", padding);
+								DOM.setStyleAttribute(invokingWidget.getElement(), "margin", margin);
+								draggingWidget.removeFromParent();
+							}
+						});
+						hideMenu();
+					}});
+			}
+			else if(operationsList.get(i).equals(VkEngine.COPY))
+			{
+				operationsMenu.addItem(operationsList.get(i), new Command(){
+					@Override
+					public void execute() {
+						copyWidget = (IVkWidget)invokingWidget;
 					}
 				});
-				draggingWidget.addMouseUpHandler(new MouseUpHandler() {
+			}
+			else if(operationsList.get(i).equals(VkEngine.PASTE))
+			{
+				operationsMenu.addItem(operationsList.get(i), new Command(){
 					@Override
-					public void onMouseUp(MouseUpEvent event) {
-						DOM.releaseCapture(draggingWidget.getElement());
-						int initialHeight = invokingWidget.getOffsetHeight();
-						int initialWidth = invokingWidget.getOffsetWidth();
-						//This is necessary because offsetWidth contains all the decorations but when width is set, the figure is assumed to be independent 
-						//of decorations
-						String borderTopWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderTopWidth");
-						String borderBottomWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderBottomWidth");
-						String borderLeftWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderLeftWidth");
-						String borderRightWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderRightWidth");
-						String padding = DOM.getStyleAttribute(invokingWidget.getElement(), "padding");
-						String margin = DOM.getStyleAttribute(invokingWidget.getElement(), "margin");
-						DOM.setStyleAttribute(invokingWidget.getElement(), "borderWidth", "0px");
-						DOM.setStyleAttribute(invokingWidget.getElement(), "padding", "0px");
-						DOM.setStyleAttribute(invokingWidget.getElement(), "margin", "0px");
-						int width = draggingWidget.getOffsetWidth()	- initialWidth + invokingWidget.getOffsetWidth();
-						if(width > 0)
-							invokingWidget.setWidth(width + "px");
-						int height = draggingWidget.getOffsetHeight() - initialHeight + invokingWidget.getOffsetHeight();
-						if(height > 0)
-							invokingWidget.setHeight(height + "px");
-						
-						DOM.setStyleAttribute(invokingWidget.getElement(), "borderTopWidth", borderTopWidth);
-						DOM.setStyleAttribute(invokingWidget.getElement(), "borderBottomWidth", borderBottomWidth);
-						DOM.setStyleAttribute(invokingWidget.getElement(), "borderLeftWidth", borderLeftWidth);
-						DOM.setStyleAttribute(invokingWidget.getElement(), "borderRightWidth", borderRightWidth);
-						DOM.setStyleAttribute(invokingWidget.getElement(), "padding", padding);
-						DOM.setStyleAttribute(invokingWidget.getElement(), "margin", margin);
-						draggingWidget.removeFromParent();
+					public void execute() {
+						if(copyWidget != null)
+						{
+							Widget widget = VkDesignerUtil.getEngine().getWidget((copyWidget).getWidgetName());
+							VkDesignerUtil.getEngineMap().get(copyWidget.getWidgetName()).deepClone((Widget)copyWidget, widget);
+							VkDesignerUtil.addWidget(widget , ((IPanel)invokingWidget), VkMenu.this.top, VkMenu.this.left);
+						}
+						else
+							Window.alert("Cannot paste as no widget is copied");
 					}
 				});
-				hideMenu();
-			}});
-		if(invokingWidget instanceof IVkWidget)
-		{
-			operationsMenu.addItem("Copy", new Command(){
-				@Override
-				public void execute() {
-					copyWidget = (IVkWidget)invokingWidget;
-				}
-			});
-		}
-		if(invokingWidget instanceof IPanel)
-		{
-			operationsMenu.addItem("Paste", new Command(){
-				@Override
-				public void execute() {
-					if(copyWidget != null)
-					{
-						Widget widget = VkDesignerUtil.getEngine().getWidget((copyWidget).getWidgetName());
-						VkDesignerUtil.getEngineMap().get(copyWidget.getWidgetName()).deepClone((Widget)copyWidget, widget);
-						VkDesignerUtil.addWidget(widget , ((IPanel)invokingWidget), VkMenu.this.top, VkMenu.this.left);
+			}
+			else if(operationsList.get(i).equals(VkEngine.SAVE))
+			{
+				operationsMenu.addItem(operationsList.get(i), new Command(){
+					@Override
+					public void execute() {
+						final DialogBox saveDialog = new DialogBox();
+						saveDialog.setText("Please copy the save string below to reproduce application later");
+						VerticalPanel vp = new VerticalPanel();
+						vp.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+						saveDialog.add(vp);
+						TextArea ta = new TextArea();
+						vp.add(ta);
+						ta.setText(widgetEngine.serialize((IVkWidget) invokingWidget));
+						ta.setPixelSize(500, 200);
+						Button ok = new Button("OK");
+						vp.add(ok);
+						ok.addClickHandler(new ClickHandler() {
+							@Override
+							public void onClick(ClickEvent event) {
+								saveDialog.hide();
+							}
+						});
+						saveDialog.center();
 					}
-					else
-						Window.alert("Cannot paste as no widget is copied");
-				}
-			});
+				});
+			}
+			else if(operationsList.get(i).equals(VkEngine.LOAD))
+			{
+				operationsMenu.addItem(operationsList.get(i), new Command(){
+					@Override
+					public void execute() {
+						final DialogBox loadDialog = new DialogBox();
+						loadDialog.setText("Please paste the save string below to reproduce the application");
+						VerticalPanel vp = new VerticalPanel();
+						vp.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+						loadDialog.add(vp);
+						final TextArea ta = new TextArea();
+						vp.add(ta);
+						ta.setPixelSize(500, 200);
+						Button ok = new Button("Render");
+						vp.add(ok);
+						ok.addClickHandler(new ClickHandler() {
+							@Override
+							public void onClick(ClickEvent event) {
+								widgetEngine.deserialize((IVkWidget) invokingWidget, ta.getText());
+								loadDialog.hide();
+							}
+						});
+						loadDialog.center();
+					}
+				});
+			}
 		}
 		addItem("Operations", operationsMenu);
 	}	
@@ -439,12 +506,14 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private void hideMenu() {
 		this.top = getElement().getOffsetTop() - VkDesignerUtil.getCumulativeTop(invokingWidget.getElement()); 
 		this.left = getElement().getOffsetLeft() - VkDesignerUtil.getCumulativeLeft(invokingWidget.getElement());
-		Timer t = new Timer(){
+		final int lastLeft = getElement().getOffsetLeft();
+		final int lastTop = getElement().getOffsetTop();
+		new Timer(){
 			@Override
 			public void run() {
-				VkMenu.this.setVisible(false);
-			}};
-		t.schedule(50);
+				if(lastLeft == VkMenu.this.getElement().getOffsetLeft() && lastTop == getElement().getOffsetTop())
+					VkMenu.this.setVisible(false);
+			}}.schedule(100);
 	}
 
 	@Override

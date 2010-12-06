@@ -1,5 +1,8 @@
 package com.vk.gwt.designer.client.Panels;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -7,17 +10,18 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkOpenHandler;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWidgets, HasVkAnimation, HasVkCloseHandler, HasVkOpenHandler{
 	public static final String NAME = "Disclosure Panel";
@@ -38,15 +42,31 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 		if(dp.getHeader() == null)
 		{
 			dp.setHeader(w);
-			Window.alert("Widget added as header of Disclosure Panel");
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("Widget added as header of Disclosure Panel");
 		}
 		else if(dp.getContent() == null)
 		{
 			dp.add(w);
-			Window.alert("Widget added as content of Disclosure Panel");
+			DOM.setStyleAttribute(w.getElement(), "margin", "0px");
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("Widget added as content of Disclosure Panel");
 		}
 		else
 			Window.alert("Disclosure Panel can add only two widgets");
+	}
+	@Override
+	public Iterator<Widget> iterator() 
+	{
+		List<Widget> list = new ArrayList<Widget>();
+		if(dp.getHeader() != null)
+			list.add(dp.getHeader());
+		if(dp.getContent() != null)
+			list.add(dp.getContent());
+		if(list.size() == 0)
+			return super.iterator();//when widget is initialized, panel housekeeping needs the iterator of VerticalPanel
+		else
+			return list.iterator();//used by the serializer
 	}
 	@Override
 	public void addCloseHandler(String js) {
