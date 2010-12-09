@@ -12,6 +12,7 @@ import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAlternateText;
@@ -65,6 +66,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.attributes.HasVkTarget;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.attributes.HasVkUrl;
+import com.vk.gwt.designer.client.api.attributes.HasVkValue;
 import com.vk.gwt.designer.client.api.attributes.HasVkValueChangeHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkWordWrap;
@@ -197,6 +199,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		buffer.append("]}");
 		return buffer.toString();
 	}
+	@SuppressWarnings("unchecked")
 	protected void serializeAttributes(StringBuffer buffer, Widget widgetSource)
 	{
 		if(!widgetSource.getStyleName().isEmpty())
@@ -239,6 +242,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			buffer.append(",'" ).append(HasVkScrollBarShowing.NAME).append("':").append(((HasVkScrollBarShowing)widgetSource).isAlwaysShowScrollBars());
 		if(widgetSource instanceof HasVkName && !((HasVkName)widgetSource).getName().isEmpty())
 			buffer.append(",'" ).append(HasVkName.NAME).append("':").append("'").append(((HasVkName)widgetSource).getName()).append("'");
+		if(widgetSource instanceof HasVkValue && ((HasVkValue)widgetSource).getValue() != null && !((HasVkValue)widgetSource).getValue().toString().isEmpty())
+			buffer.append(",'" ).append(HasVkValue.NAME).append("':").append("'").append(((HasVkValue)widgetSource).getValue().toString()).append("'");
 		if(widgetSource instanceof HasVkCaptionText && !((HasVkCaptionText)widgetSource).getCaptionText().isEmpty())
 			buffer.append(",'" ).append(HasVkCaptionText.NAME).append("':").append("'").append(((HasVkCaptionText)widgetSource).getCaptionText()).append("'");
 		if(widgetSource instanceof HasVkCaptionHtml && !((HasVkCaptionHtml)widgetSource).getCaptionHtml().isEmpty())
@@ -324,8 +329,9 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			return;
 		}
 		VkDesignerUtil.isDesignerMode = false;
+		((Panel)invokingWidget).clear();
 		try{
-			VkDesignerUtil.getEngineMap().get(((IVkWidget)invokingWidget).getWidgetName()).buildApplication(jsonObj, (IPanel) invokingWidget);//cast is safe because root of DOM is drawingPanel
+			VkDesignerUtil.getEngineMap().get(invokingWidget.getWidgetName()).buildWidget(jsonObj, (Widget) invokingWidget);//cast is safe because root of DOM is drawingPanel
 		}catch(Exception e)
 		{
 			Window.alert("JSON String is not well-formed. Application cannot be built.");	
@@ -333,7 +339,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		}
 		VkDesignerUtil.isDesignerMode = true;
 	}
-	public void buildApplication(JSONObject jsonObj, IPanel parent) {
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		JSONArray childrenArray = jsonObj.put("children", null).isArray();
 		for(int i = 0; i < childrenArray.size(); i++)
 		{
@@ -344,10 +350,10 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
 			VkDesignerUtil.addWidget(widget, ((IPanel)parent));
 			addAttributes(childObj, widget);
-			if(widget instanceof IPanel)
-				VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildApplication(childObj, (IPanel) widget);
+			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 		}
 	}
+	@SuppressWarnings("unchecked")
 	protected void addAttributes(JSONObject childObj, Widget widget) {
 		JSONString attributeStringObj;
 		JSONNumber attributeNumberObj;
@@ -384,7 +390,11 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			((HasVkDirection)widget).setDirection(attributeStringObj.stringValue());
 		attributeJsObj = childObj.get(HasVkMaxLength.NAME);
 		if(attributeJsObj != null && (attributeNumberObj = attributeJsObj.isNumber()) != null)
-			((HasVkMaxLength)widget).setMaxLength((int)attributeNumberObj.doubleValue());
+		{
+			int maxLength = (int)attributeNumberObj.doubleValue();
+			if(maxLength > 0)
+				((HasVkMaxLength)widget).setMaxLength(maxLength);
+		}
 		attributeJsObj = childObj.get(HasVkHorizontalAlignment.NAME);
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			((HasVkHorizontalAlignment)widget).setHorizontalAlignment(attributeStringObj.stringValue());
@@ -415,6 +425,9 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		attributeJsObj = childObj.get(HasVkName.NAME);
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			((HasVkName)widget).setName(attributeStringObj.stringValue());
+		attributeJsObj = childObj.get(HasVkValue.NAME);
+		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
+			((HasVkValue)widget).setValue(attributeStringObj.stringValue());
 		attributeJsObj = childObj.get(HasVkCaptionText.NAME);
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			((HasVkCaptionText)widget).setCaptionText(attributeStringObj.stringValue());

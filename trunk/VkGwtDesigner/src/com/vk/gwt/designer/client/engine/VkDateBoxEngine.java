@@ -5,16 +5,20 @@ import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.gwtstructs.gwt.client.widgets.autocompleterTextbox.AutoCompleterTextBox;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
+import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkDateBox;
 
 public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 	private static final String SET_FORMAT = "Set Date Format";
+	private String pattern = "";
 	@Override
 	public VkDateBox getWidget() {
 		VkDateBox widget = new VkDateBox();
@@ -41,12 +45,14 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 			suggestions.add(DateTimeFormat.getShortTimeFormat().getPattern() + "(" + DateTimeFormat.getShortTimeFormat().format(new Date()) +")");
 			
 			AutoCompleterTextBox textBox = new AutoCompleterTextBox(suggestions);
+			textBox.setText(pattern);
 			textBox.setSuggestionWidth(500);
 			VkDesignerUtil.getEngine().showAddAutoCompleteTextDialog("Please select the date format", textBox
 				, new IEventRegister() {
 					@Override
 					public void registerEvent(String pattern) {
 						widget.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(pattern)));
+						VkDateBoxEngine.this.pattern = pattern;
 					}
 				});
 		}
@@ -60,5 +66,21 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 		list.add(SET_FORMAT);
 		list.addAll(VkDesignerUtil.getEngine().getAttributesList(invokingWidget));
 		return list;
+	}
+	@Override
+	public String serialize(IVkWidget widget)
+	{
+		StringBuffer buffer = new StringBuffer("{");
+		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
+		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		serializeAttributes(buffer, (Widget) widget);
+		buffer.append(",dateFormat:'").append(pattern).append("'");
+		buffer.append(",children:[").append("]}");
+		return buffer.toString();
+	}
+	@Override
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
+		VkDateBox dateBox = (VkDateBox)parent;
+		dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(jsonObj.get("dateFormat").isString().stringValue())));
 	}
 }

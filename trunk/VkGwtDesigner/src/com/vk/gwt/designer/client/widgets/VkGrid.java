@@ -24,7 +24,7 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	public static final String NAME = "Grid";
 	private HandlerRegistration clickHandlerRegistration;
-	private String clickJs;
+	private String clickJs = "";
 	@SuppressWarnings("unused")//used in native function
 	private boolean startSelection = false;
 	@SuppressWarnings("unused")//used in native function
@@ -32,7 +32,8 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	private boolean isSelectionEnabled;
 	public VkGrid()
 	{
-		showAddTextAttributeDialog();
+		if(VkDesignerUtil.isDesignerMode)
+			showAddTextAttributeDialog();
 	}
 	@Override
 	public void onLoad()

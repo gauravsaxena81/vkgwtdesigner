@@ -89,7 +89,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 	private String keyPressJs = "";
 	private String focusJs = "";
 	private String blurJs = "";
-	private String selectionJs;
+	private String selectionJs = "";
 	private String closeJs = "";
 	private String openJs = "";
 	private char accessKey;
@@ -103,13 +103,6 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 					VkTree.this.setSelectedItem(null);
 			}
 		});
-		/*VkDesignerUtil.getEngine().showAddTextAttributeDialog("Provide a name for root of the tree", new TextBox()
-		, new IEventRegister(){
-			@Override
-			public void registerEvent(String text) {
-				VkTree.this.addItem(text);
-			}
-		});*/
 	}
 	@Override
 	public void add(Widget widget)

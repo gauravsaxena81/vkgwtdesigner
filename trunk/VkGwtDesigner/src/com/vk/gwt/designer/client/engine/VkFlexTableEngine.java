@@ -3,13 +3,15 @@ package com.vk.gwt.designer.client.engine;
 import java.util.List;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.vk.gwt.designer.client.Panels.VkAbsolutePanel;
-import com.vk.gwt.designer.client.Panels.VkVerticalPanel;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
+import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkFlexTable;
@@ -68,15 +70,10 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 			table.addCell(i);
 	}
 	private void addNewRow(VkFlexTable table) {
-		VkVerticalPanel l = new VkVerticalPanel();
-		VkAbsolutePanel l2 = (VkAbsolutePanel) VkDesignerUtil.getEngine().getWidget(VkAbsolutePanel.NAME);
-		VkDesignerUtil.addWidget(l2, l);
-		l2.setSize("90%", "90%");
 		int rowCount = table.getRowCount();
-		table.setWidget(rowCount, 0, l);
-		table.getFlexCellFormatter().setWidth(rowCount, 0,"1px");
-		table.getFlexCellFormatter().setHeight(rowCount - 1, 0,"1px");
-		table.getFlexCellFormatter().setHeight(rowCount,0,"*");
+		table.insertRow(rowCount);
+		/*for(int i = 0; i < columnCount; i++)
+			table.addCell(rowCount);*/
 	}
 	private void addSpan(final VkFlexTable table) {
 		boolean isFirstCellSpared = false;
@@ -190,5 +187,48 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 				table.getFlexCellFormatter().setStyleName(i, j, "");
 		}
 		table.setSelectionEnabled(false);
+	}
+	@Override
+	public String serialize(IVkWidget widget)
+	{
+		StringBuffer buffer = new StringBuffer("{");
+		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
+		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		serializeAttributes(buffer, (Widget) widget);
+		VkFlexTable flexTable =  (VkFlexTable)widget;
+		buffer.append(",cells:[");
+		int rowCount = flexTable.getRowCount();
+		for(int i = 0; i < rowCount; i++)
+		{
+			int colCount = flexTable.getCellCount(i);
+			for(int j = 0; j < colCount; j++)
+				buffer.append("{row:").append(i).append(",col:").append(j).append(",rowSpan:").append(flexTable.getRowSpan(i, j))
+				.append(",colSpan:").append(flexTable.getColSpan(i, j)).append(",child:")
+				.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)flexTable.getWidget(i,j)).getWidgetName()).serialize((IVkWidget) flexTable.getWidget(i,j)))
+				.append("},");
+		}
+		if(buffer.charAt(buffer.length() - 1) == ',')
+			buffer.deleteCharAt(buffer.length() - 1);
+		buffer.append("]");
+		buffer.append(",children:[").append("]}");
+		return buffer.toString();
+	}
+	@Override
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
+		VkFlexTable flexTable =  (VkFlexTable)parent;
+		JSONArray cellsArray = jsonObj.get("cells").isArray();
+		for(int i = 0; i < cellsArray.size(); i++)
+		{
+			int row = (int)cellsArray.get(i).isObject().get("row").isNumber().doubleValue();
+			int col = (int)cellsArray.get(i).isObject().get("col").isNumber().doubleValue();
+			if(row >= flexTable.getRowCount())
+				flexTable.insertRow(flexTable.getRowCount());
+			flexTable.makeCell(row, col, flexTable.getRowCount());
+			Widget widget = flexTable.getWidget(row, flexTable.getCellCount(row) - 1);
+			flexTable.setRowSpan(row, col, (int)cellsArray.get(i).isObject().get("rowSpan").isNumber().doubleValue());
+			flexTable.setColSpan(row, col, (int)cellsArray.get(i).isObject().get("colSpan").isNumber().doubleValue());
+			addAttributes(cellsArray.get(i).isObject().get("child").isObject(), widget);
+			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(cellsArray.get(i).isObject().get("child").isObject(), widget);
+		}
 	}
 }

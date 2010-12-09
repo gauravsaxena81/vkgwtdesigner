@@ -77,6 +77,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	private HandlerRegistration keyPressHandlerRegistration;
 	private HandlerRegistration focusHandlerRegistration;
 	private HandlerRegistration blurHandlerRegistration;
+	private HandlerRegistration initializeHandlerRegistration;
 	private String mouseDownJs = "";
 	private String mouseUpJs = "";
 	private String mouseMoveJs = "";
@@ -90,8 +91,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	private String blurJs = "";
 	private String clickJs = "";
 	private char accessKey;
-	private HandlerRegistration initializeHandlerRegistration;
-	private String initializeJs;
+	private String initializeJs = "";
 	public VkRichTextArea()
 	{
 		super(2,1);

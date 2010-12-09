@@ -48,6 +48,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private int left;
 	private IWidgetEngine<? extends Widget> widgetEngine;
 	private IVkWidget copyWidget;
+	protected Widget copyStyleWidget;
 
 	public VkMenu() {
 		super(true);
@@ -428,6 +429,28 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					@Override
 					public void execute() {
 						copyWidget = (IVkWidget)invokingWidget;
+					}
+				});
+			}
+			else if(operationsList.get(i).equals(VkEngine.COPY_STYLE))
+			{
+				operationsMenu.addItem(operationsList.get(i), new Command(){
+					@Override
+					public void execute() {
+						copyStyleWidget = invokingWidget;
+					}
+				});
+			}
+			else if(operationsList.get(i).equals(VkEngine.PASTE_STYLE))
+			{
+				operationsMenu.addItem(operationsList.get(i), new Command(){
+					@Override
+					public void execute() {
+						String top = DOM.getStyleAttribute(invokingWidget.getElement(), "top");
+						String left = DOM.getStyleAttribute(invokingWidget.getElement(), "left");
+						DOM.setElementAttribute(invokingWidget.getElement(), "style", DOM.getElementAttribute(copyStyleWidget.getElement(), "style"));
+						DOM.setStyleAttribute(invokingWidget.getElement(), "left", left);
+						DOM.setStyleAttribute(invokingWidget.getElement(), "top", top);
 					}
 				});
 			}

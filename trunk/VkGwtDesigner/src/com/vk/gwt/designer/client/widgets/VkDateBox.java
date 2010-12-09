@@ -105,9 +105,9 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	private String clickJs = "";
 	private String changeJs = "";
 	private String valueChangeJs = "";
+	private String highlightJs = "";
+	private String showRangeJs = "";
 	private char accessKey;
-	private String highlightJs;
-	private String showRangeJs;
 
 	@Override
 	public void addClickHandler(final String js) {

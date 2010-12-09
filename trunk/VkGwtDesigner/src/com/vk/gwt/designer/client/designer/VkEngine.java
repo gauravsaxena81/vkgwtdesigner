@@ -72,6 +72,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkListBoxMultiple;
+import com.vk.gwt.designer.client.api.attributes.HasVkListBoxRenderMode;
 import com.vk.gwt.designer.client.api.attributes.HasVkMaxLength;
 import com.vk.gwt.designer.client.api.attributes.HasVkModal;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseDownHandler;
@@ -95,6 +96,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.attributes.HasVkTarget;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.attributes.HasVkUrl;
+import com.vk.gwt.designer.client.api.attributes.HasVkValue;
 import com.vk.gwt.designer.client.api.attributes.HasVkValueChangeHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkWordWrap;
@@ -121,6 +123,7 @@ import com.vk.gwt.designer.client.api.widgets.HasVkInlineLabel;
 import com.vk.gwt.designer.client.api.widgets.HasVkLabel;
 import com.vk.gwt.designer.client.api.widgets.HasVkListBox;
 import com.vk.gwt.designer.client.api.widgets.HasVkMenuBarHorizontal;
+import com.vk.gwt.designer.client.api.widgets.HasVkMenuBarVertical;
 import com.vk.gwt.designer.client.api.widgets.HasVkPasswordTextBox;
 import com.vk.gwt.designer.client.api.widgets.HasVkPushButton;
 import com.vk.gwt.designer.client.api.widgets.HasVkRadioButton;
@@ -153,6 +156,7 @@ import com.vk.gwt.designer.client.widgets.VkInlineLabel;
 import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkListBox;
 import com.vk.gwt.designer.client.widgets.VkMenuBarHorizontal;
+import com.vk.gwt.designer.client.widgets.VkMenuBarVertical;
 import com.vk.gwt.designer.client.widgets.VkPasswordTextBox;
 import com.vk.gwt.designer.client.widgets.VkPushButton;
 import com.vk.gwt.designer.client.widgets.VkRadioButton;
@@ -174,6 +178,8 @@ public class VkEngine implements IEngine{
 	public static final String PASTE = "Paste";
 	public static final String SAVE = "Save";
 	public static final String LOAD = "Load";
+	public static final String COPY_STYLE = "Copy Style";
+	public static final String PASTE_STYLE = "Paste Style";
 	private JsBridgable jsBridgable = GWT.create(JsBridgable.class);
 	
 	public interface IEventRegister{
@@ -228,17 +234,20 @@ public class VkEngine implements IEngine{
 		operationsList.add(REMOVE);
 		operationsList.add(MOVE);
 		operationsList.add(RESIZE);
+		operationsList.add(COPY_STYLE);
+		operationsList.add(PASTE_STYLE);
 		if(!invokingWidget.getElement().getId().equals("drawingPanel"))
 			operationsList.add(COPY);
 		if(invokingWidget instanceof IPanel)
 			operationsList.add(PASTE);
-		if(invokingWidget.getElement().getId().equals("drawingPanel"));
+		if(invokingWidget.getElement().getId().equals("drawingPanel"))
 		{
 			operationsList.add(SAVE);
 			operationsList.add(LOAD);
 		}
 		return operationsList;
 	}
+	@SuppressWarnings("unchecked")
 	public List<String> getAttributesList(Widget invokingWidget) {
 		List<String> optionList = new ArrayList<String>();
 		optionList.add("Class Name");
@@ -305,6 +314,10 @@ public class VkEngine implements IEngine{
 			optionList.add(HasVkTabHeaderText.NAME);
 		if(invokingWidget instanceof HasVkTabHeaderHtml)
 			optionList.add(HasVkTabHeaderHtml.NAME);
+		if(invokingWidget instanceof HasVkValue)
+			optionList.add(HasVkValue.NAME);
+		if(invokingWidget instanceof HasVkListBoxRenderMode)
+			optionList.add(HasVkListBoxRenderMode.NAME);
 		
 		if(invokingWidget instanceof HasVkBlurHandler)
 			optionList.add(HasVkBlurHandler.NAME);
@@ -384,6 +397,8 @@ public class VkEngine implements IEngine{
 			optionList.add(VkListBox.NAME);
 		if(invokingWidget instanceof HasVkMenuBarHorizontal)
 			optionList.add(VkMenuBarHorizontal.NAME);
+		if(invokingWidget instanceof HasVkMenuBarVertical)
+			optionList.add(VkMenuBarVertical.NAME);
 		if(invokingWidget instanceof HasVkDialogBox)
 			optionList.add(VkDialogBox.NAME);
 		if(invokingWidget instanceof HasVkPushButton)
@@ -449,6 +464,7 @@ public class VkEngine implements IEngine{
 		return optionList;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void applyAttribute(String attributeName, Widget invokingWidget) {
 		if(attributeName.equals("Class Name"))
 			showAddClassNameDialog(invokingWidget);
@@ -516,6 +532,10 @@ public class VkEngine implements IEngine{
 			showAddTabHeaderTextDialog((HasVkTabHeaderText) invokingWidget);
 		else if(attributeName.equals(HasVkTabHeaderHtml.NAME))
 			showAddTabHeaderHtmlDialog((HasVkTabHeaderHtml) invokingWidget);
+		else if(attributeName.equals(HasVkValue.NAME))
+			showAddValueDialog((HasVkValue) invokingWidget);
+		else if(attributeName.equals(HasVkListBoxRenderMode.NAME))
+			showChoseListboxRenderModeDialog((HasVkListBoxRenderMode) invokingWidget);
 		
 		else if(attributeName.equals(HasVkBlurHandler.NAME))
 			showEventHandlingDialog((HasVkBlurHandler) invokingWidget);
@@ -995,9 +1015,11 @@ public class VkEngine implements IEngine{
 		targetList.add("_self");
 		targetList.add("_top");
 		targetList.add("_parent");
+		targetList.add("_blank");
 		AutoCompleterTextBox targetTb = new AutoCompleterTextBox(targetList);
 		targetTb.setWidth("100px");
-		targetTb.setText(((VkFormPanel) invokingWidget).getTarget());
+		targetTb.setText(invokingWidget.getTarget());
+		targetTb.setSuggestionWidth(100);
 		showAddAutoCompleteTextDialog("Please provide Form Target", targetTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String target) {
@@ -1007,7 +1029,6 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddNumberedWidgetDialog(final HasVkSwitchNumberedWidget invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
 		actionTb.setWidth("100px");
 		actionTb.setText(Integer.toString(invokingWidget.getCurrentlyShowingWidget()));
 		showAddTextAttributeDialog("Please provide widget number to show below", actionTb, new IEventRegister() {
@@ -1025,7 +1046,6 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddNameDialog(final HasVkName invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
 		actionTb.setWidth("100px");
 		actionTb.setText(invokingWidget.getName());
 		showAddTextAttributeDialog("Please provide name of widget", actionTb, new IEventRegister() {
@@ -1091,7 +1111,6 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddGlassStyleDialog(final HasVkGlassStyle invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
 		actionTb.setWidth("100px");
 		actionTb.setText(invokingWidget.getGlassStyleName());
 		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
@@ -1119,10 +1138,9 @@ public class VkEngine implements IEngine{
 	}
 	private void showFormEncodingDialog(final HasVkFormEncoding invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
 		actionTb.setWidth("100px");
 		actionTb.setText(invokingWidget.getEncoding());
-		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
+		showAddTextAttributeDialog("Please provide Form encoding", actionTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String encoding) {
 				invokingWidget.setEncoding(encoding);
@@ -1131,10 +1149,9 @@ public class VkEngine implements IEngine{
 	}
 	private void showHistoryTokenDialog(final HasVkHistoryToken invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
 		actionTb.setWidth("100px");
 		actionTb.setText(invokingWidget.getTargetHistoryToken());
-		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
+		showAddTextAttributeDialog("Please provide history token", actionTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String token) {
 				invokingWidget.setTargetHistoryToken(token);
@@ -1143,7 +1160,6 @@ public class VkEngine implements IEngine{
 	}
 	private void showAlternateTextDialog(final HasVkAlternateText invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
 		actionTb.setWidth("100px");
 		actionTb.setText(invokingWidget.getAlt());
 		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
@@ -1187,10 +1203,9 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddTabHeaderTextDialog(final HasVkTabHeaderText invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
 		actionTb.setWidth("100px");
 		actionTb.setText(invokingWidget.getTabText());
-		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
+		showAddTextAttributeDialog("Please provide text for tab header", actionTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
 				invokingWidget.setTabText(text);
@@ -1199,15 +1214,38 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddTabHeaderHtmlDialog(final HasVkTabHeaderHtml invokingWidget) {
 		final TextArea actionTb = new TextArea();
-		actionTb.setText(Integer.toString(((HasVkSwitchNumberedWidget) invokingWidget).getCurrentlyShowingWidget()));
+		actionTb.setText(((HasVkTabHeaderText) invokingWidget).getTabText());
 		actionTb.setSize("100px","50px");
 		actionTb.setText(invokingWidget.getTabHTML());
-		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
+		showAddTextAttributeDialog("Please provide html for tab header", actionTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String html) {
 				invokingWidget.setTabHTML(html);
 			}
 		});
+	}
+	@SuppressWarnings("unchecked")
+	private void showAddValueDialog(final HasVkValue invokingWidget) {
+		final TextBox actionTb = new TextBox();
+		actionTb.setText(invokingWidget.getValue().toString());
+		actionTb.setWidth("100px");
+		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
+			@Override
+			public void registerEvent(String text) {
+				invokingWidget.setValue(text);
+			}
+		});
+	}
+	private void showChoseListboxRenderModeDialog(final HasVkListBoxRenderMode invokingWidget) {
+		final ListBox listBox = new ListBox();
+		listBox.addItem("Drop Down","true");
+		listBox.addItem("List","false");
+		showAddListDialog("Pick a render mode", listBox, new IEventRegister() {
+				@Override
+				public void registerEvent(String value) {
+					invokingWidget.setDropDown(Boolean.parseBoolean(value));
+				}
+			});
 	}
 	public void showAddListDialog(String heading, final ListBox listBox, final IEventRegister eventRegister) {
 		final VerticalPanel dialog = new VerticalPanel();

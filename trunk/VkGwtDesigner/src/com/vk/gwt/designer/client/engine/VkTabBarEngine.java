@@ -2,12 +2,22 @@ package com.vk.gwt.designer.client.engine;
 
 import java.util.List;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.vk.gwt.designer.client.api.attributes.HasVkBeforeSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
+import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
+import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkTabBar;
@@ -103,5 +113,64 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 			});
 		}
 		VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+	}
+	@Override
+	public String serialize(IVkWidget widget)
+	{
+		StringBuffer buffer = new StringBuffer("{");
+		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
+		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		serializeAttributes(buffer, (Widget) widget);
+		TabBar tabBar =  (TabBar)widget;
+		buffer.append(",tabHtml:[");
+		for(int i = 0; i < tabBar.getTabCount(); i++)
+			buffer.append("'").append(tabBar.getTabHTML(i)).append("',");
+		if(buffer.charAt(buffer.length() - 1) == ',')
+			buffer.deleteCharAt(buffer.length() - 1);
+		buffer.append("]");
+		buffer.append(",children:[").append("]}");
+		return buffer.toString();
+	}
+	@Override
+	protected void serializeAttributes(StringBuffer buffer, Widget widgetSource)
+	{
+		if(!widgetSource.getStyleName().isEmpty())
+			buffer.append(",className:'" + widgetSource.getStyleName() + "'");
+		if(!widgetSource.getTitle().isEmpty())
+			buffer.append(",title:'" + widgetSource.getTitle() + "'");
+		
+		if(widgetSource instanceof HasVkBeforeSelectionHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkBeforeSelectionHandler.NAME).isEmpty())
+			buffer.append(",'" ).append(HasVkBeforeSelectionHandler.NAME).append("':").append("'")
+				.append(((HasVkEventHandler)widgetSource).getPriorJs(HasVkBeforeSelectionHandler.NAME).replace("'", "\\'")).append("'");
+		if(widgetSource instanceof HasVkSelectionHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkSelectionHandler.NAME).isEmpty())
+			buffer.append(",'" ).append(HasVkSelectionHandler.NAME).append("':").append("'")
+				.append(((HasVkEventHandler)widgetSource).getPriorJs(HasVkSelectionHandler.NAME).replace("'", "\\'")).append("'");
+	}
+	@Override
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
+		TabBar tabBar = (TabBar)parent;
+		JSONArray tabHtmlArray = jsonObj.get("tabHtml").isArray();
+		for(int i = 0; i < tabHtmlArray.size(); i++)
+			tabBar.addTab(tabHtmlArray.get(i).isString().stringValue(), true);
+	}
+	@Override
+	protected void addAttributes(JSONObject childObj, Widget widget) {
+		JSONString attributeStringObj;
+		JSONValue attributeJsObj = childObj.get("style");
+		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
+			DOM.setElementAttribute(widget.getElement(), "style", attributeStringObj.stringValue());
+		attributeJsObj = childObj.get("title");
+		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
+			DOM.setElementAttribute(widget.getElement(), "title", attributeStringObj.stringValue()); 
+		attributeJsObj = childObj.get("className");
+		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
+			DOM.setElementAttribute(widget.getElement(), "className", attributeStringObj.stringValue());
+		
+		attributeJsObj = childObj.get(HasVkBeforeSelectionHandler.NAME);
+		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
+			((HasVkBeforeSelectionHandler)widget).addBeforeSelectionHandler(attributeStringObj.stringValue());
+		attributeJsObj = childObj.get(HasVkSelectionHandler.NAME);
+		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
+			((HasVkSelectionHandler)widget).addSelectionHandler(attributeStringObj.stringValue());
 	}
 }

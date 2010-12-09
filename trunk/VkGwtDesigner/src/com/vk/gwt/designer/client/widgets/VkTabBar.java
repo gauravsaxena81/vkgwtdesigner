@@ -22,8 +22,8 @@ public class VkTabBar extends TabBar implements IVkWidget, HasVkBeforeSelectionH
 	public static final String NAME = "Tab Bar";
 	private HandlerRegistration beforeSelectionHandler;
 	private HandlerRegistration selectionHandler;
-	private String beforeSelectionJs;
-	private String selectionJs;
+	private String beforeSelectionJs = "";
+	private String selectionJs = "";
 	@Override
 	public void addBeforeSelectionHandler(String js) {
 		if(beforeSelectionHandler != null)
@@ -71,7 +71,8 @@ public class VkTabBar extends TabBar implements IVkWidget, HasVkBeforeSelectionH
 			return getTabHTML(getSelectedTab());
 		else
 		{
-			Window.alert("No Tab has been selected");
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
 	}

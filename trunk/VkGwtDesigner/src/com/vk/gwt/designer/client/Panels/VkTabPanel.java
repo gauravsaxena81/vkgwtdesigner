@@ -22,13 +22,13 @@ import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
-public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkAnimation, HasVkTabHeaderText, HasVkTabHeaderHtml, HasVkEnabled, HasVkBeforeSelectionHandler, 
-HasVkSelectionHandler{
+public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkAnimation, HasVkTabHeaderText, HasVkTabHeaderHtml, HasVkEnabled
+, HasVkBeforeSelectionHandler,HasVkSelectionHandler{
 	public static final String NAME = "Tab Panel";
 	private HandlerRegistration beforeSelectionHandler;
-	private String beforeSelectionJs;
+	private String beforeSelectionJs = "";
 	private HandlerRegistration selectionHandler;
-	private String selectionJs;
+	private String selectionJs = "";
 	@Override
 	public void add(Widget widget)
 	{
@@ -37,7 +37,15 @@ HasVkSelectionHandler{
 	}
 	@Override
 	public void setTabHTML(String html) {
-		addTabHeaderHtml(getSelectedTab(), html);
+		int selectedIndex = getSelectedTab();
+		if(selectedIndex > -1)
+			setTabHeaderHtml(getSelectedTab(), html);
+		else
+		{
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("No Tab has been selected");
+			throw new IllegalStateException("No Tab has been selected");
+		}
 	}
 	@Override
 	public String getTabHTML() {
@@ -46,13 +54,22 @@ HasVkSelectionHandler{
 			return super.getTabBar().getTabHTML(getSelectedTab());
 		else
 		{
-			Window.alert("No Tab has been added");
-			throw new IllegalStateException("No Tab has been added");
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("No Tab has been selected");
+			throw new IllegalStateException("No Tab has been selected");
 		}
 	}
 	@Override
 	public void setTabText(String text) {
-		addTabHeaderText(getSelectedTab(), text);
+		int selectedIndex = getSelectedTab();
+		if(selectedIndex > -1)
+			setTabHeaderText(getSelectedTab(), text);
+		else
+		{
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("No Tab has been selected");
+			throw new IllegalStateException("No Tab has been selected");
+		}
 	}
 	
 	@Override
@@ -62,13 +79,22 @@ HasVkSelectionHandler{
 			return super.getTabBar().getTabHTML(selectedIndex);
 		else
 		{
-			Window.alert("No Tab has been added");
-			throw new IllegalStateException("No Tab has been added");
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("No Tab has been selected");
+			throw new IllegalStateException("No Tab has been selected");
 		}
 	}
 	@Override
 	public boolean isEnabled() {
-		return getTabEnabled(getSelectedTab());
+		int selectedIndex = getSelectedTab();
+		if(selectedIndex > -1)
+			return getTabEnabled(getSelectedTab());
+		else
+		{
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("No Tab has been selected");
+			throw new IllegalStateException("No Tab has been selected");
+		}
 	}
 	@Override
 	public void addBeforeSelectionHandler(String js) {
@@ -109,7 +135,15 @@ HasVkSelectionHandler{
 	}
 	@Override
 	public void setEnabled(boolean enabled) {
-		setTabEnabled(getSelectedTab(), enabled);
+		int selectedIndex = getSelectedTab();
+		if(selectedIndex > -1)
+			setTabEnabled(getSelectedTab(), enabled);
+		else
+		{
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("No Tab has been selected");
+			throw new IllegalStateException("No Tab has been selected");
+		}
 	}
 	@Override
 	public String getWidgetName() {
@@ -134,12 +168,20 @@ HasVkSelectionHandler{
 		return super.getTabBar().getSelectedTab();
 	}
 	@Export
-	public void addTabHeaderText(int index, String text) {
+	public void setTabHeaderText(int index, String text) {
 		super.getTabBar().setTabText(index, text);
 	}
 	@Export
-	public void addTabHeaderHtml(int index, String html) {
+	public String getTabHeaderText(int index) {
+		return getTabHeaderHtml(index);
+	}
+	@Export
+	public void setTabHeaderHtml(int index, String html) {
 		super.getTabBar().setTabHTML(index, html);
+	}
+	@Export
+	public String getTabHeaderHtml(int index) {
+		return super.getTabBar().getTabHTML(index);
 	}
 	@Export
 	public void setTabEnabled(int index, boolean enabled) {

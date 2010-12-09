@@ -10,6 +10,10 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 public class VkHidden extends SimplePanel implements IVkWidget, HasVkName, HasVkValue<String>{
 	public static final String NAME = "Hidden";
 	private Hidden hidden = new Hidden();
+	public VkHidden()
+	{
+		add(hidden);
+	}
 	@Override
 	public String getWidgetName() {
 		return NAME;

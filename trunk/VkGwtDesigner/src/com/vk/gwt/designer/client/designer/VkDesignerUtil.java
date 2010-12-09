@@ -280,8 +280,8 @@ public class VkDesignerUtil {
 			DOM.setStyleAttribute(element, "top", top + "px");
 			DOM.setStyleAttribute(element, "left", left + "px");
 		}
-		else
-			DOM.setStyleAttribute(element, "position", "");
+		else if(!DOM.getStyleAttribute(element, "position").equals("absolute"))
+			DOM.setStyleAttribute(element, "position", "relative");
 	}
 	private static void init()
 	{
