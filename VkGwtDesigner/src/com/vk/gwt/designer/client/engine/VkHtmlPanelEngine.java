@@ -46,7 +46,7 @@ public class VkHtmlPanelEngine extends VkAbstractWidgetEngine<VkHtmlPanel> {
 		return buffer.toString();
 	}
 	@Override
-	public void buildApplication(JSONObject jsonObj, IPanel parent) {
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		JSONArray childrenArray = jsonObj.put("children", null).isArray();
 		((Widget)parent).getElement().getFirstChildElement().setId(jsonObj.get("widgetId").isString().stringValue());
 		for(int i = 0; i < childrenArray.size(); i++)
@@ -57,8 +57,7 @@ public class VkHtmlPanelEngine extends VkAbstractWidgetEngine<VkHtmlPanel> {
 			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
 			((VkHtmlPanel)parent).add(widget, childObj.get("parentId").isString().stringValue());
 			addAttributes(childWidgetObj, widget);
-			if(widget instanceof IPanel)
-				VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildApplication(childWidgetObj, (IPanel) widget);
+			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
 		}
 	}
 }

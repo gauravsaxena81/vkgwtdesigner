@@ -194,7 +194,10 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 	}
 	public String getHorizontalAlignmentString()
 	{
-		return getHorizontalAlignment().getTextAlignString();
+		if(getHorizontalAlignment().getTextAlignString() != null)
+			return getHorizontalAlignment().getTextAlignString();
+		else
+			return "left";
 	}
 	@Override
 	public String getWidgetName() {

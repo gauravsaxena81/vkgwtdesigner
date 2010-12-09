@@ -144,7 +144,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 		}
 	}
 	@Override
-	public void buildApplication(JSONObject jsonObj, IPanel parent) {
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		JSONArray childrenArray = jsonObj.put("children", null).isArray();
 		VkDockPanel dockPanel = (VkDockPanel)parent;
 		for(int i = 0; i < childrenArray.size(); i++)
@@ -157,8 +157,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 			dockPanel.setCellHorizontalAlignment(dockPanel.getWidgetCount() - 1, childObj.get("horizontalAlignment").isString().stringValue());
 			dockPanel.setCellVerticalAlignment(dockPanel.getWidgetCount() - 1, childObj.get("verticalAlignment").isString().stringValue());
 			addAttributes(childWidgetObj, widget);
-			if(widget instanceof IPanel)
-				VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildApplication(childObj, (IPanel) widget);
+			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 		}
 	}
 	private DockLayoutConstant getDirectionConstant(int value) {

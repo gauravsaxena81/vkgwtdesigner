@@ -27,6 +27,9 @@ HasVkModal{
 	public static final String NAME = "Popup Panel(added to Page)";
 	private HandlerRegistration closeRegistration;
 	private String closeJs = "";
+	public VkPopUpPanel() {
+		show();
+	}
 	@Override
 	public void add(Widget w) {
 		if(getWidget() != null)

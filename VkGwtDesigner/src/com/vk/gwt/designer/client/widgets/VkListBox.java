@@ -40,6 +40,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkListBoxMultiple;
+import com.vk.gwt.designer.client.api.attributes.HasVkListBoxRenderMode;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseMoveHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseOutHandler;
@@ -53,7 +54,7 @@ import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkListBox extends ListBox implements IVkWidget, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler
-, HasVkChangeHandler, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkName, HasVkListBoxMultiple{
+, HasVkChangeHandler, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkName, HasVkListBoxMultiple, HasVkListBoxRenderMode{
 	public static final String NAME = "Listbox";
 	private HandlerRegistration clickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
@@ -299,6 +300,18 @@ public class VkListBox extends ListBox implements IVkWidget, HasVkAllKeyHandlers
 		else
 			super.setVisibleItemCount(1);
 	}
+	@Override
+	public boolean isDropDown() {
+		return getVisibleItemCount() == 1;
+	}
+
+	@Override
+	public void setDropDown(boolean dropDown) {
+		if(dropDown)
+			setVisibleItemCount(1);
+		else
+			setVisibleItemCount(2);
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
@@ -318,7 +331,7 @@ public class VkListBox extends ListBox implements IVkWidget, HasVkAllKeyHandlers
 	@Override
 	@Export
 	public String getItemText(int index){
-		return getItemText(index);
+		return super.getItemText(index);
 	}
 	@Override
 	@Export
@@ -398,5 +411,5 @@ public class VkListBox extends ListBox implements IVkWidget, HasVkAllKeyHandlers
 	public void removeStyleName(String className)
 	{
 		super.removeStyleName(className);
-	}	
+	}		
 }

@@ -24,7 +24,7 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandler{
 	public static final String NAME = "Flex Table";
 	private HandlerRegistration clickHandlerRegistration;
-	private String clickJs;
+	private String clickJs = "";
 	@SuppressWarnings("unused")//used in native function
 	private boolean startSelection = false;
 	@SuppressWarnings("unused")//used in native function
@@ -32,7 +32,8 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	private boolean isSelectionEnabled;
 	public VkFlexTable()
 	{
-		showAddTextAttributeDialog();
+		if(VkDesignerUtil.isDesignerMode)
+			showAddTextAttributeDialog();
 	}
 	@Override
 	public void onLoad()
@@ -165,7 +166,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 					for(int i = 0; i < rowCount; i++)
 					{
 						for(int j = 0; j < columnCount; j++)
-							makeCell(i, j, rowCount);
+							makeCell(i, j , rowCount);
 						//VkFlexTable.this.getFlexCellFormatter().setWidth(i,getCellCount(i) - 1,"*");
 					}
 					dialog.removeFromParent();
@@ -184,7 +185,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 			}
 		});
 	}
-	private void makeCell(int row, int col, int rowCount)
+	public void makeCell(int row, int col, int rowCount)
 	{
 		VkVerticalPanel l = new VkVerticalPanel();
 		VkAbsolutePanel l2 = (VkAbsolutePanel) VkDesignerUtil.getEngine().getWidget(VkAbsolutePanel.NAME);
@@ -203,7 +204,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		var element = flexCellFormatter.@com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter::getElement(II)(i, j);
 		var t = this;
 		t.@com.vk.gwt.designer.client.widgets.VkFlexTable::getElement()().onclick = function(e){
-			if(!!e)
+			if(typeof e == 'undefined' || e == null)
 				e = $wnd.event;
 			if(e.button == 0 && t.@com.vk.gwt.designer.client.widgets.VkFlexTable::isSelectionEnabled)
 			{
@@ -423,7 +424,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	public void addCell(int row)
 	{
 		super.addCell(row);
-		makeCell(row, getCellCount(row), getRowCount());
+		makeCell(row, getCellCount(row) - 1, getRowCount());
 	}
 	@Override
 	@Export
@@ -447,10 +448,16 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	@Export
 	public int insertRow(int beforeRow) {
 	    int rowNum =  super.insertRow(beforeRow);
-	    int cellCount = getCellCount(rowNum);
-	    int rowCount = getRowCount();
-	    for(int i = 0; i < cellCount; i++)
-	    	makeCell(rowNum, i, rowCount);
+	    if(VkDesignerUtil.isDesignerMode)
+	    {
+		    int rowCount = getRowCount();
+		    int cellCount = getCellCount(0);
+			int columnCount = 0;
+			for(int i = 0; i < cellCount; i++)
+				columnCount += getColSpan(0, i);
+		    for(int i = 0; i < columnCount; i++)
+		    	makeCell(rowNum, i, rowCount);
+	    }
 	    return rowNum;
 	}
 	@Override

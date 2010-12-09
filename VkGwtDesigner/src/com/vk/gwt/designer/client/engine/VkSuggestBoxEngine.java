@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
+import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkSuggestBox;
@@ -102,5 +106,34 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 	}
 	public List<String> getSuggestions() {
 		return suggestions;
+	}
+	@Override
+	public String serialize(IVkWidget widget)
+	{
+		StringBuffer buffer = new StringBuffer("{");
+		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
+		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		serializeAttributes(buffer, (Widget) widget);
+		buffer.append(",suggestions:[");
+		for(int i = 0; i < suggestions.size(); i++)
+			buffer.append("'").append(suggestions.get(i)).append("',");
+		if(buffer.charAt(buffer.length() - 1) == ',')
+			buffer.deleteCharAt(buffer.length() - 1);
+		buffer.append("]");
+		buffer.append(",children:[").append("]}");
+		return buffer.toString();
+	}
+	@Override
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
+		VkSuggestBox suggestBox = (VkSuggestBox)parent;
+		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)suggestBox.getSuggestOracle();
+		JSONArray suggestionArray = jsonObj.get("suggestions").isArray();
+		suggestions.clear();
+		for(int i = 0; i < suggestionArray.size(); i++)
+		{
+			String suggestion = suggestionArray.get(i).isString().stringValue();
+			oracle.add(suggestion);
+			suggestions.add(suggestion);
+		}
 	}
 }

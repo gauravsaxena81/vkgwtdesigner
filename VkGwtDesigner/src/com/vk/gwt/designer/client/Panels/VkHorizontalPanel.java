@@ -47,7 +47,10 @@ public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, 
 	}
 	public String getHorizontalAlignmentString()
 	{
-		return getHorizontalAlignment().getTextAlignString();
+		if(getHorizontalAlignment().getTextAlignString() != null)
+			return getHorizontalAlignment().getTextAlignString();
+		else
+			return "left";
 	}
 	
 	public String getVerticalAlignmentString()

@@ -248,7 +248,10 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 	}
 	@Override
 	public String getHorizontalAlignmentString() {
-		return getHorizontalAlignment().getTextAlignString();
+		if(getHorizontalAlignment().getTextAlignString() != null)
+			return getHorizontalAlignment().getTextAlignString();
+		else
+			return "left";
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

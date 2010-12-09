@@ -2,10 +2,14 @@ package com.vk.gwt.designer.client.engine;
 
 import java.util.List;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
+import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkGrid;
@@ -13,13 +17,8 @@ import com.vk.gwt.designer.client.widgets.VkGrid;
 public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 	private static final String ADD_NEW_ROW = "Add New Row";
 	private static final String ADD_NEW_COLUMN = "Add New Column";
-	//private static final String CLEAR_SELECTION = "Clear And Stop Cell Selection";
-	//private static final String START_SELECTION = "Start Cell Selection";
 	private static final String ADD_CELLSPACING = "Add Cell Spacing";
 	private static final String ADD_CELLPADDING = "Add Cell Padding";
-	//private static final String SET_CELL_HORIZONTAL_ALIGNMENT = "Set Cell Horizontal Alignment";
-	//private static final String SET_CELL_VERTICAL_ALIGNMENT = "Set Cell Vertical Alignment";
-	//private static final String SET_CELL_WORDWRAP = "Set Cell Word Wrap";
 	@Override
 	public VkGrid getWidget() {
 		VkGrid widget = new VkGrid();
@@ -32,13 +31,8 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 		List<String> list = VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
 		list.add(ADD_NEW_ROW);
 		list.add(ADD_NEW_COLUMN);
-		//list.add(CLEAR_SELECTION);
-		//list.add(START_SELECTION);
 		list.add(ADD_CELLSPACING);
 		list.add(ADD_CELLPADDING);
-		//list.add(SET_CELL_HORIZONTAL_ALIGNMENT);
-		//list.add(SET_CELL_VERTICAL_ALIGNMENT);
-		//list.add(SET_CELL_WORDWRAP);
 		return list;
 	}
 	@Override
@@ -48,91 +42,13 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 			addNewRow(table);
 		else if(attributeName.equals(ADD_NEW_COLUMN))
 			addNewColumn(table);
-		/*else if(attributeName.equals(CLEAR_SELECTION))
-			clearAndStopCellSelection(table);
-		else if(attributeName.equals(START_SELECTION))
-			startCellSelection(table);*/
 		else if (attributeName.equals(ADD_CELLSPACING))
 			addCellSpacing(table);
 		else if (attributeName.equals(ADD_CELLPADDING))
 			addCellPadding(table);
-		/*else if (attributeName.equals(SET_CELL_VERTICAL_ALIGNMENT))
-			setCellVerticalAlignment(table);
-		else if (attributeName.equals(SET_CELL_HORIZONTAL_ALIGNMENT))
-			setCellHorizontalAlignment(table);
-		else if (attributeName.equals(SET_CELL_WORDWRAP))
-			setCellWordWrap(table);*/
 		else
 			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
 	}
-	/*private void setCellWordWrap(final VkGrid table) {
-		final ListBox listBox = new ListBox();
-		listBox.setWidth("100px");
-		listBox.addItem("True", "true");
-		listBox.addItem("False", "false");
-		VkDesignerUtil.getEngine().showAddListDialog("Please choose true to make text wrap", listBox, new IEventRegister() {
-			@Override
-			public void registerEvent(String text) {
-				int rowCount = table.getRowCount();
-				boolean selectedCellFound = false;
-				for(int i = 0; i < rowCount; i++)
-				{
-					int colCount = table.getCellCount(i);
-					for(int j = 0; j < colCount; j++)
-						if(table.getCellFormatter().getStyleName(i, j).indexOf("VkGrid-cell-selected") > -1 && (selectedCellFound = true))
-							table.setCellWordWrap(i, j, Boolean.valueOf(listBox.getValue(listBox.getSelectedIndex())));
-				}
-				if(!selectedCellFound)
-					Window.alert("Please select cells before applying cell operations");
-			}
-		});
-	}
-	private void setCellHorizontalAlignment(final VkGrid table) {
-		final ListBox listBox = new ListBox();
-		listBox.setWidth("100px");
-		listBox.addItem("Left", "left");
-		listBox.addItem("Center", "center");
-		listBox.addItem("Right", "right");
-		VkDesignerUtil.getEngine().showAddListDialog("Add Cell Spacing", listBox, new IEventRegister() {
-			@Override
-			public void registerEvent(String text) {
-				int rowCount = table.getRowCount();
-				boolean selectedCellFound = false;
-				for(int i = 0; i < rowCount; i++)
-				{
-					int colCount = table.getCellCount(i);
-					for(int j = 0; j < colCount; j++)
-						if(table.getCellFormatter().getStyleName(i, j).indexOf("VkGrid-cell-selected") > -1 && (selectedCellFound = true))
-							table.setCellHorizontalAlignment(i, j, text);
-				}
-				if(!selectedCellFound)
-					Window.alert("Please select cells before applying cell operations");
-			}
-		});
-	}
-	private void setCellVerticalAlignment(final VkGrid table) {
-		final ListBox listBox = new ListBox();
-		listBox.setWidth("100px");
-		listBox.addItem("Top", "top");
-		listBox.addItem("Middle", "middle");
-		listBox.addItem("Bottom", "bottom");
-		VkDesignerUtil.getEngine().showAddListDialog("Add Cell Spacing", listBox, new IEventRegister() {
-			@Override
-			public void registerEvent(String text) {
-				int rowCount = table.getRowCount();
-				boolean selectedCellFound = false;
-				for(int i = 0; i < rowCount; i++)
-				{
-					int colCount = table.getCellCount(i);
-					for(int j = 0; j < colCount; j++)
-						if(table.getCellFormatter().getStyleName(i, j).indexOf("VkGrid-cell-selected") > -1 && (selectedCellFound = true))
-							table.setCellVerticalAlignment(i, j, text);
-				}
-				if(!selectedCellFound)
-					Window.alert("Please select cells before applying cell operations");
-			}
-		});
-	}*/
 	private void addNewColumn(VkGrid table) {
 		table.addColumn();
 	}
@@ -170,25 +86,45 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 			}
 		});
 	}
-	/*private void startCellSelection(VkGrid table) {
-		table.setSelectionEnabled(true);
-		int rowCount = table.getRowCount();
+	@Override
+	public String serialize(IVkWidget widget)
+	{
+		StringBuffer buffer = new StringBuffer("{");
+		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
+		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		serializeAttributes(buffer, (Widget) widget);
+		VkGrid grid =  (VkGrid)widget;
+		buffer.append(",rows:").append(grid.getRowCount()).append(",cols:").append(grid.getColumnCount()).append(",cells:[");
+		int rowCount = grid.getRowCount();
 		for(int i = 0; i < rowCount; i++)
 		{
-			int colCount = table.getCellCount(i);
+			int colCount = grid.getCellCount(i);
 			for(int j = 0; j < colCount; j++)
-					table.getCellFormatter().setStyleName(i, j, "");
+				buffer.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)grid.getWidget(i,j)).getWidgetName()).serialize((IVkWidget) grid.getWidget(i,j)))
+				.append(",");
 		}
-		Window.alert("Cell Selection is enabled. Click on a cell to start cell selecting and click again to stop");
+		if(buffer.charAt(buffer.length() - 1) == ',')
+			buffer.deleteCharAt(buffer.length() - 1);
+		buffer.append("]");
+		buffer.append(",children:[").append("]}");
+		return buffer.toString();
 	}
-	private void clearAndStopCellSelection(VkGrid table) {
-		int rowCount = table.getRowCount();
-		for(int i = 0; i < rowCount; i++)
+	@Override
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
+		VkGrid grid =  (VkGrid)parent;
+		JSONArray cellsArray = jsonObj.get("cells").isArray();
+		int rows = (int)jsonObj.get("rows").isNumber().doubleValue();
+		int cols = (int)jsonObj.get("cols").isNumber().doubleValue();
+		grid.resize(rows, cols);
+		for(int i = 0; i < rows; i++)
 		{
-			int colCount = table.getCellCount(i);
-			for(int j = 0; j < colCount; j++)
-				table.getCellFormatter().setStyleName(i, j, "");
+			for(int j = 0; j < cols; j++)
+			{
+				grid.makeCell(i, j, grid.getRowCount());
+				Widget widget = grid.getWidget(i, j);
+				addAttributes(cellsArray.get(i).isObject(), widget);
+				VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(cellsArray.get(i * rows + j).isObject(), widget);
+			}
 		}
-		table.setSelectionEnabled(false);
-	}*/
+	}
 }

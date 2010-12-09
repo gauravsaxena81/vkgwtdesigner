@@ -30,6 +30,7 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
@@ -302,6 +303,15 @@ public class VkCheckbox extends CheckBox implements IVkWidget, HasVkAllKeyHandle
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void setValue(String value) {
+		try{
+			setValue(Boolean.valueOf(value));
+		}catch(Exception e)
+		{
+			Window.alert("Only boolean values are allowed for this widget");
+		}
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
@@ -369,5 +379,10 @@ public class VkCheckbox extends CheckBox implements IVkWidget, HasVkAllKeyHandle
 	public void removeStyleName(String className)
 	{
 		super.removeStyleName(className);
+	}
+	@Override
+	@Export
+	public void setValue(Boolean value) {
+		super.setValue(value);		
 	}
 }

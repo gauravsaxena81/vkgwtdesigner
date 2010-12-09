@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -16,13 +18,11 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
+import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkListBox;
 
 public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
-	private final static String RENDER_MODE = "Change Render Mode";
-	private final static String SET_MULTIPLE = "Set Up Multiple Select";
 	private final static String ADD_ITEM = "Add Item";
 	@Override
 	public VkListBox getWidget() {
@@ -34,51 +34,14 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 	public List<String> getAttributesList(Widget invokingWidget)
 	{
 		List<String> list = new ArrayList<String>();
-		list.add(RENDER_MODE);
-		list.add(SET_MULTIPLE);
 		list.add(ADD_ITEM);
 		list.addAll(VkDesignerUtil.getEngine().getAttributesList(invokingWidget));
 		return list;
 	}
 	@Override
 	public void applyAttribute(String attributeName, final Widget invokingWidget) {
-		if(attributeName.equals(RENDER_MODE))
-		{
-			final ListBox listBox = new ListBox();
-			listBox.addItem("Drop Down","0");
-			listBox.addItem("List","1");
-			VkDesignerUtil.getEngine().showAddListDialog("Pick a render mode", listBox
-				, new IEventRegister() {
-					@Override
-					public void registerEvent(String js) {
-						VkListBox widget = (VkListBox)invokingWidget;
-						if(listBox.getSelectedIndex() == 0)
-							widget.setVisibleItemCount(1);
-						else
-							widget.setVisibleItemCount(2);
-					}
-				});
-		}
-		else if(attributeName.equals(SET_MULTIPLE))
-		{
-			final ListBox listBox = new ListBox();
-			listBox.addItem("true","true");
-			listBox.addItem("false","false");
-			VkDesignerUtil.getEngine().showAddListDialog("Pick a render mode", listBox
-				, new IEventRegister() {
-					@Override
-					public void registerEvent(String js) {
-						if(listBox.getSelectedIndex() == 0)
-							DOM.setElementAttribute(invokingWidget.getElement(), "multiple", "multiple");
-						else
-							DOM.removeElementAttribute(invokingWidget.getElement(), "multiple");
-					}
-				});
-		}
-		else if(attributeName.equals(ADD_ITEM))
-		{
+		if(attributeName.equals(ADD_ITEM))
 			showAddItemDialog((VkListBox)invokingWidget);
-		}
 		else
 			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
 	}
@@ -145,7 +108,7 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 					invokingWidget.insertItem(text, value, index);
 				}catch(NumberFormatException e)
 				{
-					Window.alert("row and column number cannot be non-numeric");
+					Window.alert("index cannot be non-numeric");
 				}
 			}
 		});
@@ -157,5 +120,36 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 				dialog.removeFromParent();
 			}
 		});
+	}
+	@Override
+	public String serialize(IVkWidget widget)
+	{
+		StringBuffer buffer = new StringBuffer("{");
+		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
+		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		serializeAttributes(buffer, (Widget) widget);
+		buffer.append(",listItems:[");
+		VkListBox listBox = (VkListBox) widget;
+		int itemCount = listBox.getItemCount();
+		for(int i = 0; i < itemCount; i++)
+		{
+			buffer.append("{text:'").append(listBox.getItemText(i)).append("'");
+			buffer.append(",value:'").append(listBox.getValue(i)).append("'},");
+		}
+		if(buffer.charAt(buffer.length() - 1) == ',')
+			buffer.deleteCharAt(buffer.length() - 1);
+		buffer.append("]");
+		buffer.append(",children:[]}");
+		return buffer.toString();
+	}
+	@Override
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
+		JSONArray listItems = jsonObj.get("listItems").isArray();
+		ListBox listBox = (ListBox) parent;
+		for(int j = 0; j < listItems.size(); j++)
+		{
+			JSONObject listItem = listItems.get(j).isObject();
+			listBox.addItem(listItem.get("text").isString().stringValue(), listItem.get("value").isString().stringValue());
+		}
 	}
 }

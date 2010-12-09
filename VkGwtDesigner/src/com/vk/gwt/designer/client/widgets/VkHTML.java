@@ -194,7 +194,10 @@ public class VkHTML extends HTML implements IVkWidget, HasVkText, HasVkHtml, Has
 	}
 	public String getHorizontalAlignmentString()
 	{
-		return getHorizontalAlignment().getTextAlignString();
+		if(getHorizontalAlignment().getTextAlignString() != null)
+			return getHorizontalAlignment().getTextAlignString();
+		else
+			return "left";
 	}
 	@Override
 	public String getWidgetName() {

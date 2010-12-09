@@ -2,6 +2,7 @@ package com.vk.gwt.designer.client.Panels;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionHtml;
@@ -9,6 +10,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkCaptionText;
 import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkStackPanel extends StackPanel implements HasVkWidgets, IPanel, HasVkSwitchNumberedWidget, HasVkCaptionHtml, HasVkCaptionText {
@@ -34,19 +36,34 @@ public class VkStackPanel extends StackPanel implements HasVkWidgets, IPanel, Ha
 	}
 	@Override
 	public void setCaptionHtml(String html) {
-		setHeaderHtml(getSelectedIndex(), html);
+		if(checkAccess(getSelectedIndex()))
+			setHeaderHtml(getSelectedIndex(), html);
 	}
 	@Override
 	public void setCaptionText(String text) {
-		setHeaderText(getSelectedIndex(), text);
+		if(checkAccess(getSelectedIndex()))
+			setHeaderText(getSelectedIndex(), text);
 	}
 	@Override
 	public String getCaptionHtml() {
-		return getHTML(getSelectedIndex());
+		if(checkAccess(getSelectedIndex()))
+			return getHTML(getSelectedIndex());
+		else
+			throw new IndexOutOfBoundsException();
 	}
 	@Override
 	public String getCaptionText() {
-		return getText(getSelectedIndex());
+		if(checkAccess(getSelectedIndex()))
+			return getText(getSelectedIndex());
+		else
+			throw new IndexOutOfBoundsException();
+	}
+	private boolean checkAccess(int index) {
+		if(index >=0 && index < super.getWidgetCount())
+			return true;
+		else if(VkDesignerUtil.isDesignerMode)
+			Window.alert("None of the stack panels are selected");
+		return false;
 	}
 	@Override
 	public String getWidgetName() {
@@ -77,20 +94,24 @@ public class VkStackPanel extends StackPanel implements HasVkWidgets, IPanel, Ha
 		super.showStack(index);
 	}
 	@Export
-	public void setHeaderHtml(int selectedIndex, String html) {
-		super.setStackText(selectedIndex, html, true);
+	public void setHeaderHtml(int index, String html) {
+		checkIndexBoundsForAccess(index);
+		super.setStackText(index, html, true);
 	}
 	@Export
 	public String getHTML(int index) {
+		checkIndexBoundsForAccess(index);
 		return DOM.getInnerHTML(getHeaderElement(index));
 	}
 	@Export
 	public String getText(int index) {
+		checkIndexBoundsForAccess(index);
 		return DOM.getInnerText(getHeaderElement(index));
 	}
 	@Export
-	public void setHeaderText(int selectedIndex, String text) {
-		super.setStackText(selectedIndex, text, false);
+	public void setHeaderText(int index, String text) {
+		checkIndexBoundsForAccess(index);
+		super.setStackText(index, text, false);
 	}
 	@Override
 	@Export
