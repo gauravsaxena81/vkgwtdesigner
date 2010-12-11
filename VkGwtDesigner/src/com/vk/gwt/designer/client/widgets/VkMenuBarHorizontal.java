@@ -1,6 +1,8 @@
 package com.vk.gwt.designer.client.widgets;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -11,6 +13,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkAutoOpen;
 import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
@@ -22,6 +25,8 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 	public static final String NAME = "Menu Bar Horizontal";
 	private HandlerRegistration closeRegistration;
 	private String closeJs = "";
+	private List<String> commandJs = new ArrayList<String>();
+	private List<Integer> seperatorIndices = new ArrayList<Integer>();
 	public VkMenuBarHorizontal(){}
 	public VkMenuBarHorizontal(boolean b) {
 		super(b);
@@ -74,6 +79,24 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 	@Override
 	public String getWidgetName() {
 		return NAME;
+	}
+	//making the method public for serialization and deserialization
+	@Override
+	public List<MenuItem> getItems() {
+	    return super.getItems();
+	}
+	public List<String> getCommandJs() {
+		return commandJs;
+	}
+	public List<Integer> getSeperatorIndices() {
+		return seperatorIndices;
+	}
+	@Override
+	public void clone(Widget targetWidget) {
+		((VkMenuBarHorizontal)targetWidget).commandJs = new ArrayList<String>();
+		((VkMenuBarHorizontal)targetWidget).commandJs.addAll(commandJs);
+		((VkMenuBarHorizontal)targetWidget).seperatorIndices = new ArrayList<Integer>();
+		((VkMenuBarHorizontal)targetWidget).seperatorIndices.addAll(seperatorIndices);
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

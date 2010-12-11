@@ -26,9 +26,9 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 , HasVkEnabled, HasVkBeforeSelectionHandler, HasVkSelectionHandler{
 	public static final String NAME = "Decorated Tab Panel";
 	private HandlerRegistration beforeSelectionHandler;
-	private String beforeSelectionJs = "";
 	private HandlerRegistration selectionHandler;
 	private String selectionJs = "";
+	private String beforeSelectionJs = "";
 	@Override
 	public void add(Widget widget)
 	{
@@ -144,6 +144,8 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

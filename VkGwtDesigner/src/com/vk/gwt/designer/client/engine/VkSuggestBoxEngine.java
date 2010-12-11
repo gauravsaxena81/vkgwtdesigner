@@ -21,7 +21,6 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 	private static final String ADD_SUGGESTION = "Add Suggestion";
 	private static final String REMOVE_SUGGESTION = "Remove Suggestion";
 	private static final String EDIT_SUGGESTION = "Edit Suggestion";
-	private List<String> suggestions = new ArrayList<String>();
 	@Override
 	public VkSuggestBox getWidget() {
 		VkSuggestBox widget = new VkSuggestBox();
@@ -41,7 +40,7 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 					public void registerEvent(String js) {
 						MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)widget.getSuggestOracle();
 						oracle.add(tb.getText());
-						suggestions.add(tb.getText());
+						widget.getSuggestions().add(tb.getText());
 					}
 				});
 		}
@@ -49,7 +48,7 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 		{
 			final ListBox listBox = new ListBox();
 			int i = 0;
-			for (Iterator<String> iterator = suggestions.iterator(); iterator.hasNext();)
+			for (Iterator<String> iterator = widget.getSuggestions().iterator(); iterator.hasNext();)
 				listBox.addItem(iterator.next(),Integer.toString(i++));
 			VkDesignerUtil.getEngine().showAddListDialog("Pick a suggestion to delete", listBox
 				, new IEventRegister() {
@@ -57,8 +56,8 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 					public void registerEvent(String js) {
 						MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)widget.getSuggestOracle();
 						oracle.clear();
-						suggestions.remove(listBox.getSelectedIndex());
-						for (Iterator<String> iterator = suggestions.iterator(); iterator.hasNext();)
+						widget.getSuggestions().remove(listBox.getSelectedIndex());
+						for (Iterator<String> iterator = widget.getSuggestions().iterator(); iterator.hasNext();)
 							oracle.add(iterator.next());
 					}
 				});
@@ -67,14 +66,14 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 		{
 			final ListBox listBox = new ListBox();
 			int i = 0;
-			for (Iterator<String> iterator = suggestions.iterator(); iterator.hasNext();)
+			for (Iterator<String> iterator = widget.getSuggestions().iterator(); iterator.hasNext();)
 				listBox.addItem(iterator.next(),Integer.toString(i++));
 			VkDesignerUtil.getEngine().showAddListDialog("Pick a suggestion to delete", listBox
 				, new IEventRegister() {
 					@Override
 					public void registerEvent(String js) {
 						final TextBox tb = new TextBox();
-						tb.setText(suggestions.get(listBox.getSelectedIndex()));
+						tb.setText(widget.getSuggestions().get(listBox.getSelectedIndex()));
 						tb.setWidth("100px");
 						VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please edit the suggestion", tb
 							, new IEventRegister() {
@@ -82,9 +81,9 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 								public void registerEvent(String js) {
 									MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)widget.getSuggestOracle();
 									oracle.clear();
-									suggestions.remove(listBox.getSelectedIndex());
-									suggestions.add(listBox.getSelectedIndex(), tb.getText());
-									for (Iterator<String> iterator = suggestions.iterator(); iterator.hasNext();)
+									widget.getSuggestions().remove(listBox.getSelectedIndex());
+									widget.getSuggestions().add(listBox.getSelectedIndex(), tb.getText());
+									for (Iterator<String> iterator = widget.getSuggestions().iterator(); iterator.hasNext();)
 										oracle.add(iterator.next());
 								}
 						});
@@ -104,19 +103,17 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 		list.addAll(VkDesignerUtil.getEngine().getAttributesList(invokingWidget));
 		return list;
 	}
-	public List<String> getSuggestions() {
-		return suggestions;
-	}
 	@Override
 	public String serialize(IVkWidget widget)
 	{
+		VkSuggestBox suggestBox = (VkSuggestBox)widget;
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
 		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		buffer.append(",suggestions:[");
-		for(int i = 0; i < suggestions.size(); i++)
-			buffer.append("'").append(suggestions.get(i)).append("',");
+		for(int i = 0; i < suggestBox.getSuggestions().size(); i++)
+			buffer.append("'").append(suggestBox.getSuggestions().get(i)).append("',");
 		if(buffer.charAt(buffer.length() - 1) == ',')
 			buffer.deleteCharAt(buffer.length() - 1);
 		buffer.append("]");
@@ -128,12 +125,12 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 		VkSuggestBox suggestBox = (VkSuggestBox)parent;
 		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)suggestBox.getSuggestOracle();
 		JSONArray suggestionArray = jsonObj.get("suggestions").isArray();
-		suggestions.clear();
+		suggestBox.getSuggestions().clear();
 		for(int i = 0; i < suggestionArray.size(); i++)
 		{
 			String suggestion = suggestionArray.get(i).isString().stringValue();
 			oracle.add(suggestion);
-			suggestions.add(suggestion);
+			suggestBox.getSuggestions().add(suggestion);
 		}
 	}
 }

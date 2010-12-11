@@ -69,6 +69,8 @@ public class VkStackPanel extends StackPanel implements HasVkWidgets, IPanel, Ha
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

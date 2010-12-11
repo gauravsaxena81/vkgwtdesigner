@@ -12,7 +12,7 @@ public interface IWidgetEngine<T extends Widget> {
 	 public List<String> getAttributesList(Widget invokingWidget);
 	 public List<String> getOperationsList(Widget invokingWidget);
 	 public void copyAttributes(Widget widgetSource, Widget widgetTarget);
-	 public Widget deepClone(Widget currentWidget, Widget widget);
+	 public Widget deepClone(Widget sourceWidget, Widget targetWidget);
 	 public String serialize(IVkWidget widget);
 	 public void deserialize(IVkWidget invokingWidget, String jsonString);
 	 public void buildWidget(JSONObject childObj, Widget parent);

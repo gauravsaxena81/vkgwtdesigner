@@ -2,6 +2,7 @@ package com.vk.gwt.designer.client.widgets;
 
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.attributes.HasVkValue;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
@@ -18,6 +19,8 @@ public class VkHidden extends SimplePanel implements IVkWidget, HasVkName, HasVk
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

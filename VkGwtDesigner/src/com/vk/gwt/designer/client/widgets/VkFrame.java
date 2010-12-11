@@ -2,6 +2,7 @@ package com.vk.gwt.designer.client.widgets;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.attributes.HasVkUrl;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
@@ -22,6 +23,8 @@ public class VkFrame extends Frame implements IVkWidget, HasVkUrl, HasVkName{
 	public void setName(String name) {
 		DOM.setStyleAttribute(getElement(), "name", name);
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

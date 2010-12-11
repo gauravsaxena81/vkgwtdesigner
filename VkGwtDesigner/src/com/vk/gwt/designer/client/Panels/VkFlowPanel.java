@@ -1,6 +1,7 @@
 package com.vk.gwt.designer.client.Panels;
 
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
@@ -11,6 +12,8 @@ public class VkFlowPanel extends FlowPanel implements IPanel, HasVkWidgets{
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

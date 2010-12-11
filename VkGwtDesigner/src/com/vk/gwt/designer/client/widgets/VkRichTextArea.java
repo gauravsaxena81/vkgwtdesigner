@@ -90,8 +90,8 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	private String focusJs = "";
 	private String blurJs = "";
 	private String clickJs = "";
-	private char accessKey;
 	private String initializeJs = "";
+	private char accessKey;
 	public VkRichTextArea()
 	{
 		super(2,1);
@@ -327,6 +327,8 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	public void setTabIndex(int tabIndex) {
 		richTextArea.setTabIndex(tabIndex);
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Export
 	public void createLink(String link)

@@ -34,12 +34,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 	private static final String ADD_DOWN_TEXT = "Add Down Text";
 	private static final String ADD_DOWN_HOVERING_TEXT = "Add Down Hover Text";
 	private static final String ADD_DOWN_DISABLED_TEXT = "Add Down Disabled Text";
-	private String imageUpSrc;
-	private String imageDownSrc;
-	private String imageUpHoveringSrc;
-	protected String imageUpDisabledSrc;
-	protected String imageDownDisabledSrc;
-	protected String imageDownHoveringSrc;
+	
 	@Override
 	public VkPushButton getWidget() {
 		VkPushButton widget = new VkPushButton();
@@ -53,8 +48,8 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		{
 			TextBox tb = new TextBox();
 			tb.setWidth("100px");
-			if(imageDownSrc != null)
-				tb.setText(imageUpSrc);
+			if(widget.getImageUpSrc() != null)
+				tb.setText(widget.getImageUpSrc());
 			else
 				tb.setText("");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up image url", tb
@@ -62,7 +57,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String src) {
 							widget.getUpFace().setImage(new Image(src));
-							imageUpSrc = src;
+							widget.setImageUpSrc(src);
 						}
 					});
 		}
@@ -70,8 +65,8 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		{
 			TextBox tb = new TextBox();
 			tb.setWidth("100px");
-			if(imageDownSrc != null)
-				tb.setText(imageUpHoveringSrc);
+			if(widget.getImageUpHoveringSrc() != null)
+				tb.setText(widget.getImageUpHoveringSrc());
 			else
 				tb.setText("");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up hover image url", tb
@@ -79,7 +74,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String src) {
 							widget.getUpHoveringFace().setImage(new Image(src));
-							imageUpHoveringSrc = src;
+							widget.setImageUpHoveringSrc(src);
 						}
 					});
 		}
@@ -87,8 +82,8 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		{
 			TextBox tb = new TextBox();
 			tb.setWidth("100px");
-			if(imageDownSrc != null)
-				tb.setText(imageUpDisabledSrc);
+			if(widget.getImageUpDisabledSrc() != null)
+				tb.setText(widget.getImageUpDisabledSrc());
 			else
 				tb.setText("");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up disabled image url", tb
@@ -96,7 +91,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String src) {
 							widget.getUpDisabledFace().setImage(new Image(src));
-							imageUpDisabledSrc = src;
+							widget.setImageUpDisabledSrc(src);
 						}
 					});
 		}
@@ -104,8 +99,8 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		{
 			TextBox tb = new TextBox();
 			tb.setWidth("100px");
-			if(imageDownSrc != null)
-				tb.setText(imageDownSrc);
+			if(widget.getImageDownSrc() != null)
+				tb.setText(widget.getImageDownSrc());
 			else
 				tb.setText("");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down image url", tb
@@ -113,7 +108,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String src) {
 							widget.getDownFace().setImage(new Image(src));
-							imageDownSrc = src;
+							widget.setImageDownSrc(src);
 						}
 					});
 		}
@@ -121,8 +116,8 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		{
 			TextBox tb = new TextBox();
 			tb.setWidth("100px");
-			if(imageDownSrc != null)
-				tb.setText(imageDownHoveringSrc);
+			if(widget.getImageDownHoveringSrc() != null)
+				tb.setText(widget.getImageDownHoveringSrc());
 			else
 				tb.setText("");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down hover image url", tb
@@ -130,7 +125,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String src) {
 							widget.getDownHoveringFace().setImage(new Image(src));
-							imageDownHoveringSrc = src;
+							widget.setImageDownHoveringSrc(src);
 						}
 					});
 		}
@@ -138,8 +133,8 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		{
 			TextBox tb = new TextBox();
 			tb.setWidth("100px");
-			if(imageDownSrc != null)
-				tb.setText(imageDownDisabledSrc);
+			if(widget.getImageDownDisabledSrc() != null)
+				tb.setText(widget.getImageDownDisabledSrc());
 			else
 				tb.setText("");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down disabled image url", tb
@@ -147,7 +142,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String src) {
 							widget.getDownDisabledFace().setImage(new Image(src));
-							imageDownDisabledSrc = src;
+							widget.setImageDownDisabledSrc(src);
 						}
 					});
 		}
@@ -160,7 +155,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String html) {
 							widget.getUpFace().setHTML(html);
-							imageUpSrc = null;
+							widget.setImageUpSrc(null);
 						}
 					});
 		}
@@ -173,7 +168,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String html) {
 							widget.getUpHoveringFace().setHTML(html);
-							imageUpHoveringSrc = null;
+							widget.setImageUpHoveringSrc(null);
 						}
 					});
 		}
@@ -186,7 +181,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String html) {
 							widget.getUpDisabledFace().setHTML(html);
-							imageUpDisabledSrc = null;
+							widget.setImageUpDisabledSrc(null);
 						}
 					});
 		}
@@ -199,7 +194,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String html) {
 							widget.getDownFace().setHTML(html);
-							imageDownSrc = null;
+							widget.setImageDownSrc (null);
 						}
 					});
 		}
@@ -212,7 +207,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String html) {
 							widget.getDownHoveringFace().setHTML(html);
-							imageDownHoveringSrc = null;
+							widget.setImageDownHoveringSrc(null);
 						}
 					});
 		}
@@ -225,7 +220,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String html) {
 							widget.getDownDisabledFace().setHTML(html);
-							imageDownDisabledSrc = null;
+							widget.setImageDownDisabledSrc(null);
 						}
 					});
 		}
@@ -238,7 +233,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String text) {
 							widget.getUpFace().setText(text);
-							imageUpSrc = null;
+							widget.setImageUpSrc(null);
 						}
 					});
 		}
@@ -251,7 +246,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String text) {
 							widget.getUpHoveringFace().setText(text);
-							imageUpHoveringSrc = null;
+							widget.setImageUpHoveringSrc(null);
 						}
 					});
 		}
@@ -264,7 +259,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String text) {
 							widget.getUpDisabledFace().setText(text);
-							imageUpDisabledSrc = null;
+							widget.setImageUpDisabledSrc(null);
 						}
 					});
 		}
@@ -277,7 +272,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String text) {
 							widget.getDownFace().setText(text);
-							imageDownSrc = null;
+							widget.setImageDownSrc(null);
 						}
 					});
 		}
@@ -290,7 +285,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String text) {
 							widget.getDownHoveringFace().setText(text);
-							imageDownHoveringSrc = null;
+							widget.setImageDownHoveringSrc(null);
 						}
 					});
 		}
@@ -303,7 +298,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						@Override
 						public void registerEvent(String text) {
 							widget.getDownDisabledFace().setText(text);
-							imageDownDisabledSrc = null;
+							widget.setImageDownDisabledSrc(null);
 						}
 					});
 		}
@@ -346,42 +341,42 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(!buttonSource.getUpFace().getHTML().isEmpty())
 			buttonTarget.getUpFace().setHTML(buttonSource.getUpFace().getHTML());
 		else
-			buttonTarget.getUpFace().setImage(new Image(imageUpSrc));
+			buttonTarget.getUpFace().setImage(new Image(buttonSource.getImageUpSrc()));
 		
 		if(!buttonSource.getUpHoveringFace().getText().isEmpty())
 			buttonTarget.getUpHoveringFace().setText(buttonSource.getUpHoveringFace().getText());
 		else if(!buttonSource.getUpHoveringFace().getHTML().isEmpty())
 			buttonTarget.getUpHoveringFace().setHTML(buttonSource.getUpHoveringFace().getHTML());
 		else
-			buttonTarget.getUpHoveringFace().setImage(new Image(imageUpHoveringSrc));
+			buttonTarget.getUpHoveringFace().setImage(new Image(buttonSource.getImageUpHoveringSrc()));
 		
 		if(!buttonSource.getUpDisabledFace().getText().isEmpty())
 			buttonTarget.getUpDisabledFace().setText(buttonSource.getUpDisabledFace().getText());
 		else if(!buttonSource.getUpDisabledFace().getHTML().isEmpty())
 			buttonTarget.getUpDisabledFace().setHTML(buttonSource.getUpDisabledFace().getHTML());
 		else
-			buttonTarget.getUpDisabledFace().setImage(new Image(imageUpDisabledSrc));
+			buttonTarget.getUpDisabledFace().setImage(new Image(buttonSource.getImageUpDisabledSrc()));
 		
 		if(!buttonSource.getDownFace().getText().isEmpty())
 			buttonTarget.getDownFace().setText(buttonSource.getDownFace().getText());
 		else if(!buttonSource.getDownFace().getHTML().isEmpty())
 			buttonTarget.getDownFace().setHTML(buttonSource.getDownFace().getHTML());
 		else
-			buttonTarget.getDownFace().setImage(new Image(imageDownSrc));
+			buttonTarget.getDownFace().setImage(new Image(buttonSource.getImageDownSrc()));
 		
 		if(!buttonSource.getDownHoveringFace().getText().isEmpty())
 			buttonTarget.getDownHoveringFace().setText(buttonSource.getDownHoveringFace().getText());
 		else if(!buttonSource.getDownHoveringFace().getHTML().isEmpty())
 			buttonTarget.getDownHoveringFace().setHTML(buttonSource.getDownHoveringFace().getHTML());
 		else
-			buttonTarget.getDownHoveringFace().setImage(new Image(imageDownHoveringSrc));
+			buttonTarget.getDownHoveringFace().setImage(new Image(buttonSource.getImageDownHoveringSrc()));
 		
 		if(!buttonSource.getDownDisabledFace().getText().isEmpty())
 			buttonTarget.getDownDisabledFace().setText(buttonSource.getDownDisabledFace().getText());
 		else if(!buttonSource.getDownDisabledFace().getHTML().isEmpty())
 			buttonTarget.getDownDisabledFace().setHTML(buttonSource.getDownDisabledFace().getHTML());
 		else
-			buttonTarget.getDownDisabledFace().setImage(new Image(imageDownDisabledSrc));
+			buttonTarget.getDownDisabledFace().setImage(new Image(buttonSource.getImageDownDisabledSrc()));
 	}
 	@Override
 	public String serialize(IVkWidget widget)
@@ -392,33 +387,33 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		serializeAttributes(buffer, (Widget) widget);
 		VkPushButton button = (VkPushButton)widget;
 		buffer.append(",upDisabledFace:{");
-		if(imageUpDisabledSrc != null)
-			buffer.append("image:'").append(imageUpDisabledSrc).append("'}");
+		if(button.getImageUpDisabledSrc() != null)
+			buffer.append("image:'").append(button.getImageUpDisabledSrc()).append("'}");
 		else
 			buffer.append("html:'").append(button.getUpDisabledFace().getHTML()).append("'}");
 		buffer.append(",upFace:{");
-		if(imageUpSrc != null)
-			buffer.append("image:'").append(imageUpSrc).append("'}");
+		if(button.getImageUpSrc() != null)
+			buffer.append("image:'").append(button.getImageUpSrc()).append("'}");
 		else
 			buffer.append("html:'").append(button.getUpFace().getHTML()).append("'}");
 		buffer.append(",upHoveringFace:{");
-		if(imageUpHoveringSrc != null)
-			buffer.append("image:'").append(imageUpHoveringSrc).append("'}");
+		if(button.getImageUpHoveringSrc() != null)
+			buffer.append("image:'").append(button.getImageUpHoveringSrc()).append("'}");
 		else
 			buffer.append("html:'").append(button.getUpHoveringFace().getHTML()).append("'}");
 		buffer.append(",downDisabledFace:{");
-		if(imageDownDisabledSrc != null)
-			buffer.append("image:'").append(imageDownDisabledSrc).append("'}");
+		if(button.getImageDownDisabledSrc() != null)
+			buffer.append("image:'").append(button.getImageDownDisabledSrc()).append("'}");
 		else
 			buffer.append("html:'").append(button.getDownDisabledFace().getHTML()).append("'}");
 		buffer.append(",downFace:{");
-		if(imageDownSrc != null)
-			buffer.append("image:'").append(imageDownSrc).append("'}");
+		if(button.getImageDownSrc() != null)
+			buffer.append("image:'").append(button.getImageDownSrc()).append("'}");
 		else
 			buffer.append("html:'").append(button.getDownFace().getHTML()).append("'}");
 		buffer.append(",downHoveringFace:{");
-		if(imageDownHoveringSrc != null)
-			buffer.append("image:'").append(imageDownHoveringSrc).append("'}");
+		if(button.getImageDownHoveringSrc() != null)
+			buffer.append("image:'").append(button.getImageDownHoveringSrc()).append("'}");
 		else
 			buffer.append("html:'").append(button.getDownHoveringFace().getHTML()).append("'}");
 		buffer.append(",children:[").append("]}");
@@ -455,7 +450,6 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		if(faceObj.get("image") != null)
 			button.getDownHoveringFace().setImage(new Image(faceObj.get("image").isString().stringValue()));
 		else
-			button.getDownHoveringFace().setHTML(faceObj.get("html").isString().stringValue());
-			
+			button.getDownHoveringFace().setHTML(faceObj.get("html").isString().stringValue());			
 	}
 }

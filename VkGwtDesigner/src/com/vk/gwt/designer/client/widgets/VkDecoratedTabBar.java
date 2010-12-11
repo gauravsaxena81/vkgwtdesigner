@@ -10,6 +10,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DecoratedTabBar;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkBeforeSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderHtml;
@@ -99,6 +100,8 @@ public class VkDecoratedTabBar extends DecoratedTabBar implements IVkWidget, Has
 		else
 			Window.alert("Please select a tab before this operation");
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

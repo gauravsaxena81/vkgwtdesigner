@@ -127,4 +127,17 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 			}
 		}
 	}
+	@Override
+	public void copyAttributes(Widget widgetSource, Widget widgetTarget){
+		super.copyAttributes(widgetSource, widgetTarget);
+		VkGrid sourceTable = (VkGrid)widgetSource;
+		VkGrid targetTable = (VkGrid)widgetSource;
+		int rowCount = sourceTable.getRowCount();
+		for(int i = 0; i < rowCount; i++)
+		{
+			int columnCount = sourceTable.getCellCount(i);
+			for(int j = 0; j < columnCount; j++)
+				targetTable.makeCell(i, j , rowCount);
+		}
+	}
 }

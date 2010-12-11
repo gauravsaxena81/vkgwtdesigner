@@ -1,6 +1,8 @@
 package com.vk.gwt.designer.client.widgets;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -35,6 +37,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.SuggestBox;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
@@ -96,10 +99,10 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 	private String blurJs = "";
 	private String clickJs = "";
 	private String changeJs = "";
-	private char accessKey;
 	private String selectionJs = "";
 	private String valueChangeJs = "";
-	
+	private char accessKey;
+	private List<String> suggestions = new ArrayList<String>();
 	
 	@Override
 	public void addKeyDownHandler(String js) {
@@ -337,6 +340,14 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 	@Override
 	public String getWidgetName() {
 		return NAME;
+	}
+	public List<String> getSuggestions() {
+		return suggestions;
+	}
+	@Override
+	public void clone(Widget targetWidget) {
+		((VkSuggestBox) targetWidget).suggestions = new ArrayList<String>();
+		((VkSuggestBox) targetWidget).suggestions.addAll(suggestions);
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

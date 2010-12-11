@@ -21,6 +21,7 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAlternateText;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
@@ -199,6 +200,8 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

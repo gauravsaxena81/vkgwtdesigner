@@ -84,4 +84,11 @@ public class VkDecoratedStackPanelEngine extends VkAbstractWidgetEngine<VkDecora
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			DOM.setElementAttribute(widget.getElement(), "className", attributeStringObj.stringValue());
 	}
+	@Override
+	public void copyAttributes(Widget widgetSource, Widget widgetTarget){
+		super.copyAttributes(widgetSource, widgetTarget);
+		int widgetCount = ((VkDecoratedStackPanel)widgetSource).getWidgetCount();
+		for(int i = 0 ; i < widgetCount; i++)
+			((VkDecoratedStackPanel)widgetTarget).setHeaderHtml(i, ((VkDecoratedStackPanel)widgetSource).getHTML(i));
+	}
 }

@@ -76,6 +76,8 @@ public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IPanel {
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

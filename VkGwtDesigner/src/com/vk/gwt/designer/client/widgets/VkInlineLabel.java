@@ -20,6 +20,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkDirection;
@@ -206,6 +207,8 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

@@ -95,7 +95,6 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 	}
 	@Override
 	public Widget deepClone(Widget sourceWidget, Widget targetWidget) {
-		VkDesignerUtil.getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
 		if(sourceWidget instanceof IPanel && targetWidget instanceof IPanel)
 		{
 			Iterator<Widget> widgets = ((IPanel)sourceWidget).iterator();
@@ -106,6 +105,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 					((IPanel)targetWidget).add(deepClone(currentWidget, VkDesignerUtil.getEngine().getWidget(((IVkWidget)currentWidget).getWidgetName())));
 			}
 		}
+		((IVkWidget)sourceWidget).clone(targetWidget);
+		VkDesignerUtil.getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
 		return targetWidget;
 	}
 	public void copyAttributes(Widget widgetSource, Widget widgetTarget)
@@ -339,6 +340,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		}
 		VkDesignerUtil.isDesignerMode = true;
 	}
+	//TODO buildWidget should return a widget and the work of addition should be performed in the parent. It is not right to pass parent object and adding
+	//work is being done by the child
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		JSONArray childrenArray = jsonObj.put("children", null).isArray();
 		for(int i = 0; i < childrenArray.size(); i++)
@@ -349,8 +352,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			JSONString widgetName = childObj.get("widgetName").isString();
 			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
 			VkDesignerUtil.addWidget(widget, ((IPanel)parent));
-			addAttributes(childObj, widget);
 			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
+			addAttributes(childObj, widget);
 		}
 	}
 	@SuppressWarnings("unchecked")

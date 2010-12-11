@@ -75,6 +75,8 @@ public class VkVerticalSplitPanel extends SimplePanel implements IPanel, HasVkWi
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Export
 	public void setSplitPosition(String pos) {

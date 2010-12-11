@@ -283,6 +283,8 @@ HasVkAccessKey, HasVkTabIndex
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

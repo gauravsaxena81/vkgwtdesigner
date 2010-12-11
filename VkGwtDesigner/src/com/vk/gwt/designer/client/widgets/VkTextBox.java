@@ -30,6 +30,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.HasDirection;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
@@ -303,6 +304,8 @@ public class VkTextBox extends TextBox implements IVkWidget, HasVkText, HasVkAll
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

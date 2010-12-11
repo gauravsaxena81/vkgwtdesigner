@@ -231,4 +231,21 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(cellsArray.get(i).isObject().get("child").isObject(), widget);
 		}
 	}
+	@Override
+	public void copyAttributes(Widget widgetSource, Widget widgetTarget){
+		super.copyAttributes(widgetSource, widgetTarget);
+		VkFlexTable sourceTable = (VkFlexTable)widgetSource;
+		VkFlexTable targetTable = (VkFlexTable)widgetSource;
+		int rowCount = sourceTable.getRowCount();
+		for(int i = 0; i < rowCount; i++)
+		{
+			int columnCount = sourceTable.getCellCount(i);
+			for(int j = 0; j < columnCount; j++)
+			{
+				targetTable.makeCell(i, j , rowCount);
+				targetTable.setRowSpan(i, j, sourceTable.getRowSpan(i, j));
+				targetTable.setRowSpan(i, j, sourceTable.getRowSpan(i, j));
+			}
+		}
+	}
 }

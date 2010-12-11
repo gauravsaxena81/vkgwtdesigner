@@ -26,8 +26,8 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkA
 , HasVkBeforeSelectionHandler,HasVkSelectionHandler{
 	public static final String NAME = "Tab Panel";
 	private HandlerRegistration beforeSelectionHandler;
-	private String beforeSelectionJs = "";
 	private HandlerRegistration selectionHandler;
+	private String beforeSelectionJs = "";
 	private String selectionJs = "";
 	@Override
 	public void add(Widget widget)
@@ -149,6 +149,8 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkA
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

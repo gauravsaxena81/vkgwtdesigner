@@ -39,6 +39,8 @@ public class VkAbsolutePanel extends AbsolutePanel implements IPanel,HasVkWidget
 		}
 		return list.iterator();
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

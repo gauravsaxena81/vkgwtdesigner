@@ -61,6 +61,8 @@ public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, 
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
