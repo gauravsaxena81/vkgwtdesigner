@@ -1,6 +1,7 @@
 package com.vk.gwt.designer.client.Panels;
 
 import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.engine.IPanel;
@@ -17,6 +18,8 @@ public class VkDeckPanel extends DeckPanel implements IPanel, HasVkWidgets, HasV
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

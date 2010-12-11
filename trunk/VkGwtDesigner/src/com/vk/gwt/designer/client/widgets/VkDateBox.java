@@ -39,7 +39,9 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.HasDirection;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
@@ -68,7 +70,6 @@ import com.vk.gwt.designer.client.api.attributes.HasVkValue;
 import com.vk.gwt.designer.client.api.attributes.HasVkValueChangeHandler;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler
 , HasVkChangeHandler, HasVkValueChangeHandler, HasVkHighlightHandlers, HasVkShowRangeHandler, HasVkDirection, HasVkAccessKey, HasVkTabIndex, HasVkEnabled
@@ -108,7 +109,8 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	private String highlightJs = "";
 	private String showRangeJs = "";
 	private char accessKey;
-
+	private String pattern = "";
+	
 	@Override
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)
@@ -380,6 +382,16 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	{
 		super.setFormat(format);
 	}
+	public String getPattern() {
+		return pattern;
+	}
+	public void setPattern(String pattern) {
+		this.pattern = pattern;
+	}
+	@Override
+	public void clone(Widget targetWidget) {
+		((VkDateBox)targetWidget).pattern = pattern;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
@@ -507,10 +519,17 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	public void setValue(Date value) {
 		super.setValue(value);
 	}
+	@SuppressWarnings("serial")
 	@Override
 	@Export
 	public Date getValue() {
-		return super.getValue();
+		return new Date(){
+			@Override
+			public String toString()
+			{
+				return VkDateBox.super.getFormat().format(VkDateBox.this, VkDateBox.super.getValue());
+			}
+		};
 	}
 	@Override
 	@Export

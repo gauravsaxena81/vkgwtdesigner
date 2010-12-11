@@ -162,4 +162,14 @@ public class VkDecoratedTabPanelEngine extends VkAbstractWidgetEngine<VkDecorate
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			((HasVkSelectionHandler)widget).addSelectionHandler(attributeStringObj.stringValue());
 	}
+	@Override
+	public void copyAttributes(Widget widgetSource, Widget widgetTarget){
+		super.copyAttributes(widgetSource, widgetTarget);
+		int widgetCount = ((VkDecoratedTabPanel)widgetSource).getWidgetCount();
+		for(int i = 0 ; i < widgetCount; i++)
+		{
+			((VkDecoratedTabPanel)widgetTarget).setTabHeaderHtml(i, ((VkDecoratedTabPanel)widgetSource).getTabHeaderHtml(i));
+			((VkDecoratedTabPanel)widgetTarget).setEnabled(((VkDecoratedTabPanel)widgetSource).getTabEnabled(i));
+		}
+	}
 }

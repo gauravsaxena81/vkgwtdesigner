@@ -253,6 +253,8 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 		else
 			return "left";
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

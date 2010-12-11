@@ -114,6 +114,8 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Export
 	public String getHeaderText()

@@ -2,6 +2,7 @@ package com.vk.gwt.designer.client.widgets;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.InlineHyperlink;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkHistoryToken;
 import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
@@ -14,6 +15,8 @@ public class VkInlineHyperlink extends InlineHyperlink implements IVkWidget, Has
 	public String getWidgetName() {
 		return NAME;
 	}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

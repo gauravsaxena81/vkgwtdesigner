@@ -379,6 +379,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 	public String getWidgetName() {
 		return NAME;
 	}
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

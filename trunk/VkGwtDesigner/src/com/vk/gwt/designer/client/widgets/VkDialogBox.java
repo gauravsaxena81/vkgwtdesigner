@@ -72,6 +72,8 @@ public class VkDialogBox extends DialogBox implements IPanel, HasVkCloseHandler,
 	}
 	@Override
 	public void setWidth(String width){}
+	@Override
+	public void clone(Widget targetWidget) {}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

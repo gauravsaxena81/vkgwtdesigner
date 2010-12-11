@@ -22,8 +22,6 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 	private static final String ADD_DOWN_HTML = "Add Down Html";
 	private static final String ADD_UP_TEXT = "Add Up Text";
 	private static final String ADD_DOWN_TEXT = "Add Down Text";
-	private String imageUpSrc;
-	private String imageDownSrc;
 	@Override
 	public VkToggleButton getWidget() {
 		VkToggleButton widget = new VkToggleButton();
@@ -42,7 +40,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 						@Override
 						public void registerEvent(String src) {
 							widget.getUpFace().setImage(new Image(src));
-							imageUpSrc = src;
+							widget.setImageUpSrc(src);
 						}
 					});
 		}
@@ -55,7 +53,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 						@Override
 						public void registerEvent(String src) {
 							widget.getDownFace().setImage(new Image(src));
-							imageDownSrc = src;
+							widget.setImageDownSrc(src);
 						}
 					});
 		}
@@ -68,7 +66,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 						@Override
 						public void registerEvent(String html) {
 							widget.getUpFace().setHTML(html);
-							imageUpSrc = null;
+							widget.setImageUpSrc(null);
 						}
 					});
 		}
@@ -81,7 +79,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 						@Override
 						public void registerEvent(String html) {
 							widget.getDownFace().setHTML(html);
-							imageDownSrc = null;
+							widget.setImageDownSrc(null);
 						}
 					});
 		}
@@ -94,7 +92,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 						@Override
 						public void registerEvent(String text) {
 							widget.getUpFace().setText(text);
-							imageUpSrc = null;
+							widget.setImageUpSrc(null);
 						}
 					});
 		}
@@ -107,7 +105,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 						@Override
 						public void registerEvent(String text) {
 							widget.getDownFace().setText(text);
-							imageDownSrc = null;
+							widget.setImageDownSrc(null);
 						}
 					});
 		}
@@ -138,13 +136,13 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 		else if(!buttonSource.getUpFace().getHTML().isEmpty())
 			buttonTarget.getUpFace().setHTML(buttonSource.getUpFace().getHTML());
 		else
-			buttonTarget.getUpFace().setImage(new Image(imageUpSrc));
+			buttonTarget.getUpFace().setImage(new Image(buttonSource.getImageUpSrc()));
 		if(!buttonSource.getDownFace().getText().isEmpty())
 			buttonTarget.getDownFace().setText(buttonSource.getDownFace().getText());
 		else if(!buttonSource.getDownFace().getHTML().isEmpty())
 			buttonTarget.getDownFace().setHTML(buttonSource.getDownFace().getHTML());
 		else
-			buttonTarget.getDownFace().setImage(new Image(imageDownSrc));
+			buttonTarget.getDownFace().setImage(new Image(buttonSource.getImageDownSrc()));
 	}
 	@Override
 	public String serialize(IVkWidget widget)
@@ -155,13 +153,13 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 		serializeAttributes(buffer, (Widget) widget);
 		VkToggleButton button = (VkToggleButton)widget;
 		buffer.append(",upFace:{");
-		if(imageUpSrc != null)
-			buffer.append("image:'").append(imageUpSrc).append("'}");
+		if(button.getImageUpSrc() != null)
+			buffer.append("image:'").append(button.getImageUpSrc()).append("'}");
 		else
 			buffer.append("html:'").append(button.getUpFace().getHTML()).append("'}");
 		buffer.append(",downFace:{");
-		if(imageDownSrc != null)
-			buffer.append("image:'").append(imageDownSrc).append("'}");
+		if(button.getImageDownSrc() != null)
+			buffer.append("image:'").append(button.getImageDownSrc()).append("'}");
 		else
 			buffer.append("html:'").append(button.getDownFace().getHTML()).append("'}");
 		buffer.append(",children:[").append("]}");

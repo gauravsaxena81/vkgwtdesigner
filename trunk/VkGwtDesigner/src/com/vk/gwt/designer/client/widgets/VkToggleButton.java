@@ -26,6 +26,7 @@ import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.ToggleButton;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
@@ -77,8 +78,9 @@ HasVkFocusHandler, HasVkBlurHandler{
 	private String focusJs = "";
 	private String blurJs = "";
 	private String clickJs = "";
-
 	private char accessKey;
+	private String imageUpSrc;
+	private String imageDownSrc;
 	
 	@Override
 	public void addClickHandler(final String js) {
@@ -276,6 +278,23 @@ HasVkFocusHandler, HasVkBlurHandler{
 	@Override
 	public String getWidgetName() {
 		return NAME;
+	}
+	public String getImageUpSrc() {
+		return imageUpSrc;
+	}
+	public String getImageDownSrc() {
+		return imageDownSrc;
+	}
+	public void setImageUpSrc(String imageUpSrc) {
+		this.imageUpSrc = imageUpSrc;
+	}
+	public void setImageDownSrc(String imageDownSrc) {
+		this.imageDownSrc = imageDownSrc;
+	}
+	@Override
+	public void clone(Widget targetWidget) {
+		((VkToggleButton)targetWidget).imageDownSrc = imageDownSrc;
+		((VkToggleButton)targetWidget).imageUpSrc = imageUpSrc;
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

@@ -462,7 +462,9 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						if(copyWidget != null)
 						{
 							Widget widget = VkDesignerUtil.getEngine().getWidget((copyWidget).getWidgetName());
+							VkDesignerUtil.isDesignerMode = false;
 							VkDesignerUtil.getEngineMap().get(copyWidget.getWidgetName()).deepClone((Widget)copyWidget, widget);
+							VkDesignerUtil.isDesignerMode = true;
 							VkDesignerUtil.addWidget(widget , ((IPanel)invokingWidget), VkMenu.this.top, VkMenu.this.left);
 						}
 						else
@@ -527,8 +529,11 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	}	
 
 	private void hideMenu() {
-		this.top = getElement().getOffsetTop() - VkDesignerUtil.getCumulativeTop(invokingWidget.getElement()); 
-		this.left = getElement().getOffsetLeft() - VkDesignerUtil.getCumulativeLeft(invokingWidget.getElement());
+		if(invokingWidget != null)
+		{
+			this.top = getElement().getOffsetTop() - VkDesignerUtil.getCumulativeTop(invokingWidget.getElement()); 
+			this.left = getElement().getOffsetLeft() - VkDesignerUtil.getCumulativeLeft(invokingWidget.getElement());
+		}
 		final int lastLeft = getElement().getOffsetLeft();
 		final int lastTop = getElement().getOffsetTop();
 		new Timer(){

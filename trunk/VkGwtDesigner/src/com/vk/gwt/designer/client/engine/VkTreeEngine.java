@@ -3,6 +3,11 @@ package com.vk.gwt.designer.client.engine;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.json.client.JSONArray;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
+import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TreeItem;
@@ -72,7 +77,7 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 		list.addAll(VkDesignerUtil.getEngine().getAttributesList(invokingWidget));
 		return list;
 	}
-	@Override
+	@Override//overriding deep clone because addition of widgets has to be done in a different way
 	public Widget deepClone(Widget sourceWidget, Widget targetWidget) {
 		VkDesignerUtil.getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
 		VkTree vkTreeSource = (VkTree)sourceWidget;
@@ -106,6 +111,87 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 						, VkDesignerUtil.getEngine().getWidget(((IVkWidget)treeItem.getWidget()).getWidgetName())));
 			targetItem.addItem(copiedItem);
 			deepClone(sourceItem.getChild(i), copiedItem);
+		}
+	}
+	@Override
+	public String serialize(IVkWidget widget)
+	{
+		StringBuffer buffer = new StringBuffer("{");
+		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
+		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		serializeAttributes(buffer, (Widget) widget);
+		VkTree tree =  (VkTree)widget;
+		buffer.append(",items:[");
+		for(int i = 0; i < tree.getItemCount(); i++)
+		{
+			if(tree.getItem(i).getWidget() == null)
+				buffer.append("{html:'").append(tree.getItem(i).getHTML()).append("'");
+			else
+				buffer.append("{widget:").append(VkDesignerUtil.getEngineMap().get(((IVkWidget)tree.getItem(i).getWidget()).getWidgetName())
+						.serialize((IVkWidget) tree.getItem(i).getWidget()));
+			if(tree.getItem(i).getChildCount() > 0)
+				buffer.append(serialize(tree.getItem(i)));
+			buffer.append("},");
+		}
+		if(buffer.charAt(buffer.length() - 1) == ',')
+			buffer.deleteCharAt(buffer.length() - 1);
+		buffer.append("]}");
+		return buffer.toString();
+	}
+	private StringBuffer serialize(TreeItem item) {
+		StringBuffer buffer = new StringBuffer(",items:[");
+		for(int i = 0; i < item.getChildCount(); i++)
+		{
+			if(item.getChild(i).getWidget() == null)
+				buffer.append("{html:'").append(item.getChild(i).getHTML()).append("'");
+			else
+				buffer.append("{widget:").append(VkDesignerUtil.getEngineMap().get(((IVkWidget)item.getChild(i).getWidget()).getWidgetName())
+						.serialize((IVkWidget) item.getChild(i).getWidget()));
+			if(item.getChild(i).getChildCount() > 0)
+				buffer.append(serialize(item.getChild(i)));
+			buffer.append("},");
+		}
+		if(buffer.charAt(buffer.length() - 1) == ',')
+			buffer.deleteCharAt(buffer.length() - 1);
+		buffer.append("]");
+		return buffer;
+	}
+	@Override
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
+		VkTree tree =  (VkTree)parent;
+		JSONArray items = jsonObj.get("items").isArray();
+		for(int i = 0; i < items.size(); i++)
+		{
+			JSONObject item = items.get(i).isObject();
+			JSONValue html = item.get("html");
+			if(html != null)
+				tree.addItem(new TreeItem(html.isString().stringValue()));
+			else
+				VkDesignerUtil.getEngineMap().get(((IVkWidget)tree).getWidgetName()).buildWidget(item.get("widget").isObject(), tree);
+			if(item.get("items") != null)
+				buildItemWidget(item, tree.getItem(tree.getItemCount() - 1));
+		}
+	}
+	private void buildItemWidget(JSONObject itemJson, TreeItem parent) {
+		TreeItem treeItem =  (TreeItem)parent;
+		JSONArray items = itemJson.get("items").isArray();
+		for(int i = 0; i < items.size(); i++)
+		{
+			JSONObject item = items.get(i).isObject();
+			JSONValue html = item.get("html");
+			if(html != null)
+				treeItem.addItem(new TreeItem(html.isString().stringValue()));
+			else
+			{
+				JSONObject jsonObj = item.get("widget").isObject();
+				JSONString widgetName = jsonObj.get("widgetName").isString();
+				Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
+				treeItem.addItem(widget);
+				addAttributes(jsonObj, widget);
+				VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(jsonObj, widget);
+			}
+			if(item.get("items") != null)
+				buildItemWidget(item, treeItem.getChild(treeItem.getChildCount() - 1));
 		}
 	}
 }

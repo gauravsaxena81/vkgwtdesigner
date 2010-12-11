@@ -52,6 +52,8 @@ public class VkDecoratedStackPanel extends DecoratedStackPanel implements HasVkW
 		public String getWidgetName() {
 			return NAME;
 		}
+		@Override
+		public void clone(Widget targetWidget) {}
 		/**************************Export attribute Methods********************************/
 		@Override
 		@Export

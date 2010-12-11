@@ -26,6 +26,7 @@ import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
@@ -77,7 +78,12 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 	private String focusJs = "";
 	private String blurJs = "";
 	private String clickJs = "";
-
+	private String imageUpSrc;
+	private String imageDownSrc;
+	private String imageUpHoveringSrc;
+	private String imageUpDisabledSrc;
+	private String imageDownDisabledSrc;
+	private String imageDownHoveringSrc;
 	private char accessKey;
 	
 	@Override
@@ -276,6 +282,52 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 	@Override
 	public String getWidgetName() {
 		return NAME;
+	}
+	public String getImageUpSrc() {
+		return imageUpSrc;
+	}
+	public void setImageUpSrc(String imageUpSrc) {
+		this.imageUpSrc = imageUpSrc;
+	}
+	public String getImageDownSrc() {
+		return imageDownSrc;
+	}
+	public void setImageDownSrc(String imageDownSrc) {
+		this.imageDownSrc = imageDownSrc;
+	}
+	public String getImageUpHoveringSrc() {
+		return imageUpHoveringSrc;
+	}
+	public void setImageUpHoveringSrc(String imageUpHoveringSrc) {
+		this.imageUpHoveringSrc = imageUpHoveringSrc;
+	}
+	public String getImageUpDisabledSrc() {
+		return imageUpDisabledSrc;
+	}
+	public void setImageUpDisabledSrc(String imageUpDisabledSrc) {
+		this.imageUpDisabledSrc = imageUpDisabledSrc;
+	}
+	public String getImageDownDisabledSrc() {
+		return imageDownDisabledSrc;
+	}
+	public void setImageDownDisabledSrc(String imageDownDisabledSrc) {
+		this.imageDownDisabledSrc = imageDownDisabledSrc;
+	}
+	public String getImageDownHoveringSrc() {
+		return imageDownHoveringSrc;
+	}
+	public void setImageDownHoveringSrc(String imageDownHoveringSrc) {
+		this.imageDownHoveringSrc = imageDownHoveringSrc;
+	}
+	@Override
+	public void clone(Widget targetWidget) {
+		VkPushButton targetButton = (VkPushButton)targetWidget;
+		targetButton.imageDownDisabledSrc = imageDownDisabledSrc;
+		targetButton.imageDownHoveringSrc= imageDownHoveringSrc;
+		targetButton.imageDownSrc = imageDownSrc;
+		targetButton.imageUpDisabledSrc = imageUpDisabledSrc;
+		targetButton.imageUpSrc = imageUpSrc;
+		targetButton.imageUpHoveringSrc = imageUpHoveringSrc;
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

@@ -8,7 +8,6 @@ import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
-
 import com.vk.gwt.designer.client.Panels.VkStackPanel;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
@@ -82,5 +81,12 @@ public class VkStackPanelEngine extends VkAbstractWidgetEngine<VkStackPanel> {
 		attributeJsObj = childObj.get("className");
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			DOM.setElementAttribute(widget.getElement(), "className", attributeStringObj.stringValue());
+	}
+	@Override
+	public void copyAttributes(Widget widgetSource, Widget widgetTarget){
+		super.copyAttributes(widgetSource, widgetTarget);
+		int widgetCount = ((VkStackPanel)widgetSource).getWidgetCount();
+		for(int i = 0 ; i < widgetCount; i++)
+			((VkStackPanel)widgetTarget).setHeaderHtml(i, ((VkStackPanel)widgetSource).getHTML(i));
 	}
 }
