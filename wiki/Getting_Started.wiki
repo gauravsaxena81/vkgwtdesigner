@@ -20,6 +20,8 @@ RootPanel.get().add(VkDesignerUtil.getDrawingPanel());//Mandatory
 
 ====4. Run the application====
 
+NB: Currently, the uploaded version only works with *Mozilla FF* predictably.
+
 1. Right click for options for each widget
 
 2. To add javascript for event handlers,
