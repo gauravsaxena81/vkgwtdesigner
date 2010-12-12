@@ -18,7 +18,7 @@ RootPanel.get().add(VkDesignerUtil.getDrawingPanel());//Mandatory
 
 *Do remember to include [http://code.google.com/p/gwt-structs/downloads/detail?name=JsBridge-0.0.2.jar&can=2&q= JsBridge] and [http://code.google.com/p/gwt-structs/downloads/detail?name=autocompleter_1.0.2.jar&can=2&q= Combobox] in your classpath
 
-====3. Run the application====
+====4. Run the application====
 
 1. Right click for options for each widget
 
