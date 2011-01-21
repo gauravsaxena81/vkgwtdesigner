@@ -21,7 +21,6 @@ public class VkGwtDesigner implements EntryPoint {
 		}
 	}
 	private native String getLoadString() /*-{
-		alert($wnd.opener.loadStr)
 		return $wnd.opener.loadStr;
 	}-*/;
 }
