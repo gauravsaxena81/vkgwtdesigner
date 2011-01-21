@@ -122,7 +122,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			@Override
 			public void execute() {
 				VkDesignerUtil.setLoadString(widgetEngine.serialize((IVkWidget) invokingWidget));
-				Window.open(Window.Location.getHref() + "&isDesignerMode=false", "Preview", null);
+				String href = Window.Location.getHref();
+				if(Window.Location.getParameterMap().size() == 0)
+					href += "?isDesignerMode=false";
+				else
+					href += "&isDesignerMode=false";
+				Window.open(href, "Preview", null);
 				hideMenu();
 			}
 		});
