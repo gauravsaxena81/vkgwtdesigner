@@ -1,0 +1,37 @@
+/** Most GWT widgets already have a .vkgwtdesigner-vertical-menu .gwt-MenuItem {
+  padding: 1px 1px 1px 1px;
+}style name defined */
+.gwt-DialogBox {
+  width: 400px;
+}
+
+.dialogVPanel {
+  margin: 5px;
+}
+
+.serverResponseLabelError {
+  color: red;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#closeButton {
+  margin: 15px 6px 6px;
+}
+.vkgwtdesigner-vertical-menuPopup{z-index: 2147483647}
+.VkDesigner-styledialog-heading{background: gray; color: white; font-weight: bold;}
+.VkDesigner-styledialog{border: solid 1px green;}
+.autocompleter-suggestionPanel{border: solid 1px black; background: white}
+.autocomplete-option{}
+.autocomplete-option-highlight{background: #9999FF; color: white}
+.autocomplete-option-unhighlight{background: white; color: black}
+.vkflextable-cell-selected{border: solid 1px red;}
+.vkgwtdesigner-vertical-menu table { border-collapse: collapse; background: white;}
+.vkgwtdesigner-vertical-menu .gwt-MenuItem { padding: 1px; font-size: 11px;}
+.vkgwtdesigner-vertical-menu .gwt-MenuItemSeparator { padding: 1px 0px;}
+.vkgwtdesigner-vertical-menu .gwt-MenuItemSeparator .menuSeparatorInner { height: 1px; padding: 0px; border: 0px; border-top: 1px solid #777777;
+	background: #ddddee; overflow: hidden;}
+.vkgwtdesigner-vertical-menu .subMenuIcon { padding-right: 4px;}
+.vkgwtdesigner-vertical-menu .subMenuIcon-selected { background: #E0EDFE;}
+.vkgwtdesigner-vertical-menu { cursor: default;}
+.vkgwtdesigner-vertical-menu .gwt-MenuItem { cursor: default;}
+.vkgwtdesigner-vertical-menu .gwt-MenuItem-selected { background: #E0EDFE;}
