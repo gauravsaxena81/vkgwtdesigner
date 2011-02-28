@@ -10,6 +10,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -60,7 +61,12 @@ public class VkEventTextArea extends Composite {
 		new Timer(){
 			@Override
 			public void run() {
-				focus();
+				try{
+					focus();
+				}catch(Exception e)
+				{
+					schedule(200);
+				}
 			}
 		}.schedule(200);
 	}
@@ -92,23 +98,28 @@ public class VkEventTextArea extends Composite {
 		new Timer(){
 			@Override
 			public void run() {
-				if(editor != null)
-					populateJs(editor, text.replaceAll(";", ";\n").replaceAll("\\{","{\n").replaceAll("\\}","}\n").trim());
-				else
-					schedule(100);
+				try{
+					if(editor != null)
+						populateJs(editor, text.replaceAll(";", ";\n").replaceAll("\\{","{\n").replaceAll("\\}","}\n").trim());
+					else
+						schedule(200);
+				}
+				catch(Exception e)
+				{
+					schedule(200);//editor is not initialized properly
+				}
 			}
 			private native void populateJs(JavaScriptObject editor, String text) /*-{
 				editor.setCode(text);
 				editor.reindent();
 			}-*/;
-		}.schedule(100);
+		}.schedule(200);
 	}
 	private String getRealElementId(com.google.gwt.dom.client.Element element) 
 	{
 		com.google.gwt.dom.client.Element currentElement = element;
 		while(currentElement != null && currentElement.getId().isEmpty())
 			currentElement = currentElement.getParentElement();
-		//if(currentElement != null && !currentElement.getId().equals("drawingPanel"))
 		if(currentElement != null && currentElement != VkDesignerUtil.getDrawingPanel().getElement())
 			return currentElement.getId();
 		else
@@ -121,8 +132,6 @@ public class VkEventTextArea extends Composite {
 		focus();
 	}
 	private native void focus() /*-{
-		if(this.@com.vk.gwt.designer.client.designer.VkEventTextArea::editor != null && 
-			typeof this.@com.vk.gwt.designer.client.designer.VkEventTextArea::editor != 'undefined')
-			this.@com.vk.gwt.designer.client.designer.VkEventTextArea::editor.focus();
+		this.@com.vk.gwt.designer.client.designer.VkEventTextArea::editor.focus();
 	}-*/;
 }

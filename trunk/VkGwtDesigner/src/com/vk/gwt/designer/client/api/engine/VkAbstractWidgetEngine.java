@@ -90,7 +90,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 	}
 	protected void init(Widget widget) {
 		widget.setPixelSize(100, 20);
-		widget.addStyleName("vk-widget");
+		DOM.setStyleAttribute(widget.getElement(), "border", "solid 1px gray");
 	}
 	@Override
 	public Widget deepClone(Widget sourceWidget, Widget targetWidget) {

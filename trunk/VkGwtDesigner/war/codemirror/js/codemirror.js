@@ -196,7 +196,7 @@ var CodeMirror = (function(){
     },
     focus: function() {
       this.win.focus();
-      if (this.editor.selectionSnapshot) // IE hack
+      if (this.editor && this.editor.selectionSnapshot) // IE hack
         this.win.select.setBookmark(this.win.document.body, this.editor.selectionSnapshot);
     },
     replaceSelection: function(text) {
