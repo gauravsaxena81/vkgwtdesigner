@@ -9,6 +9,7 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
@@ -254,11 +255,28 @@ public class VkDesignerUtil {
 		draggingWidget.addMouseUpHandler(new MouseUpHandler() {
 			@Override
 			public void onMouseUp(MouseUpEvent event) {
+				final int initialTop = invokingWidget.getElement().getOffsetTop();
+				final int initialLeft = invokingWidget.getElement().getOffsetLeft();
+				final int finalTop = invokingWidget.getElement().getOffsetTop() 
+				+ draggingWidget.getElement().getAbsoluteTop() - invokingWidget.getElement().getAbsoluteTop();
+				final int finalLeft = invokingWidget.getElement().getOffsetLeft() 
+				+ draggingWidget.getElement().getAbsoluteLeft() - invokingWidget.getElement().getAbsoluteLeft();
+				final Widget widget = invokingWidget;
+				new Command(){
+					private final Command redoCommand = this;
+					@Override
+					public void execute() {
+						DOM.setStyleAttribute(invokingWidget.getElement(), "top", finalTop + "px"); 
+						DOM.setStyleAttribute(invokingWidget.getElement(), "left", finalLeft + "px");
+						vkMenu.getUndoStack().push(new Command(){
+							@Override
+							public void execute() {
+								DOM.setStyleAttribute(invokingWidget.getElement(), "top", initialTop + "px"); 
+								DOM.setStyleAttribute(invokingWidget.getElement(), "left", initialLeft + "px");
+								vkMenu.getRedoStack().push(redoCommand);
+							}});
+				}}.execute();
 				DOM.releaseCapture(draggingWidget.getElement());
-				DOM.setStyleAttribute(invokingWidget.getElement(), "top", invokingWidget.getElement().getOffsetTop() 
-						+ draggingWidget.getElement().getAbsoluteTop() - invokingWidget.getElement().getAbsoluteTop() + "px"); 
-				DOM.setStyleAttribute(invokingWidget.getElement(), "left", invokingWidget.getElement().getOffsetLeft() 
-						+ draggingWidget.getElement().getAbsoluteLeft() - invokingWidget.getElement().getAbsoluteLeft() + "px");
 				draggingWidget.removeFromParent();
 			}
 		});

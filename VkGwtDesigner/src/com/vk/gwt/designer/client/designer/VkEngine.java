@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -1262,6 +1263,7 @@ public class VkEngine implements IEngine{
 		origDialog.setText(heading);
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		dialog.setWidth("100%");
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.MAX_VALUE + "");
 		
 		new Timer(){
 			@Override
@@ -1299,7 +1301,7 @@ public class VkEngine implements IEngine{
 		origDialog.setText(heading);
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		dialog.setWidth("100%");
-		
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.MAX_VALUE + "");
 		Timer t = new Timer(){
 			@Override
 			public void run() {
@@ -1336,19 +1338,18 @@ public class VkEngine implements IEngine{
 		origDialog.add(dialog);
 		origDialog.setText("Please add JS code below:");
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-		
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.MAX_VALUE + "");
 		final VkEventTextArea addTextTa = new VkEventTextArea(); 
-		addTextTa.setText(invokingWidget.getPriorJs(eventName));
-		Timer t = new Timer(){
+		new Timer(){
 			@Override
 			public void run() {
 				VkDesignerUtil.centerDialog(dialog);
 				addTextTa.setFocus(true);
 			}
-		};
-		t.schedule(100);
+		}.schedule(100);
 		dialog.add(addTextTa);
 		addTextTa.setPixelSize(500, 200);
+		addTextTa.setText(invokingWidget.getPriorJs(eventName));
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);
 		Button saveButton = new Button("Ok");
@@ -1377,7 +1378,7 @@ public class VkEngine implements IEngine{
 		origDialog.setText(heading);
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		dialog.setWidth("100%");
-		
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.MAX_VALUE + "");
 		Timer t = new Timer(){
 			@Override
 			public void run() {

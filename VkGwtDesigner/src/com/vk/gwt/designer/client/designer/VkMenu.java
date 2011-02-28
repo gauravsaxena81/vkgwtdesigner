@@ -2,6 +2,7 @@ package com.vk.gwt.designer.client.designer;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Stack;
 
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
@@ -44,6 +45,7 @@ import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.widgets.VkMenuBarVertical;
 import com.vk.gwt.designer.client.widgets.colorpicker.VkColorPicker;
 
+@SuppressWarnings("serial")
 public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private Widget copyStyleWidget;
 	private Widget invokingWidget;
@@ -53,6 +55,24 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private IWidgetEngine<? extends Widget> widgetEngine;
 	private IVkWidget copyWidget;
 	private AbsolutePanel tabPanelHolder;
+	private Stack<Command> undoStack = new Stack<Command>(){
+		@Override
+		public Command push(Command c)
+		{
+			if(size() == 10)
+				remove(9);
+			return super.push(c);
+		}
+	};
+	private Stack<Command> redoStack = new Stack<Command>(){
+		@Override
+		public Command push(Command c)
+		{
+			if(size() == 10)
+				remove(9);
+			return super.push(c);
+		}
+	};
 	public VkMenu() {
 		this(true);
 		setStyleName("vkgwtdesigner-vertical-menu");
@@ -131,6 +151,26 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				hideMenu();
 			}
 		});
+		if(!undoStack.isEmpty())
+		{
+			addSeparator();
+			addItem("Undo", new Command(){
+				@Override
+				public void execute() {
+					undoStack.pop().execute();
+					hideMenu();
+				}});
+		}
+		if(!redoStack.isEmpty())
+		{
+			addSeparator();
+			addItem("Redo", new Command(){
+				@Override
+				public void execute() {
+					redoStack.pop().execute();
+					hideMenu();
+				}});
+		}
 	}
 	@Override
 	public HandlerRegistration addBlurHandler(BlurHandler handler) {
@@ -182,21 +222,60 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				, true, new Command(){
 					@Override
 					public void execute() {
-						DOM.setStyleAttribute(invokingWidget.getElement(), "textAlign", "left");
+						final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "textAlign");
+						final Widget widget = invokingWidget;
+						new Command(){
+							private final Command redoCommand = this;
+							@Override
+							public void execute() {
+								DOM.setStyleAttribute(widget.getElement(), "textAlign", "left");
+								undoStack.push(new Command(){
+									@Override
+									public void execute() {
+										DOM.setStyleAttribute(widget.getElement(), "textAlign", prior);
+										redoStack.push(redoCommand);
+									}});
+							}}.execute();
 					}
 		}));
 		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPXpaNhOBqGIzMMRwHpAAC130e5KyRN6AAAAABJRU5ErkJggg=='"
 				, true, new Command(){
 					@Override
 					public void execute() {
-						DOM.setStyleAttribute(invokingWidget.getElement(), "textAlign", "center");
+						final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "textAlign");
+						final Widget widget = invokingWidget;
+						new Command(){
+							private final Command redoCommand = this;
+							@Override
+							public void execute() {
+								DOM.setStyleAttribute(widget.getElement(), "textAlign", "center");
+								undoStack.push(new Command(){
+									@Override
+									public void execute() {
+										DOM.setStyleAttribute(widget.getElement(), "textAlign", prior);
+										redoStack.push(redoCommand);
+									}});
+							}}.execute();
 					}
 		}));
 		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPfxaNhOBqGIysMRwHpAADGwEe5v4tWjAAAAABJRU5ErkJggg=='"
 				, true, new Command(){
 					@Override
 					public void execute() {
-						DOM.setStyleAttribute(invokingWidget.getElement(), "textAlign", "right");
+						final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "textAlign");
+						final Widget widget = invokingWidget;
+						new Command(){
+							private final Command redoCommand = this;
+							@Override
+							public void execute() {
+								DOM.setStyleAttribute(widget.getElement(), "textAlign", "right");
+								undoStack.push(new Command(){
+									@Override
+									public void execute() {
+										DOM.setStyleAttribute(widget.getElement(), "textAlign", prior);
+										redoStack.push(redoCommand);
+									}});
+							}}.execute();
 					}
 		}));
 		styleMenu.addItem("V", new Command(){
@@ -227,10 +306,28 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		return new Command(){
 			@Override
 			public void execute() {
+				final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "borderWidth");
+				final String attribute;
 				if(suffix != null)
-					DOM.setStyleAttribute(invokingWidget.getElement(), "border" + suffix + "Style", "solid");
+					attribute = "border" + suffix + "Style";
 				else
-					DOM.setStyleAttribute(invokingWidget.getElement(), "borderStyle", "none");
+					attribute = "borderStyle";
+				final Widget widget = invokingWidget;
+				new Command(){
+					private final Command redoCommand = this;
+					@Override
+					public void execute() {
+						if(suffix != null)
+							DOM.setStyleAttribute(widget.getElement(), attribute, "solid");
+						else
+							DOM.setStyleAttribute(widget.getElement(), attribute, "none");
+						undoStack.push(new Command(){
+							@Override
+							public void execute() {
+								DOM.setStyleAttribute(widget.getElement(), attribute, prior);
+								redoStack.push(redoCommand);
+							}});
+				}}.execute();
 			}};
 	}
 	private MenuItem getBorderWidthPickerMenuItem() {
@@ -252,10 +349,26 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		return new Command(){
 			@Override
 			public void execute() {
-				DOM.setStyleAttribute(invokingWidget.getElement(), "borderTopWidth", borderWidth + "px");
-				DOM.setStyleAttribute(invokingWidget.getElement(), "borderLeftWidth", borderWidth + "px");
-				DOM.setStyleAttribute(invokingWidget.getElement(), "borderRightWidth", borderWidth + "px");
-				DOM.setStyleAttribute(invokingWidget.getElement(), "borderBottomWidth", borderWidth + "px");
+				final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "borderWidth");
+				final Widget widget = invokingWidget;
+				new Command(){
+					private final Command redoCommand = this;
+					@Override
+					public void execute() {
+						DOM.setStyleAttribute(widget.getElement(), "borderTopWidth", borderWidth + "px");
+						DOM.setStyleAttribute(widget.getElement(), "borderLeftWidth", borderWidth + "px");
+						DOM.setStyleAttribute(widget.getElement(), "borderRightWidth", borderWidth + "px");
+						DOM.setStyleAttribute(widget.getElement(), "borderBottomWidth", borderWidth + "px");
+						undoStack.push(new Command(){
+							@Override
+							public void execute() {
+								DOM.setStyleAttribute(widget.getElement(), "borderTopWidth", prior);
+								DOM.setStyleAttribute(widget.getElement(), "borderLeftWidth", prior);
+								DOM.setStyleAttribute(widget.getElement(), "borderRightWidth", prior);
+								DOM.setStyleAttribute(widget.getElement(), "borderBottomWidth", prior);
+								redoStack.push(redoCommand);
+							}});
+				}}.execute();				
 			}};
 	}
 	private MenuItem getBorderColorPickerMenuItem() {
@@ -270,8 +383,22 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					borderPickerPopPanel.setWidget(vkColorPicker);
 					vkColorPicker.addValueChangeHandler(new ValueChangeHandler<VkColorPicker>() {
 						@Override
-						public void onValueChange(ValueChangeEvent<VkColorPicker> event) {
-							DOM.setStyleAttribute(invokingWidget.getElement(), "borderColor", event.getValue().getColor());
+						public void onValueChange(final ValueChangeEvent<VkColorPicker> event) {
+							final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "borderColor");
+							final Widget widget = invokingWidget;
+							new Command(){
+								private final Command redoCommand = this;
+								@Override
+								public void execute() {
+									DOM.setStyleAttribute(widget.getElement(), "borderColor"
+											, event.getValue().getColor());
+									undoStack.push(new Command(){
+										@Override
+										public void execute() {
+											DOM.setStyleAttribute(widget.getElement(), "borderColor", prior);
+											redoStack.push(redoCommand);
+										}});
+							}}.execute();
 							borderPickerPopPanel.hide();
 						}
 					});
@@ -298,8 +425,22 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					bgPickerPopPanel.setWidget(vkColorPicker);
 					vkColorPicker.addValueChangeHandler(new ValueChangeHandler<VkColorPicker>() {
 						@Override
-						public void onValueChange(ValueChangeEvent<VkColorPicker> event) {
-							DOM.setStyleAttribute(invokingWidget.getElement(), "background", event.getValue().getColor());
+						public void onValueChange(final ValueChangeEvent<VkColorPicker> event) {
+							final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "background");
+							final Widget widget = invokingWidget;
+							new Command(){
+								private final Command redoCommand = this;
+								@Override
+								public void execute() {
+									DOM.setStyleAttribute(widget.getElement(), "background"
+											, event.getValue().getColor());
+									undoStack.push(new Command(){
+										@Override
+										public void execute() {
+											DOM.setStyleAttribute(widget.getElement(), "background", prior);
+											redoStack.push(redoCommand);
+										}});
+							}}.execute();
 							bgPickerPopPanel.hide();
 						}
 					});
@@ -326,8 +467,22 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					foreColorPickerPopPanel.setWidget(vkColorPicker);
 					vkColorPicker.addValueChangeHandler(new ValueChangeHandler<VkColorPicker>() {
 						@Override
-						public void onValueChange(ValueChangeEvent<VkColorPicker> event) {
-							DOM.setStyleAttribute(invokingWidget.getElement(), "color", event.getValue().getColor());
+						public void onValueChange(final ValueChangeEvent<VkColorPicker> event) {
+							final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "color");
+							final Widget widget = invokingWidget;
+							new Command(){
+								private final Command redoCommand = this;
+								@Override
+								public void execute() {
+									DOM.setStyleAttribute(widget.getElement(), "color"
+											, event.getValue().getColor());
+									undoStack.push(new Command(){
+										@Override
+										public void execute() {
+											DOM.setStyleAttribute(widget.getElement(), "color", prior);
+											redoStack.push(redoCommand);
+										}});
+							}}.execute();
 							foreColorPickerPopPanel.hide();
 						}
 					});
@@ -374,25 +529,6 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		styleTabPanel.add(panel, "Miscellaneous");
 		panel.setSize("100%", "250px");
 	}
-	/*private Command showStyleDialog(final Widget invokingWidget) {
-		final DialogBox origDialog = new DialogBox();
-		origDialog.setText("Set Style");
-		return new Command(){
-			@Override
-			public void execute() {
-				VerticalPanel stylePopUp = getStyleMenu();
-				((MenuBar)stylePopUp.getWidget(0)).addItem("X", new Command(){
-					@Override
-					public void execute() {
-						origDialog.hide();
-					}});
-				origDialog.add(stylePopUp);
-				origDialog.showRelativeTo(invokingWidget);
-				hideMenu();
-			}
-		};
-	}*/
-
 	
 	private ScrollPanel addColorPanel() {
 		ScrollPanel scrollColorHolderPanel = new ScrollPanel();				
@@ -490,7 +626,20 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		textBox.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent event) {
-				DOM.setStyleAttribute(invokingWidget.getElement(), attribute, textBox.getText());
+				final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), attribute);
+				final Widget widget = invokingWidget;
+				new Command(){
+					private final Command redoCommand = this;
+					@Override
+					public void execute() {
+						DOM.setStyleAttribute(widget.getElement(), attribute, textBox.getText());
+						undoStack.push(new Command(){
+							@Override
+							public void execute() {
+								DOM.setStyleAttribute(widget.getElement(), attribute, prior);
+								redoStack.push(redoCommand);
+							}});
+				}}.execute();
 			}
 		});
 	}
@@ -545,10 +694,27 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			Command widgetClickedCommand = new Command() {
 				@Override
 				public void execute() {
-					Widget widget = null;
-					widget = VkDesignerUtil.getEngine().getWidget(selectedMenuItem.getText());
-					if(widget != null)//cast is safe because the restriction on widgets,  if any, is placed by menu while it shows widget list
-						VkDesignerUtil.addWidget(widget, (IPanel)invokingWidget, VkMenu.this.top, VkMenu.this.left);
+					final Widget widget = VkDesignerUtil.getEngine().getWidget(selectedMenuItem.getText());
+					final Widget panelWidget = invokingWidget;
+					final int top = VkMenu.this.top;
+					final int left = VkMenu.this.left;
+					new Command(){
+						private final Command redoCommand = this;
+						@Override
+						public void execute() {
+							if(widget != null)//cast is safe because the restriction on widgets,  if any, is placed by menu while it shows widget list
+							{
+								VkDesignerUtil.addWidget(widget, (IPanel)panelWidget, top, left);
+								invokingWidget = widget;
+							}
+							undoStack.push(new Command(){
+								@Override
+								public void execute() {
+									if(widget != null)
+										widget.removeFromParent();
+									redoStack.push(redoCommand);
+								}});
+					}}.execute();
 					hideMenu();
 				}
 			};
@@ -603,8 +769,24 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				operationsMenu.addItem(operationsList.get(i), new Command(){
 					@Override
 					public void execute() {
-						invokingWidget.removeFromParent();
-						invokingWidget = null;
+						final Widget widget = invokingWidget;
+						final Widget panel = widget.getParent();
+						final int top = invokingWidget.getElement().getOffsetTop();
+						final int left = invokingWidget.getElement().getOffsetLeft();
+						new Command(){
+							private final Command redoCommand = this;
+							@Override
+							public void execute() {
+								widget.removeFromParent();
+								invokingWidget = null;
+								undoStack.push(new Command(){
+									@Override
+									public void execute() {
+										VkDesignerUtil.addWidget(widget, (IPanel)panel, top, left);
+										invokingWidget = widget;
+										redoStack.push(redoCommand);
+									}});
+						}}.execute();
 					}});
 			}
 			else if(operationsList.get(i).equals(VkEngine.RESIZE))
@@ -641,33 +823,47 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 							@Override
 							public void onMouseUp(MouseUpEvent event) {
 								DOM.releaseCapture(draggingWidget.getElement());
-								int initialHeight = invokingWidget.getOffsetHeight();
-								int initialWidth = invokingWidget.getOffsetWidth();
+								final int initialHeight = invokingWidget.getOffsetHeight();
+								final int initialWidth = invokingWidget.getOffsetWidth();
+								final Widget widget = invokingWidget;
+								String borderTopWidth = DOM.getStyleAttribute(widget.getElement(), "borderTopWidth");
+								String borderBottomWidth = DOM.getStyleAttribute(widget.getElement(), "borderBottomWidth");
+								String borderLeftWidth = DOM.getStyleAttribute(widget.getElement(), "borderLeftWidth");
+								String borderRightWidth = DOM.getStyleAttribute(widget.getElement(), "borderRightWidth");
+								String padding = DOM.getStyleAttribute(widget.getElement(), "padding");
+								String margin = DOM.getStyleAttribute(widget.getElement(), "margin");
+								DOM.setStyleAttribute(widget.getElement(), "borderWidth", "0px");
+								DOM.setStyleAttribute(widget.getElement(), "padding", "0px");
+								DOM.setStyleAttribute(widget.getElement(), "margin", "0px");
 								//This is necessary because offsetWidth contains all the decorations but when width is set, the figure is assumed to be independent 
 								//of decorations
-								String borderTopWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderTopWidth");
-								String borderBottomWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderBottomWidth");
-								String borderLeftWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderLeftWidth");
-								String borderRightWidth = DOM.getStyleAttribute(invokingWidget.getElement(), "borderRightWidth");
-								String padding = DOM.getStyleAttribute(invokingWidget.getElement(), "padding");
-								String margin = DOM.getStyleAttribute(invokingWidget.getElement(), "margin");
-								DOM.setStyleAttribute(invokingWidget.getElement(), "borderWidth", "0px");
-								DOM.setStyleAttribute(invokingWidget.getElement(), "padding", "0px");
-								DOM.setStyleAttribute(invokingWidget.getElement(), "margin", "0px");
-								int width = draggingWidget.getOffsetWidth()	- initialWidth + invokingWidget.getOffsetWidth();
-								if(width > 0)
-									invokingWidget.setWidth(width + "px");
-								int height = draggingWidget.getOffsetHeight() - initialHeight + invokingWidget.getOffsetHeight();
-								if(height > 0)
-									invokingWidget.setHeight(height + "px");
-								
-								DOM.setStyleAttribute(invokingWidget.getElement(), "borderTopWidth", borderTopWidth);
-								DOM.setStyleAttribute(invokingWidget.getElement(), "borderBottomWidth", borderBottomWidth);
-								DOM.setStyleAttribute(invokingWidget.getElement(), "borderLeftWidth", borderLeftWidth);
-								DOM.setStyleAttribute(invokingWidget.getElement(), "borderRightWidth", borderRightWidth);
-								DOM.setStyleAttribute(invokingWidget.getElement(), "padding", padding);
-								DOM.setStyleAttribute(invokingWidget.getElement(), "margin", margin);
+								final int finalWidth = draggingWidget.getOffsetWidth() - initialWidth 
+									+ widget.getOffsetWidth();
+								final int finalHeight = draggingWidget.getOffsetHeight() - initialHeight 
+									+ widget.getOffsetHeight();
+								DOM.setStyleAttribute(widget.getElement(), "borderTopWidth", borderTopWidth);
+								DOM.setStyleAttribute(widget.getElement(), "borderBottomWidth", borderBottomWidth);
+								DOM.setStyleAttribute(widget.getElement(), "borderLeftWidth", borderLeftWidth);
+								DOM.setStyleAttribute(widget.getElement(), "borderRightWidth", borderRightWidth);
+								DOM.setStyleAttribute(widget.getElement(), "padding", padding);
+								DOM.setStyleAttribute(widget.getElement(), "margin", margin);
 								draggingWidget.removeFromParent();
+								new Command(){
+									final Command redoCommand = this;
+									@Override
+									public void execute() {
+										if(finalWidth > 0)
+											widget.setWidth(finalWidth + "px");
+										if(finalHeight > 0)
+											widget.setHeight(finalHeight + "px");
+										undoStack.push(new Command(){
+											@Override
+											public void execute() {
+												widget.setWidth(initialWidth + "px");
+												widget.setHeight(initialHeight + "px");
+												redoStack.push(redoCommand);
+											}});
+									}}.execute();
 							}
 						});
 						hideMenu();
@@ -804,14 +1000,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			this.left = getElement().getOffsetLeft() - VkDesignerUtil.getCumulativeLeft(invokingWidget.getElement());
 			this.left = this.left - (this.left % VkDesignerUtil.SNAP_TO_FIT_LEFT);
 		}
-		/*final int lastLeft = getElement().getOffsetLeft();
-		final int lastTop = getElement().getOffsetTop();*/
 		VkMenu.this.setVisible(false);
-		/*new Timer(){
-			@Override
-			public void run() {
-				if(lastLeft == VkMenu.this.getElement().getOffsetLeft() && lastTop == getElement().getOffsetTop())
-					VkMenu.this.setVisible(false);
-			}}.schedule(1);*/
+	}
+	public Stack<Command> getUndoStack() {
+		return undoStack;
+	}
+	public Stack<Command> getRedoStack() {
+		return redoStack;
 	}
 }

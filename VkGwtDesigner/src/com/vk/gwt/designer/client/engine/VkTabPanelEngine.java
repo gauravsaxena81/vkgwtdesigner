@@ -92,8 +92,8 @@ public class VkTabPanelEngine extends VkAbstractWidgetEngine<VkTabPanel> {
 			while(widgetList.hasNext())
 			{
 				Widget child = widgetList.next();
-				buffer.append("{headerHtml:'").append(((VkTabPanel)widget).getTabHeaderHtml(widgetIndex));
-				buffer.append(",'enabled:'").append(((VkTabPanel)widget).getTabEnabled(widgetIndex++));
+				buffer.append("{headerHtml:'").append(((VkTabPanel)widget).getTabHeaderHtml(widgetIndex)).append("'");
+				buffer.append(",enabled:").append(((VkTabPanel)widget).getTabEnabled(widgetIndex++));
 				buffer.append(",child:");
 				if(child instanceof IVkWidget)
 					buffer.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append("},");

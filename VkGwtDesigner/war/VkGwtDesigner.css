@@ -17,6 +17,7 @@
 #closeButton {
   margin: 15px 6px 6px;
 }
+.vk-selectedWidget{z-index: 2147483646}
 .vkgwtdesigner-vertical-menuPopup{z-index: 2147483647}
 .VkDesigner-styledialog-heading{background: gray; color: white; font-weight: bold;}
 .VkDesigner-styledialog{border: solid 1px green;}
