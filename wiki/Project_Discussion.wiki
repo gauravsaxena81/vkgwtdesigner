@@ -38,6 +38,14 @@ Also, as shown below, it is possible to style the component using the style dial
 
 http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/styledialog.PNG
 
+<font color=red>------Change Starts-----</font>
+
+7. Provide a toolbar available, which opens on request, having a few more common functions including common styles, undo-redo, copy styles(paint brush), copy-paste etc
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/toolbar.PNG
+
+<font color=red>------Change Ends-----</font>
+
 ===Use Cases:===
 
 ====1. Components====
@@ -81,12 +89,24 @@ http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/styledialog.PNG
 
        e.Developers are able to extend the platform to include more event handlers and to expose more attributes for manipulation of events
 
+<font color=red>------Change Starts-----</font>
+       f. Although these events can be defined in UI but they will not work there. They will only work when application is saved and reproduced or in 'quick preview'
+<font color=red>------Change Ends-----</font>
 
 ====4.Saving and reproducing Application====
-       a. When “Save” is pressed, designer produces a json
+       a. When "Save" is pressed, designer produces a json
 
        b. Interfaces to store this json as a database object, file etc
 
        c.Interfaces to render the application using the json from database, files etc. 
               i.The reader module will be an independent application which can be used with or without designers
              ii.The reader module will be made available both as a GWT module and a javascript file which can be used in non-GWT application
+
+====5.Toolbar for rapid application development====
+       a. Contains more common functions like copy-paste, copy style(paint-bush), common styles, undo-redo etc.
+       b. It is brought forth by request and hides when dismissed
+<font color=red>------Change Starts-----</font>
+====6.Quick preview of the application====
+       a. To view the currently designed application a new window shows the application designed so far.
+       b. In this view, designing will not be possible
+<font color=red>------Change Ends-----</font>
