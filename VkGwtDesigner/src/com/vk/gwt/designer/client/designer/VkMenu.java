@@ -55,10 +55,14 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private IWidgetEngine<? extends Widget> widgetEngine;
 	private IVkWidget copyWidget;
 	private AbsolutePanel tabPanelHolder;
+	private MenuItem redoItem;
+	private MenuItem undoItem;
 	private Stack<Command> undoStack = new Stack<Command>(){
 		@Override
 		public Command push(Command c)
 		{
+			if(undoItem != null)
+				undoItem.setEnabled(true);
 			if(size() == 10)
 				remove(9);
 			return super.push(c);
@@ -68,11 +72,14 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		@Override
 		public Command push(Command c)
 		{
+			if(redoItem != null)
+				redoItem.setEnabled(true);
 			if(size() == 10)
 				remove(9);
 			return super.push(c);
 		}
 	};
+	
 	public VkMenu() {
 		this(true);
 		setStyleName("vkgwtdesigner-vertical-menu");
@@ -127,7 +134,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	protected void addSpecificItems()
 	{
 		addSeparator();
-		addItem("Style", new Command(){
+		addItem("Toolbar", new Command(){
 			@Override
 			public void execute() {
 				if(tabPanelHolder == null)
@@ -218,7 +225,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		styleMenu.addItem(getBorderColorPickerMenuItem());
 		styleMenu.addItem(getBorderWidthPickerMenuItem());
 		styleMenu.addItem(getBorderEdgePickerMenuItem());
-		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPPhaNhOBqGIzsMRwHpAACk/ke5B2guPwAAAABJRU5ErkJggg=='"
+		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPPhaNhOBqGIzsMRwHpAACk/ke5B2guPwAAAABJRU5ErkJggg=='>"
 				, true, new Command(){
 					@Override
 					public void execute() {
@@ -238,7 +245,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 							}}.execute();
 					}
 		}));
-		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPXpaNhOBqGIzMMRwHpAAC130e5KyRN6AAAAABJRU5ErkJggg=='"
+		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPXpaNhOBqGIzMMRwHpAAC130e5KyRN6AAAAABJRU5ErkJggg=='>"
 				, true, new Command(){
 					@Override
 					public void execute() {
@@ -258,7 +265,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 							}}.execute();
 					}
 		}));
-		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPfxaNhOBqGIysMRwHpAADGwEe5v4tWjAAAAABJRU5ErkJggg=='"
+		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPfxaNhOBqGIysMRwHpAADGwEe5v4tWjAAAAABJRU5ErkJggg=='>"
 				, true, new Command(){
 					@Override
 					public void execute() {
@@ -278,6 +285,34 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 							}}.execute();
 					}
 		}));
+		undoItem = styleMenu.addItem("Undo", (Command)null);
+		undoItem.setCommand(new Command(){
+			@Override
+			public void execute() {
+				undoStack.pop().execute();
+				if(undoStack.isEmpty())
+					undoItem.setEnabled(false);
+				else
+					undoItem.setEnabled(true);
+			}});
+		if(undoStack.isEmpty())
+			undoItem.setEnabled(false);
+		else
+			undoItem.setEnabled(true);
+		redoItem = styleMenu.addItem("Redo", (Command)null);
+		redoItem.setCommand(new Command(){
+			@Override
+			public void execute() {
+				redoStack.pop().execute();
+				if(redoStack.isEmpty())
+					redoItem.setEnabled(false);
+				else
+					redoItem.setEnabled(true);
+			}});
+		if(redoStack.isEmpty())
+			redoItem.setEnabled(false);
+		else
+			redoItem.setEnabled(true);
 		styleMenu.addItem("V", new Command(){
 			@Override
 			public void execute() {
@@ -386,12 +421,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						public void onValueChange(final ValueChangeEvent<VkColorPicker> event) {
 							final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "borderColor");
 							final Widget widget = invokingWidget;
+							final String color = event.getValue().getColor();
 							new Command(){
 								private final Command redoCommand = this;
 								@Override
 								public void execute() {
-									DOM.setStyleAttribute(widget.getElement(), "borderColor"
-											, event.getValue().getColor());
+									DOM.setStyleAttribute(widget.getElement(), "borderColor", color);
 									undoStack.push(new Command(){
 										@Override
 										public void execute() {
@@ -413,7 +448,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		return borderColorPicker;
 	}
 	private MenuItem getBgColorPickerMenuItem() {
-		final MenuItem bgColorPicker = new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAANUlEQVR42mNgGAW0Av+JxNjB39/s/5ExSDE6H5sYFn10MhCbBdgMGDVw1EBqGkhGFhwFNAQAQy76sGFjx7gAAAAASUVORK5CYII='"
+		final MenuItem bgColorPicker = new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAANUlEQVR42mNgGAW0Av+JxNjB39/s/5ExSDE6H5sYFn10MhCbBdgMGDVw1EBqGkhGFhwFNAQAQy76sGFjx7gAAAAASUVORK5CYII='>"
 				, true, (Command)null);
 		final PopupPanel bgPickerPopPanel = new PopupPanel();
 		bgPickerPopPanel.setAutoHideEnabled(true);
@@ -425,15 +460,15 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					bgPickerPopPanel.setWidget(vkColorPicker);
 					vkColorPicker.addValueChangeHandler(new ValueChangeHandler<VkColorPicker>() {
 						@Override
-						public void onValueChange(final ValueChangeEvent<VkColorPicker> event) {
+						public void onValueChange(ValueChangeEvent<VkColorPicker> event) {
 							final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "background");
 							final Widget widget = invokingWidget;
+							final String color = event.getValue().getColor();
 							new Command(){
 								private final Command redoCommand = this;
 								@Override
 								public void execute() {
-									DOM.setStyleAttribute(widget.getElement(), "background"
-											, event.getValue().getColor());
+									DOM.setStyleAttribute(widget.getElement(), "background", color);
 									undoStack.push(new Command(){
 										@Override
 										public void execute() {
@@ -455,7 +490,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		return bgColorPicker;
 	}
 	private MenuItem getForeColorPickerMenuItem() {
-		final MenuItem foreColorPicker = new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAgElEQVR42t2S4QqAMAiEfW//+t42XW4SozQhKuFQaH2duwC+VBxUCrj6wNmZZ4EQAMI7gYjIV0oD2zCkAOahMpCI6kCBiGxFm62nfnB5iZ0ndYjtGYH2qMNRurIDKmCHSb8F9Cuv5jTQZcI9pGk67bA7mEC90wrQJ3tMN5Lyz2sDT5T/KC/lAxMAAAAASUVORK5CYII='"
+		final MenuItem foreColorPicker = new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAgElEQVR42t2S4QqAMAiEfW//+t42XW4SozQhKuFQaH2duwC+VBxUCrj6wNmZZ4EQAMI7gYjIV0oD2zCkAOahMpCI6kCBiGxFm62nfnB5iZ0ndYjtGYH2qMNRurIDKmCHSb8F9Cuv5jTQZcI9pGk67bA7mEC90wrQJ3tMN5Lyz2sDT5T/KC/lAxMAAAAASUVORK5CYII='>"
 				, true, (Command)null);
 		final PopupPanel foreColorPickerPopPanel = new PopupPanel();
 		foreColorPickerPopPanel.setAutoHideEnabled(true);
@@ -467,15 +502,15 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					foreColorPickerPopPanel.setWidget(vkColorPicker);
 					vkColorPicker.addValueChangeHandler(new ValueChangeHandler<VkColorPicker>() {
 						@Override
-						public void onValueChange(final ValueChangeEvent<VkColorPicker> event) {
+						public void onValueChange(ValueChangeEvent<VkColorPicker> event) {
 							final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "color");
 							final Widget widget = invokingWidget;
+							final String color = event.getValue().getColor();
 							new Command(){
 								private final Command redoCommand = this;
 								@Override
 								public void execute() {
-									DOM.setStyleAttribute(widget.getElement(), "color"
-											, event.getValue().getColor());
+									DOM.setStyleAttribute(widget.getElement(), "color", color);
 									undoStack.push(new Command(){
 										@Override
 										public void execute() {
