@@ -96,20 +96,7 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			throw new IllegalStateException("No Tab has been selected");
 		}
 	}
-	@Override
-	public void addBeforeSelectionHandler(String js) {
-		if(beforeSelectionHandler != null)
-			beforeSelectionHandler.removeHandler();
-		beforeSelectionJs = js;
-		beforeSelectionHandler = super.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
-			@Override
-			public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
-				Map<String, String> eventproperties = new HashMap<String, String>();
-				eventproperties.put("item", event.getItem().toString());
-				VkDesignerUtil.executeEvent(beforeSelectionJs, eventproperties);
-			}
-		});
-	}
+	
 	@Override
 	public String getPriorJs(String eventName) {
 		if(eventName.equals(HasVkSelectionHandler.NAME))
@@ -120,18 +107,40 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			return "";
 	}
 	@Override
+	public void addBeforeSelectionHandler(String js) {
+		if(beforeSelectionHandler != null)
+			beforeSelectionHandler.removeHandler();
+		beforeSelectionHandler = null;
+		beforeSelectionJs = js.trim();
+		if(!beforeSelectionJs.isEmpty())
+		{
+			beforeSelectionHandler = super.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+				@Override
+				public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+					Map<String, String> eventproperties = new HashMap<String, String>();
+					eventproperties.put("item", event.getItem().toString());
+					VkDesignerUtil.executeEvent(beforeSelectionJs, eventproperties);
+				}
+			});
+		}
+	}
+	@Override
 	public void addSelectionHandler(String js) {
 		if(selectionHandler != null)
 			selectionHandler.removeHandler();
-		selectionJs = js;
-		selectionHandler = super.addSelectionHandler(new SelectionHandler<Integer>() {
-			@Override
-			public void onSelection(SelectionEvent<Integer> event) {
-				Map<String, String> eventproperties = new HashMap<String, String>();
-				eventproperties.put("item", event.getSelectedItem().toString());
-				VkDesignerUtil.executeEvent(selectionJs, eventproperties);
-			}
-		});
+		selectionHandler = null;
+		selectionJs = js.trim();
+		if(!selectionJs.isEmpty())
+		{
+			selectionHandler = super.addSelectionHandler(new SelectionHandler<Integer>() {
+				@Override
+				public void onSelection(SelectionEvent<Integer> event) {
+					Map<String, String> eventproperties = new HashMap<String, String>();
+					eventproperties.put("item", event.getSelectedItem().toString());
+					VkDesignerUtil.executeEvent(selectionJs, eventproperties);
+				}
+			});
+		}
 	}
 	@Override
 	public void setEnabled(boolean enabled) {

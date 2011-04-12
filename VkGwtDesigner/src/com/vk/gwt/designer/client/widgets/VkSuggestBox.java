@@ -36,9 +36,11 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.SuggestBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.SuggestOracle.Suggestion;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
@@ -65,7 +67,6 @@ import com.vk.gwt.designer.client.api.attributes.HasVkValue;
 import com.vk.gwt.designer.client.api.attributes.HasVkValueChangeHandler;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, HasVkValue<String>, HasVkAnimation, HasVkAllKeyHandlers, HasVkSelectionHandler
 , HasVkValueChangeHandler, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler, HasVkChangeHandler, HasVkEnabled, HasVkTabIndex, HasVkAccessKey 
@@ -103,194 +104,255 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 	private String valueChangeJs = "";
 	private char accessKey;
 	private List<String> suggestions = new ArrayList<String>();
+	private boolean isEnabled = true;
 	
-	@Override
-	public void addKeyDownHandler(String js) {
-		if(keyDownHandlerRegistration != null)
-			keyDownHandlerRegistration.removeHandler();
-		keyDownJs = js;
-		keyDownHandlerRegistration = addKeyDownHandler(new KeyDownHandler() {
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				VkDesignerUtil.executeEvent(keyDownJs, event);
-			}
-		});
-	}
-	@Override
-	public void addKeyUpHandler(String js) {
-		if(keyUpHandlerRegistration != null)
-			keyUpHandlerRegistration.removeHandler();
-		keyUpJs = js;
-		keyUpHandlerRegistration = addKeyUpHandler(new KeyUpHandler() {
-			@Override
-			public void onKeyUp(KeyUpEvent event) {
-				VkDesignerUtil.executeEvent(keyUpJs, event);
-			}
-		});
-	}
-	@Override
-	public void addKeyPressHandler(String js) {
-		if(keyPressHandlerRegistration != null)
-			keyPressHandlerRegistration.removeHandler();
-		keyPressJs = js;
-		keyPressHandlerRegistration = addKeyPressHandler(new KeyPressHandler() {
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				VkDesignerUtil.executeEvent(keyPressJs, event);
-			}
-		});
-	}
-	@Override
-	public void addSelectionHandler(String js) {
-		if(selectionHandlerRegistration != null)
-			selectionHandlerRegistration.removeHandler();
-		selectionJs = js;
-		selectionHandlerRegistration = addSelectionHandler(new SelectionHandler<Suggestion>() {
-			@Override
-			public void onSelection(SelectionEvent<Suggestion> event) {
-				Suggestion suggestion = event.getSelectedItem();
-				Map<String, String> map = new HashMap<String, String>();
-				map.put("displayString", suggestion.getDisplayString());
-				map.put("replacementString", suggestion.getReplacementString());
-				VkDesignerUtil.executeEvent(selectionJs, map);
-			}
-		});
-	}
-	@Override
-	public void addValueChangeHandler(String js) {
-		if(valueChangeHandlerRegistration != null)
-			valueChangeHandlerRegistration.removeHandler();
-		valueChangeJs = js;
-		valueChangeHandlerRegistration = addValueChangeHandler(new ValueChangeHandler<String>() {
-			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				Map<String, String> map = new HashMap<String, String>();
-				map.put("value", event.getValue());
-				VkDesignerUtil.executeEvent(valueChangeJs, map);
-			}
-		});
-	}
 	@Override
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)
 			clickHandlerRegistration.removeHandler();
-		clickJs = js;
-		clickHandlerRegistration = super.getTextBox().addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				VkDesignerUtil.executeEvent(clickJs, event);
-			}
-		});
+		clickHandlerRegistration = null;
+		clickJs = js.trim();
+		if(!clickJs.isEmpty())
+		{
+			clickHandlerRegistration = super.getTextBox().addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					VkDesignerUtil.executeEvent(clickJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseDownHandler(String js) {
 		if(mouseDownHandlerRegistration != null)
 			mouseDownHandlerRegistration.removeHandler();
-		mouseDownJs = js;
-		mouseDownHandlerRegistration = super.getTextBox().addMouseDownHandler(new MouseDownHandler() {
-			@Override
-			public void onMouseDown(MouseDownEvent event) {
-				VkDesignerUtil.executeEvent(mouseDownJs, event);
-			}
-		});
+		mouseDownHandlerRegistration = null;
+		mouseDownJs = js.trim();
+		if(!mouseDownJs.isEmpty())
+		{
+			mouseDownHandlerRegistration = super.getTextBox().addMouseDownHandler(new MouseDownHandler() {
+				@Override
+				public void onMouseDown(MouseDownEvent event) {
+					VkDesignerUtil.executeEvent(mouseDownJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseUpHandler(String js) {
 		if(mouseUpHandlerRegistration != null)
 			mouseUpHandlerRegistration.removeHandler();
-		mouseUpJs = js;
-		mouseUpHandlerRegistration = super.getTextBox().addMouseUpHandler(new MouseUpHandler() {
-			@Override
-			public void onMouseUp(MouseUpEvent event) {
-				VkDesignerUtil.executeEvent(mouseUpJs, event);
-			}
-		});
+		mouseUpHandlerRegistration = null;
+		mouseUpJs = js.trim();
+		if(!mouseUpJs.isEmpty())
+		{
+			mouseUpHandlerRegistration = super.getTextBox().addMouseUpHandler(new MouseUpHandler() {
+				@Override
+				public void onMouseUp(MouseUpEvent event) {
+					VkDesignerUtil.executeEvent(mouseUpJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseMoveHandler(String js) {
 		if(mouseMoveHandlerRegistration != null)
 			mouseMoveHandlerRegistration.removeHandler();
-		mouseMoveJs = js;
-		mouseMoveHandlerRegistration = super.getTextBox().addMouseMoveHandler(new MouseMoveHandler() {
-			@Override
-			public void onMouseMove(MouseMoveEvent event) {
-				VkDesignerUtil.executeEvent(mouseMoveJs, event);
-			}
-		});
+		mouseMoveHandlerRegistration = null;
+		mouseMoveJs = js.trim();
+		if(!mouseMoveJs.isEmpty())
+		{
+			mouseMoveHandlerRegistration = super.getTextBox().addMouseMoveHandler(new MouseMoveHandler() {
+				@Override
+				public void onMouseMove(MouseMoveEvent event) {
+					VkDesignerUtil.executeEvent(mouseMoveJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseOverHandler(String js) {
 		if(mouseOverHandlerRegistration != null)
 			mouseOverHandlerRegistration.removeHandler();
-		mouseOverJs = js;
-		mouseOverHandlerRegistration = super.getTextBox().addMouseOverHandler(new MouseOverHandler() {
-			@Override
-			public void onMouseOver(MouseOverEvent event) {
-				VkDesignerUtil.executeEvent(mouseOverJs, event);
-			}
-		});
+		mouseOverHandlerRegistration = null;
+		mouseOverJs = js.trim();
+		if(!mouseOverJs.isEmpty())
+		{
+			mouseOverHandlerRegistration = super.getTextBox().addMouseOverHandler(new MouseOverHandler() {
+				@Override
+				public void onMouseOver(MouseOverEvent event) {
+					VkDesignerUtil.executeEvent(mouseOverJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseOutHandler(String js) {
 		if(mouseOutHandlerRegistration != null)
 			mouseOutHandlerRegistration.removeHandler();
-		mouseOutJs = js;
-		mouseOutHandlerRegistration = super.getTextBox().addMouseOutHandler(new MouseOutHandler() {
-			@Override
-			public void onMouseOut(MouseOutEvent event) {
-				VkDesignerUtil.executeEvent(mouseOutJs, event);
-			}
-		});
+		mouseOutHandlerRegistration = null;
+		mouseOutJs = js.trim();
+		if(!mouseOutJs.isEmpty())
+		{
+			mouseOutHandlerRegistration = super.getTextBox().addMouseOutHandler(new MouseOutHandler() {
+				@Override
+				public void onMouseOut(MouseOutEvent event) {
+					VkDesignerUtil.executeEvent(mouseOutJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseWheelHandler(String js) {
 		if(mouseWheelHandlerRegistration != null)
 			mouseWheelHandlerRegistration.removeHandler();
-		mouseWheelJs = js;
-		mouseWheelHandlerRegistration = super.getTextBox().addMouseWheelHandler(new MouseWheelHandler() {
-			@Override
-			public void onMouseWheel(MouseWheelEvent event) {
-				VkDesignerUtil.executeEvent(mouseWheelJs, event);
-			}
-		});
+		mouseWheelHandlerRegistration = null;
+		mouseWheelJs = js.trim();
+		if(!mouseWheelJs.isEmpty())
+		{
+			mouseWheelHandlerRegistration = super.getTextBox().addMouseWheelHandler(new MouseWheelHandler() {
+				@Override
+				public void onMouseWheel(MouseWheelEvent event) {
+					VkDesignerUtil.executeEvent(mouseWheelJs, event);
+				}
+			});
+		}
 	}
-	
+	@Override
+	public void addKeyDownHandler(String js) {
+		if(keyDownHandlerRegistration != null)
+			keyDownHandlerRegistration.removeHandler();
+		keyDownHandlerRegistration = null;
+		keyDownJs = js.trim();
+		if(!keyDownJs.isEmpty())
+		{
+			
+			keyDownHandlerRegistration = addKeyDownHandler(new KeyDownHandler() {
+				@Override
+				public void onKeyDown(KeyDownEvent event) {
+					VkDesignerUtil.executeEvent(keyDownJs, event);
+				}
+			});
+		}
+	}
+	@Override
+	public void addKeyUpHandler(String js) {
+		if(keyUpHandlerRegistration != null)
+			keyUpHandlerRegistration.removeHandler();
+		keyUpHandlerRegistration = null;
+		keyUpJs = js.trim();
+		if(!keyUpJs.isEmpty())
+		{
+			keyUpHandlerRegistration = addKeyUpHandler(new KeyUpHandler() {
+				@Override
+				public void onKeyUp(KeyUpEvent event) {
+					VkDesignerUtil.executeEvent(keyUpJs, event);
+				}
+			});
+		}
+	}
+	@Override
+	public void addKeyPressHandler(String js) {
+		if(keyPressHandlerRegistration != null)
+			keyPressHandlerRegistration.removeHandler();
+		keyPressHandlerRegistration = null;
+		keyPressJs = js.trim();
+		if(!keyPressJs.isEmpty())
+		{
+			
+			keyPressHandlerRegistration = addKeyPressHandler(new KeyPressHandler() {
+				@Override
+				public void onKeyPress(KeyPressEvent event) {
+					VkDesignerUtil.executeEvent(keyPressJs, event);
+				}
+			});
+		}
+	}
 	@Override
 	public void addFocusHandler(String js) {
 		if(focusHandlerRegistration != null)
 			focusHandlerRegistration.removeHandler();
-		focusJs = js;
-		focusHandlerRegistration = super.getTextBox().addFocusHandler(new FocusHandler() {
-			@Override
-			public void onFocus(FocusEvent event) {
-				VkDesignerUtil.executeEvent(focusJs, event);
-			}
-		});
+		focusHandlerRegistration = null;
+		focusJs = js.trim();
+		if(!focusJs.isEmpty())
+		{
+			focusHandlerRegistration = super.getTextBox().addFocusHandler(new FocusHandler() {
+				@Override
+				public void onFocus(FocusEvent event) {
+					VkDesignerUtil.executeEvent(focusJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addBlurHandler(String js) {
 		if(blurHandlerRegistration != null)
 			blurHandlerRegistration.removeHandler();
+		blurHandlerRegistration = null;
 		blurJs = js;
-		blurHandlerRegistration = super.getTextBox().addBlurHandler(new BlurHandler() {
-			@Override
-			public void onBlur(BlurEvent event) {
-				VkDesignerUtil.executeEvent(blurJs, event);
-			}
-		});
+		if(!js.trim().isEmpty())
+		{
+			blurHandlerRegistration = super.getTextBox().addBlurHandler(new BlurHandler() {
+				@Override
+				public void onBlur(BlurEvent event) {
+					VkDesignerUtil.executeEvent(blurJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addChangeHandler(String js) {
 		if(changeHandlerRegistration != null)
 			changeHandlerRegistration.removeHandler();
-		changeJs  = js;
-		changeHandlerRegistration = super.getTextBox().addChangeHandler(new ChangeHandler() {
-			@Override
-			public void onChange(ChangeEvent event) {
-				VkDesignerUtil.executeEvent(changeJs, event);
-			}
-		});
-		
+		changeHandlerRegistration = null;
+		changeJs  = js.trim();
+		if(!changeJs.isEmpty())
+		{
+			changeHandlerRegistration = super.getTextBox().addChangeHandler(new ChangeHandler() {
+				@Override
+				public void onChange(ChangeEvent event) {
+					VkDesignerUtil.executeEvent(changeJs, event);
+				}
+			});
+		}
+	}
+	@Override
+	public void addSelectionHandler(String js) {
+		if(selectionHandlerRegistration != null)
+			selectionHandlerRegistration.removeHandler();
+		selectionHandlerRegistration = null;
+		selectionJs = js.trim();
+		if(!selectionJs.isEmpty())
+		{
+			selectionHandlerRegistration = addSelectionHandler(new SelectionHandler<Suggestion>() {
+				@Override
+				public void onSelection(SelectionEvent<Suggestion> event) {
+					Suggestion suggestion = event.getSelectedItem();
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("displayString", suggestion.getDisplayString());
+					map.put("replacementString", suggestion.getReplacementString());
+					VkDesignerUtil.executeEvent(selectionJs, map);
+				}
+			});
+		}
+	}
+	@Override
+	public void addValueChangeHandler(String js) {
+		if(valueChangeHandlerRegistration != null)
+			valueChangeHandlerRegistration.removeHandler();
+		valueChangeHandlerRegistration = null;
+		valueChangeJs = js.trim();
+		if(!valueChangeJs.isEmpty())
+		{
+			valueChangeHandlerRegistration = addValueChangeHandler(new ValueChangeHandler<String>() {
+				@Override
+				public void onValueChange(ValueChangeEvent<String> event) {
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("value", event.getValue());
+					VkDesignerUtil.executeEvent(valueChangeJs, map);
+				}
+			});
+		}
 	}
 	@Override
 	public String getPriorJs(String eventName) {
@@ -362,18 +424,21 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 	{
 		return super.getText();
 	}
-	
 	@Override
 	@Export
 	public void setEnabled(boolean enabled)
 	{
-		super.getTextBox().setEnabled(enabled);
+		if(!VkDesignerUtil.isDesignerMode)
+			super.getTextBox().setEnabled(enabled);
+		else if(!enabled)
+			Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");
+		isEnabled = enabled;
 	}
 	@Override
 	@Export
 	public boolean isEnabled()
 	{
-		return super.getTextBox().isEnabled();
+		return isEnabled;
 	}
 	@Override
 	@Export

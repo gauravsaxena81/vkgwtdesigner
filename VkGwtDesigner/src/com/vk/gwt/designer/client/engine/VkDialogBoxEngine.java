@@ -14,6 +14,7 @@ public class VkDialogBoxEngine extends VkAbstractWidgetEngine<VkDialogBox> {
 	@Override
 	public VkDialogBox getWidget() {
 		VkDialogBox widget = new VkDialogBox();
+		widget.setPixelSize(200, 100);
 		return widget;
 	}
 	@Override

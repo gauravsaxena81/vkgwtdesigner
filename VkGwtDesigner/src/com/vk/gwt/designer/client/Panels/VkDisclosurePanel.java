@@ -72,26 +72,34 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 	public void addCloseHandler(String js) {
 		if(closeHandlerRegistration != null)
 			closeHandlerRegistration.removeHandler();
-		closeJs = js;
-		closeHandlerRegistration = dp.addCloseHandler(new CloseHandler<DisclosurePanel>() {
-			@Override
-			public void onClose(CloseEvent<DisclosurePanel> event) {
-				VkDesignerUtil.executeEvent(closeJs, (Map<String, String>)null);
-			}
-		});
+		closeHandlerRegistration = null;
+		closeJs = js.trim();
+		if(!closeJs.isEmpty())
+		{
+			closeHandlerRegistration = dp.addCloseHandler(new CloseHandler<DisclosurePanel>() {
+				@Override
+				public void onClose(CloseEvent<DisclosurePanel> event) {
+					VkDesignerUtil.executeEvent(closeJs, (Map<String, String>)null);
+				}
+			});
+		}
 	}
 
 	@Override
 	public void addOpenHandler(String js) {
 		if(openHandlerRegistration != null)
 			openHandlerRegistration.removeHandler();
-		openJs = js;
-		openHandlerRegistration = dp.addOpenHandler(new OpenHandler<DisclosurePanel>() {
-			@Override
-			public void onOpen(OpenEvent<DisclosurePanel> event) {
-				VkDesignerUtil.executeEvent(openJs, (Map<String, String>)null);
-			}
-		});
+		openHandlerRegistration = null;
+		openJs = js.trim();
+		if(!openJs.isEmpty())
+		{
+			openHandlerRegistration = dp.addOpenHandler(new OpenHandler<DisclosurePanel>() {
+				@Override
+				public void onOpen(OpenEvent<DisclosurePanel> event) {
+					VkDesignerUtil.executeEvent(openJs, (Map<String, String>)null);
+				}
+			});
+		}
 	}
 	@Override
 	public String getPriorJs(String eventName) {

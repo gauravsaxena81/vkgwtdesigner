@@ -34,6 +34,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 		if(attributeName.equals(ADD_UP_IMAGE))
 		{
 			TextBox tb = new TextBox();
+			tb.setValue(widget.getImageUpSrc());
 			tb.setWidth("100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up image url", tb
 					, new IEventRegister() {
@@ -47,6 +48,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 		else if(attributeName.equals(ADD_DOWN_IMAGE))
 		{
 			TextBox tb = new TextBox();
+			tb.setValue(widget.getImageDownSrc());
 			tb.setWidth("100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down image url", tb
 					, new IEventRegister() {
@@ -60,6 +62,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 		else if(attributeName.equals(ADD_UP_HTML))
 		{
 			TextArea ta = new TextArea();
+			ta.setValue(widget.getUpFace().getHTML());
 			ta.setSize("100px","50px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up html", ta
 					, new IEventRegister() {
@@ -73,6 +76,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 		else if(attributeName.equals(ADD_DOWN_HTML))
 		{
 			TextArea ta = new TextArea();
+			ta.setValue(widget.getDownFace().getHTML());
 			ta.setSize("100px","50px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down html", ta
 					, new IEventRegister() {
@@ -86,6 +90,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 		else if(attributeName.equals(ADD_UP_TEXT))
 		{
 			TextBox tb = new TextBox();
+			tb.setValue(widget.getUpFace().getText());
 			tb.setWidth("100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up text", tb
 					, new IEventRegister() {
@@ -99,6 +104,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 		else if(attributeName.equals(ADD_DOWN_TEXT))
 		{
 			TextBox tb = new TextBox();
+			tb.setValue(widget.getDownFace().getText());
 			tb.setWidth("100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down text", tb
 					, new IEventRegister() {

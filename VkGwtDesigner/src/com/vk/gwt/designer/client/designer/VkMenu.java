@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -15,6 +17,7 @@ import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -39,6 +42,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.vk.gwt.designer.client.api.engine.IEngine;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
@@ -54,31 +58,46 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private int left;
 	private IWidgetEngine<? extends Widget> widgetEngine;
 	private IVkWidget copyWidget;
-	private AbsolutePanel tabPanelHolder;
-	private MenuItem redoItem;
-	private MenuItem undoItem;
+	private AbsolutePanel toolBar;
 	private Stack<Command> undoStack = new Stack<Command>(){
 		@Override
 		public Command push(Command c)
 		{
-			if(undoItem != null)
-				undoItem.setEnabled(true);
 			if(size() == 10)
 				remove(9);
+			redoStack.clear();
 			return super.push(c);
+		}
+		@Override
+		public Command pop()
+		{
+			if(size() > 0)
+				return super.pop();
+			else return null;
 		}
 	};
 	private Stack<Command> redoStack = new Stack<Command>(){
 		@Override
 		public Command push(Command c)
 		{
-			if(redoItem != null)
-				redoItem.setEnabled(true);
 			if(size() == 10)
 				remove(9);
 			return super.push(c);
 		}
+		@Override
+		public Command pop()
+		{
+			if(size() > 0)
+				return super.pop();
+			else return null;
+		}
 	};
+	private Command copyCommand;
+	private Command pasteCommand;
+	private Command undoCommand;
+	private Command redoCommand;
+	private TabPanel styleTabPanel;
+	private Command cutCommand;
 	
 	public VkMenu() {
 		this(true);
@@ -101,7 +120,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		sinkEvents(Event.ONCLICK | Event.ONMOUSEOVER | Event.ONMOUSEOUT | Event.ONFOCUS | Event.ONKEYDOWN | Event.ONBLUR);
 	}
 	public void prepareMenu(Widget invokingWidget, IWidgetEngine<? extends Widget> widgetEngine) {
-		intializeMenu(invokingWidget, widgetEngine);
+		initializeMenu(invokingWidget, widgetEngine);
 		clearItems();
 		addItem("Operations", getOperationsItems(widgetEngine.getOperationsList(invokingWidget)));
 		List<String> widgetsList = VkDesignerUtil.getEngine().getWidgetsList(invokingWidget);
@@ -123,13 +142,28 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		addAttributesList(attributesList);
 		addSpecificItems();
 	}
-	protected void intializeMenu(Widget invokingWidget, IWidgetEngine<? extends Widget> widgetEngine) {
+	protected void initializeMenu(Widget invokingWidget, IWidgetEngine<? extends Widget> widgetEngine) {
 		if(this.invokingWidget != null && VkDesignerUtil.isDesignerMode)
 			this.invokingWidget.removeStyleName("vk-selectedWidget");
 		this.invokingWidget = invokingWidget;
 		if(VkDesignerUtil.isDesignerMode)
 			this.invokingWidget.addStyleName("vk-selectedWidget");
 		this.widgetEngine = widgetEngine;
+		refreshStylePanelValues();
+	}
+	private void refreshStylePanelValues() {
+		if(styleTabPanel != null){
+			NodeList<Element> inputList = styleTabPanel.getElement().getElementsByTagName("INPUT");
+			for(int i = 0; i < inputList.getLength(); i++)
+			{
+				String attributeName = DOM.getElementAttribute(
+					(com.google.gwt.user.client.Element) inputList.getItem(i), "attributeName");
+				String styleAttribute = DOM.getStyleAttribute(invokingWidget.getElement(), attributeName);
+				if(!attributeName.trim().isEmpty())
+					DOM.setElementProperty((com.google.gwt.user.client.Element) inputList.getItem(i), "value"
+							, styleAttribute);
+			}
+		}
 	}
 	protected void addSpecificItems()
 	{
@@ -137,11 +171,11 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		addItem("Toolbar", new Command(){
 			@Override
 			public void execute() {
-				if(tabPanelHolder == null)
-					getStyleMenu();
-				if(RootPanel.get().getWidgetIndex(tabPanelHolder) == -1)
-					RootPanel.get().insert(tabPanelHolder, 0);
-				tabPanelHolder.setVisible(true);
+				if(toolBar == null)
+					makeToolbar();
+				if(RootPanel.get().getWidgetIndex(toolBar) == -1)
+					RootPanel.get().insert(toolBar, 0);
+				toolBar.setVisible(true);
 				hideMenu();
 			}});
 		addSeparator();
@@ -161,23 +195,29 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		if(!undoStack.isEmpty())
 		{
 			addSeparator();
-			addItem("Undo", new Command(){
-				@Override
-				public void execute() {
-					undoStack.pop().execute();
-					hideMenu();
-				}});
+			addItem("Undo Ctrl+Z", getUndoCommand());
 		}
 		if(!redoStack.isEmpty())
 		{
 			addSeparator();
-			addItem("Redo", new Command(){
-				@Override
-				public void execute() {
-					redoStack.pop().execute();
-					hideMenu();
-				}});
+			addItem("Redo Ctrl+Y", getRedoCOmmand());
 		}
+	}
+	Command getRedoCOmmand() {
+		return redoCommand = redoCommand != null ? redoCommand : new Command(){
+			@Override
+			public void execute() {
+				redoStack.pop().execute();
+				hideMenu();
+			}};
+	}
+	Command getUndoCommand() {
+		return undoCommand = undoCommand != null ? undoCommand : new Command(){
+			@Override
+			public void execute() {
+				undoStack.pop().execute();
+				hideMenu();
+			}};
 	}
 	@Override
 	public HandlerRegistration addBlurHandler(BlurHandler handler) {
@@ -189,28 +229,52 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	public void setLeft(int left) {
 		this.left = left;
 	}	
-	protected AbsolutePanel getStyleMenu()
+	protected void makeToolbar()
 	{
-		tabPanelHolder = new AbsolutePanel();
+		toolBar = new AbsolutePanel();
+		toolBar.addStyleName("vkgwtdesigner-toolbar");
 		MenuBar styleMenu = new MenuBar();
-		tabPanelHolder.add(styleMenu);
-		styleMenu.addItem("<span style='font-weight: bolder;'>B</span>", true, new Command(){
+		toolBar.add(styleMenu);
+		styleMenu.addItem(getBoldMenuItem());
+		styleMenu.addItem(getItalicMenuItem());
+		styleMenu.addItem(getUnderLineMenuItem());
+		styleMenu.addItem(getBgColorPickerMenuItem());
+		styleMenu.addItem(getForeColorPickerMenuItem());
+		styleMenu.addItem(getBorderColorPickerMenuItem());
+		styleMenu.addItem(getBorderWidthPickerMenuItem());
+		styleMenu.addItem(getBorderEdgePickerMenuItem());
+		styleMenu.addItem(getTextAlignLeftMenuItem());
+		styleMenu.addItem(getTextAlignCenterMenuItem());
+		styleMenu.addItem(getTextAlignRightMenuItem());
+		styleMenu.addItem(getCopyStyleMenuItem());
+		styleTabPanel = getStyleTabPanel();
+		styleMenu.addItem(getStyleDialogMenuItem(styleTabPanel));
+		
+		styleMenu.addSeparator();
+		styleMenu.addItem("X", new Command(){
 			@Override
 			public void execute() {
-				if(!DOM.getStyleAttribute(invokingWidget.getElement(), "fontWeight").equals("bold"))
-					DOM.setStyleAttribute(invokingWidget.getElement(), "fontWeight", "bold");
-				else
-					DOM.setStyleAttribute(invokingWidget.getElement(), "fontWeight", "");
+				toolBar.setVisible(false);
 			}});
-		styleMenu.addItem("<span style='font-style: italic;'>I</span>", true, new Command(){
+	}
+	private MenuItem getCopyStyleMenuItem() {
+		final MenuBar menuBar = new MenuBar(){
+			public void onLoad()
+			{
+				super.onLoad();
+				DOM.setStyleAttribute(getElement(), "visibility", "hidden");
+			}
+		};
+		menuBar.addAttachHandler(new AttachEvent.Handler(){
 			@Override
-			public void execute() {
-				if(!DOM.getStyleAttribute(invokingWidget.getElement(), "fontStyle").equals("italic"))
-					DOM.setStyleAttribute(invokingWidget.getElement(), "fontStyle", "italic");
-				else
-					DOM.setStyleAttribute(invokingWidget.getElement(), "fontStyle", "");
+			public void onAttachOrDetach(AttachEvent event) {
+				Window.alert("1");
 			}});
-		styleMenu.addItem("<span style='text-decoration: underline;'>U</span>", true, new Command(){
+		MenuItem copyStyleMenuItem = new MenuItem("CS", menuBar);
+		return copyStyleMenuItem;
+	}
+	private MenuItem getUnderLineMenuItem() {
+		return new MenuItem("<span style='text-decoration: underline;'>U</span>", true, new Command(){
 			@Override
 			public void execute() {
 				if(!DOM.getStyleAttribute(invokingWidget.getElement(), "textDecoration").equals("underline"))
@@ -218,54 +282,29 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				else
 					DOM.setStyleAttribute(invokingWidget.getElement(), "textDecoration", "");
 			}});
-		final TabPanel styleTabPanel = getStyleTabPanel();
-		tabPanelHolder.add(styleTabPanel);
-		styleMenu.addItem(getBgColorPickerMenuItem());
-		styleMenu.addItem(getForeColorPickerMenuItem());
-		styleMenu.addItem(getBorderColorPickerMenuItem());
-		styleMenu.addItem(getBorderWidthPickerMenuItem());
-		styleMenu.addItem(getBorderEdgePickerMenuItem());
-		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPPhaNhOBqGIzsMRwHpAACk/ke5B2guPwAAAABJRU5ErkJggg=='>"
-				, true, new Command(){
-					@Override
-					public void execute() {
-						final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "textAlign");
-						final Widget widget = invokingWidget;
-						new Command(){
-							private final Command redoCommand = this;
-							@Override
-							public void execute() {
-								DOM.setStyleAttribute(widget.getElement(), "textAlign", "left");
-								undoStack.push(new Command(){
-									@Override
-									public void execute() {
-										DOM.setStyleAttribute(widget.getElement(), "textAlign", prior);
-										redoStack.push(redoCommand);
-									}});
-							}}.execute();
-					}
-		}));
-		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPXpaNhOBqGIzMMRwHpAAC130e5KyRN6AAAAABJRU5ErkJggg=='>"
-				, true, new Command(){
-					@Override
-					public void execute() {
-						final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "textAlign");
-						final Widget widget = invokingWidget;
-						new Command(){
-							private final Command redoCommand = this;
-							@Override
-							public void execute() {
-								DOM.setStyleAttribute(widget.getElement(), "textAlign", "center");
-								undoStack.push(new Command(){
-									@Override
-									public void execute() {
-										DOM.setStyleAttribute(widget.getElement(), "textAlign", prior);
-										redoStack.push(redoCommand);
-									}});
-							}}.execute();
-					}
-		}));
-		styleMenu.addItem(new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPfxaNhOBqGIysMRwHpAADGwEe5v4tWjAAAAABJRU5ErkJggg=='>"
+	}
+	private MenuItem getItalicMenuItem() {
+		return new MenuItem("<span style='font-style: italic;'>I</span>", true, new Command(){
+			@Override
+			public void execute() {
+				if(!DOM.getStyleAttribute(invokingWidget.getElement(), "fontStyle").equals("italic"))
+					DOM.setStyleAttribute(invokingWidget.getElement(), "fontStyle", "italic");
+				else
+					DOM.setStyleAttribute(invokingWidget.getElement(), "fontStyle", "");
+			}});
+	}
+	private MenuItem getBoldMenuItem() {
+		return new MenuItem("<span style='font-weight: bolder;'>B</span>", true, new Command(){
+			@Override
+			public void execute() {
+				if(!DOM.getStyleAttribute(invokingWidget.getElement(), "fontWeight").equals("bold"))
+					DOM.setStyleAttribute(invokingWidget.getElement(), "fontWeight", "bold");
+				else
+					DOM.setStyleAttribute(invokingWidget.getElement(), "fontWeight", "");
+			}});
+	}
+	private MenuItem getTextAlignRightMenuItem() {
+		return new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPfxaNhOBqGIysMRwHpAADGwEe5v4tWjAAAAABJRU5ErkJggg=='>"
 				, true, new Command(){
 					@Override
 					public void execute() {
@@ -284,46 +323,71 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 									}});
 							}}.execute();
 					}
-		}));
-		undoItem = styleMenu.addItem("Undo", (Command)null);
-		undoItem.setCommand(new Command(){
+		});
+	}
+	private MenuItem getTextAlignCenterMenuItem() {
+		return new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPXpaNhOBqGIzMMRwHpAAC130e5KyRN6AAAAABJRU5ErkJggg=='>"
+				, true, new Command(){
+					@Override
+					public void execute() {
+						final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "textAlign");
+						final Widget widget = invokingWidget;
+						new Command(){
+							private final Command redoCommand = this;
+							@Override
+							public void execute() {
+								DOM.setStyleAttribute(widget.getElement(), "textAlign", "center");
+								undoStack.push(new Command(){
+									@Override
+									public void execute() {
+										DOM.setStyleAttribute(widget.getElement(), "textAlign", prior);
+										redoStack.push(redoCommand);
+									}});
+							}}.execute();
+					}
+		});
+	}
+	private MenuItem getTextAlignLeftMenuItem() {
+		return new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPPhaNhOBqGIzsMRwHpAACk/ke5B2guPwAAAABJRU5ErkJggg=='>"
+				, true, new Command(){
+					@Override
+					public void execute() {
+						final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "textAlign");
+						final Widget widget = invokingWidget;
+						new Command(){
+							private final Command redoCommand = this;
+							@Override
+							public void execute() {
+								DOM.setStyleAttribute(widget.getElement(), "textAlign", "left");
+								undoStack.push(new Command(){
+									@Override
+									public void execute() {
+										DOM.setStyleAttribute(widget.getElement(), "textAlign", prior);
+										redoStack.push(redoCommand);
+									}});
+							}}.execute();
+					}
+		});
+	}
+	private MenuItem getStyleDialogMenuItem(final TabPanel styleTabPanel) {
+		final MenuItem styleMenu = new MenuItem("SM", (Command)null);
+		final PopupPanel stylePickerPopPanel = new PopupPanel();
+		DOM.setStyleAttribute(stylePickerPopPanel.getElement(), "zIndex", Integer.MAX_VALUE + "");
+		styleMenu.setCommand(new Command(){
 			@Override
 			public void execute() {
-				undoStack.pop().execute();
-				if(undoStack.isEmpty())
-					undoItem.setEnabled(false);
+				if(stylePickerPopPanel.getWidget() == null){
+					stylePickerPopPanel.setWidget(styleTabPanel);
+					stylePickerPopPanel.showRelativeTo(styleMenu);
+				}
+				else if(stylePickerPopPanel.isShowing())
+					stylePickerPopPanel.hide();
 				else
-					undoItem.setEnabled(true);
-			}});
-		if(undoStack.isEmpty())
-			undoItem.setEnabled(false);
-		else
-			undoItem.setEnabled(true);
-		redoItem = styleMenu.addItem("Redo", (Command)null);
-		redoItem.setCommand(new Command(){
-			@Override
-			public void execute() {
-				redoStack.pop().execute();
-				if(redoStack.isEmpty())
-					redoItem.setEnabled(false);
-				else
-					redoItem.setEnabled(true);
-			}});
-		if(redoStack.isEmpty())
-			redoItem.setEnabled(false);
-		else
-			redoItem.setEnabled(true);
-		styleMenu.addItem("V", new Command(){
-			@Override
-			public void execute() {
-				styleTabPanel.setVisible(!styleTabPanel.isVisible());
-			}});
-		styleMenu.addItem("X", new Command(){
-			@Override
-			public void execute() {
-				tabPanelHolder.setVisible(false);
-			}});
-		return tabPanelHolder;
+					stylePickerPopPanel.show();
+			}
+		});
+		styleMenu.setTitle("Detailed Style Dialog");
+		return styleMenu;
 	}
 	private MenuItem getBorderEdgePickerMenuItem() {
 		MenuBar borderEdgeMenu = new MenuBar(true);
@@ -531,23 +595,13 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		});
 		return foreColorPicker;
 	}
+	@SuppressWarnings("deprecation")
 	protected TabPanel getStyleTabPanel() {
-		final TabPanel styleTabPanel = new TabPanel(){
-			@Override
-			public void setVisible(boolean visible)
-			{
-				super.setVisible(visible);
-				if(visible)
-				{
-					clear();
-					refreshStylePanel(this);
-				}
-			}
-		};
+		final TabPanel styleTabPanel = new TabPanel();
 		refreshStylePanel(styleTabPanel);
-		styleTabPanel.setVisible(false);
 		return styleTabPanel;
 	}
+	@SuppressWarnings("deprecation")
 	private void refreshStylePanel(TabPanel styleTabPanel) {
 		styleTabPanel.setPixelSize(500, 250);
 		Panel panel = addDecorationPanel();
@@ -570,12 +624,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		VerticalPanel colorVPanel = new VerticalPanel();
 		scrollColorHolderPanel.add(colorVPanel);
 		colorVPanel.setWidth("100%");
-		colorVPanel.add(addStyleAttribute(invokingWidget, "Color","color"));
-		colorVPanel.add(addStyleAttribute(invokingWidget, "Background Color","backgroundColor"));
-		colorVPanel.add(addStyleAttribute(invokingWidget, "Background Image","backgroundImage"));
-		colorVPanel.add(addStyleAttribute(invokingWidget, "Background Position","backgroundPosition"));
-		colorVPanel.add(addStyleAttribute(invokingWidget, "Background Repeat","backgroundRepeat"));
-		colorVPanel.add(addStyleAttribute(invokingWidget, "Background Attachment","backgroundAttachment"));
+		colorVPanel.add(addStyleAttribute("Color","color"));
+		colorVPanel.add(addStyleAttribute("Background Color","backgroundColor"));
+		colorVPanel.add(addStyleAttribute("Background Image","backgroundImage"));
+		colorVPanel.add(addStyleAttribute("Background Position","backgroundPosition"));
+		colorVPanel.add(addStyleAttribute("Background Repeat","backgroundRepeat"));
+		colorVPanel.add(addStyleAttribute("Background Attachment","backgroundAttachment"));
 		return scrollColorHolderPanel;
 	}
 	private ScrollPanel addDecorationPanel() {
@@ -583,15 +637,15 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		VerticalPanel decorationVPanel = new VerticalPanel();
 		scrollDecorationHolderPanel.add(decorationVPanel);
 		decorationVPanel.setWidth("100%");
-		decorationVPanel.add(addStyleAttribute(invokingWidget, "Bottom Border","borderBottom"));
-		decorationVPanel.add(addStyleAttribute(invokingWidget, "Top Border","borderTop"));
-		decorationVPanel.add(addStyleAttribute(invokingWidget, "Left Border","borderLeft"));
-		decorationVPanel.add(addStyleAttribute(invokingWidget, "Right Border","borderRight"));
-		decorationVPanel.add(addStyleAttribute(invokingWidget, "Padding","padding"));
-		decorationVPanel.add(addStyleAttribute(invokingWidget, "Margin","margin"));
-		decorationVPanel.add(addStyleAttribute(invokingWidget, "Outline Color","outlineColor"));
-		decorationVPanel.add(addStyleAttribute(invokingWidget, "Outline Style","outlineStyle"));
-		decorationVPanel.add(addStyleAttribute(invokingWidget, "Outline Width","outlineWidth"));
+		decorationVPanel.add(addStyleAttribute("Bottom Border","borderBottom"));
+		decorationVPanel.add(addStyleAttribute("Top Border","borderTop"));
+		decorationVPanel.add(addStyleAttribute("Left Border","borderLeft"));
+		decorationVPanel.add(addStyleAttribute("Right Border","borderRight"));
+		decorationVPanel.add(addStyleAttribute("Padding","padding"));
+		decorationVPanel.add(addStyleAttribute("Margin","margin"));
+		decorationVPanel.add(addStyleAttribute("Outline Color","outlineColor"));
+		decorationVPanel.add(addStyleAttribute("Outline Style","outlineStyle"));
+		decorationVPanel.add(addStyleAttribute("Outline Width","outlineWidth"));
 		return scrollDecorationHolderPanel;
 	}
 	private ScrollPanel addFontPanel() {
@@ -599,23 +653,23 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		VerticalPanel fontVPanel = new VerticalPanel();
 		scrollFontHolderPanel.add(fontVPanel);
 		fontVPanel.setWidth("100%");
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Font Size", "fontSize"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Font Family","fontFamily"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Font Stretch","fontStretch"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Font Style","fontStyle"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Font Variant","fontVariant"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Font Weight","fontWeight"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Text Align","textAlign"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Text Decoration","textDecoration"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Text Decoration","textDecoration"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Text Indent","textIndent"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Text Shadow","textShadow"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Text Transform","textTransform"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Vertical Align","verticalAlign"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Word Spacing","wordSpacing"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Line Height","lineHeight"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Letter Spacing","letterSpacing"));
-		fontVPanel.add(addStyleAttribute(invokingWidget, "Word Spacing","wordSpacing"));
+		fontVPanel.add(addStyleAttribute("Font Size", "fontSize"));
+		fontVPanel.add(addStyleAttribute("Font Family","fontFamily"));
+		fontVPanel.add(addStyleAttribute("Font Stretch","fontStretch"));
+		fontVPanel.add(addStyleAttribute("Font Style","fontStyle"));
+		fontVPanel.add(addStyleAttribute("Font Variant","fontVariant"));
+		fontVPanel.add(addStyleAttribute("Font Weight","fontWeight"));
+		fontVPanel.add(addStyleAttribute("Text Align","textAlign"));
+		fontVPanel.add(addStyleAttribute("Text Decoration","textDecoration"));
+		fontVPanel.add(addStyleAttribute("Text Decoration","textDecoration"));
+		fontVPanel.add(addStyleAttribute("Text Indent","textIndent"));
+		fontVPanel.add(addStyleAttribute("Text Shadow","textShadow"));
+		fontVPanel.add(addStyleAttribute("Text Transform","textTransform"));
+		fontVPanel.add(addStyleAttribute("Vertical Align","verticalAlign"));
+		fontVPanel.add(addStyleAttribute("Word Spacing","wordSpacing"));
+		fontVPanel.add(addStyleAttribute("Line Height","lineHeight"));
+		fontVPanel.add(addStyleAttribute("Letter Spacing","letterSpacing"));
+		fontVPanel.add(addStyleAttribute("Word Spacing","wordSpacing"));
 		return scrollFontHolderPanel;
 	}
 	private Panel addMiscellaneousPanel() {
@@ -623,20 +677,20 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		VerticalPanel miscellaneousVPanel = new VerticalPanel();
 		scrollMiscellaneousHolderPanel.add(miscellaneousVPanel);
 		miscellaneousVPanel.setWidth("100%");
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Width","width"));
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Height","height"));
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Cursor","cursor"));
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Display","display"));
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Visibility","visibility"));
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Overflow X","overflowX"));
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Overflow Y","overflowY"));
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Z Index","zIndex"));
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Opacity","opacity"));
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "Filter(IE)","filter"));
-		miscellaneousVPanel.add(addStyleAttribute(invokingWidget, "border-collapse(table only)","borderCollapse"));
+		miscellaneousVPanel.add(addStyleAttribute("Width","width"));
+		miscellaneousVPanel.add(addStyleAttribute("Height","height"));
+		miscellaneousVPanel.add(addStyleAttribute("Cursor","cursor"));
+		miscellaneousVPanel.add(addStyleAttribute("Display","display"));
+		miscellaneousVPanel.add(addStyleAttribute("Visibility","visibility"));
+		miscellaneousVPanel.add(addStyleAttribute("Overflow X","overflowX"));
+		miscellaneousVPanel.add(addStyleAttribute("Overflow Y","overflowY"));
+		miscellaneousVPanel.add(addStyleAttribute("Z Index","zIndex"));
+		miscellaneousVPanel.add(addStyleAttribute("Opacity","opacity"));
+		miscellaneousVPanel.add(addStyleAttribute("Filter(IE)","filter"));
+		miscellaneousVPanel.add(addStyleAttribute("border-collapse(table only)","borderCollapse"));
 		return scrollMiscellaneousHolderPanel;
 	}
-	private Panel addStyleAttribute(Widget invokingWidget, String displayName, String attributeName)
+	private Panel addStyleAttribute(String displayName, String attributeName)
 {
 	HorizontalPanel styleAttribute = new HorizontalPanel();
 	styleAttribute.setWidth("100%");
@@ -645,6 +699,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	DOM.setStyleAttribute(styleAttribute.getElement(), "padding", "2px 0px");
 	
 	final TextBox styleAttributeTextBox = new TextBox();
+	DOM.setElementAttribute(styleAttributeTextBox.getElement(), "attributeName", attributeName);
 	styleAttribute.add(styleAttributeTextBox);
 	addChangeListenerToWidget(attributeName, styleAttributeTextBox);
 	try{//IE throws an exception when it is queried about zIndex - GWT Bug 5548
@@ -731,8 +786,8 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				public void execute() {
 					final Widget widget = VkDesignerUtil.getEngine().getWidget(selectedMenuItem.getText());
 					final Widget panelWidget = invokingWidget;
-					final int top = VkMenu.this.top;
-					final int left = VkMenu.this.left;
+					final int top = VkMenu.this.top	- panelWidget.getAbsoluteTop();
+					final int left = VkMenu.this.left - panelWidget.getAbsoluteLeft();
 					new Command(){
 						private final Command redoCommand = this;
 						@Override
@@ -778,10 +833,27 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			Command widgetClickedCommand = new Command() {
 				@Override
 				public void execute() {
-					Widget widget = null;
-					widget = VkDesignerUtil.getEngine().getWidget(selectedMenuItem.getText());
-					if(widget != null)//cast is safe because the restriction on widgets,  if any, is placed by menu while it shows widget list
-						VkDesignerUtil.addWidget(widget, (IPanel)invokingWidget, VkMenu.this.top, VkMenu.this.left);
+					final Widget widget = VkDesignerUtil.getEngine().getWidget(selectedMenuItem.getText());
+					final Widget panelWidget = invokingWidget;
+					final int top = VkMenu.this.top - panelWidget.getAbsoluteTop();
+					final int left = VkMenu.this.left - panelWidget.getAbsoluteLeft();
+					new Command(){
+						private final Command redoCommand = this;
+						@Override
+						public void execute() {
+							if(widget != null)//cast is safe because the restriction on widgets,  if any, is placed by menu while it shows widget list
+							{
+								VkDesignerUtil.addWidget(widget, (IPanel)panelWidget, top, left);
+								invokingWidget = widget;
+							}
+							undoStack.push(new Command(){
+								@Override
+								public void execute() {
+									if(widget != null)
+										widget.removeFromParent();
+									redoStack.push(redoCommand);
+								}});
+					}}.execute();
 					hideMenu();
 				}
 			};
@@ -799,7 +871,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		operationsMenu.setStyleName("vkgwtdesigner-vertical-menu");
 		for (int i = 0; i < operationsList.size(); i++) 
 		{
-			if(operationsList.get(i).equals(VkEngine.REMOVE))
+			if(operationsList.get(i).equals(IEngine.REMOVE))
 			{
 				operationsMenu.addItem(operationsList.get(i), new Command(){
 					@Override
@@ -824,7 +896,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						}}.execute();
 					}});
 			}
-			else if(operationsList.get(i).equals(VkEngine.RESIZE))
+			else if(operationsList.get(i).equals(IEngine.RESIZE))
 			{
 				operationsMenu.addItem(operationsList.get(i), new Command(){
 					@Override
@@ -838,8 +910,9 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						boolean isAttached = invokingWidget.isAttached();
 						boolean isPopUpMenuBar = invokingWidget instanceof VkMenuBarVertical;
 						//when menubars are added as submenus then on pressing resize they vanish which leads to top and left being evaluated to 0
-						final int top = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getTop() : invokingWidget.getElement().getOffsetTop();
-						final int left = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getLeft() : invokingWidget.getElement().getOffsetLeft();
+						final int top = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getTop() : 
+							(invokingWidget.getElement().getAbsoluteTop() - VkDesignerUtil.getDrawingPanel().getElement().getOffsetTop());
+						final int left = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getLeft() : invokingWidget.getElement().getAbsoluteLeft();
 						DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
 						DOM.setStyleAttribute(draggingWidget.getElement(), "left", left + "px");
 						DOM.setCapture(draggingWidget.getElement());
@@ -904,16 +977,15 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						hideMenu();
 					}});
 			}
-			else if(operationsList.get(i).equals(VkEngine.COPY))
+			else if(operationsList.get(i).equals(IEngine.CUT))
 			{
-				operationsMenu.addItem(operationsList.get(i), new Command(){
-					@Override
-					public void execute() {
-						copyWidget = (IVkWidget)invokingWidget;
-					}
-				});
+				operationsMenu.addItem(operationsList.get(i) + " Ctrl+X", getCutCommand());
 			}
-			else if(operationsList.get(i).equals(VkEngine.COPY_STYLE))
+			else if(operationsList.get(i).equals(IEngine.COPY))
+			{
+				operationsMenu.addItem(operationsList.get(i) + " Ctrl+C", getCopyCommand());
+			}
+			else if(operationsList.get(i).equals(IEngine.COPY_STYLE))
 			{
 				operationsMenu.addItem(operationsList.get(i), new Command(){
 					@Override
@@ -922,7 +994,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					}
 				});
 			}
-			else if(operationsList.get(i).equals(VkEngine.PASTE_STYLE))
+			else if(operationsList.get(i).equals(IEngine.PASTE_STYLE))
 			{
 				operationsMenu.addItem(operationsList.get(i), new Command(){
 					@Override
@@ -935,25 +1007,11 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					}
 				});
 			}
-			else if(operationsList.get(i).equals(VkEngine.PASTE))
+			else if(operationsList.get(i).equals(IEngine.PASTE))
 			{
-				operationsMenu.addItem(operationsList.get(i), new Command(){
-					@Override
-					public void execute() {
-						if(copyWidget != null)
-						{
-							Widget widget = VkDesignerUtil.getEngine().getWidget((copyWidget).getWidgetName());
-							VkDesignerUtil.isDesignerMode = false;
-							VkDesignerUtil.getEngineMap().get(copyWidget.getWidgetName()).deepClone((Widget)copyWidget, widget);
-							VkDesignerUtil.isDesignerMode = true;
-							VkDesignerUtil.addWidget(widget , ((IPanel)invokingWidget), VkMenu.this.top, VkMenu.this.left);
-						}
-						else
-							Window.alert("Cannot paste as no widget is copied");
-					}
-				});
+				operationsMenu.addItem(operationsList.get(i) + " Ctrl+V", getPasteCommand());
 			}
-			else if(operationsList.get(i).equals(VkEngine.SAVE))
+			else if(operationsList.get(i).equals(IEngine.SAVE))
 			{
 				operationsMenu.addItem(operationsList.get(i), new Command(){
 					@Override
@@ -979,7 +1037,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					}
 				});
 			}
-			else if(operationsList.get(i).equals(VkEngine.LOAD))
+			else if(operationsList.get(i).equals(IEngine.LOAD))
 			{
 				operationsMenu.addItem(operationsList.get(i), new Command(){
 					@Override
@@ -1027,12 +1085,51 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		return operationsMenu;
 	}	
 
+	Command getCopyCommand() {
+		return copyCommand = copyCommand != null ? copyCommand :  new Command(){
+			@Override
+			public void execute() {
+				copyWidget = (IVkWidget)invokingWidget;
+			}
+		};
+	}
+	Command getCutCommand(){
+		return cutCommand = cutCommand != null ? cutCommand :  new Command(){
+			@Override
+			public void execute() {
+				getCopyCommand().execute();
+			}
+		};
+	};
+	Command getPasteCommand() {
+		return pasteCommand = pasteCommand != null ? pasteCommand : new Command(){
+			@Override
+			public void execute() {
+				if(copyWidget != null)
+				{
+					Widget widget = VkDesignerUtil.getEngine().getWidget((copyWidget).getWidgetName());
+					VkDesignerUtil.isDesignerMode = false;
+					VkDesignerUtil.getEngineMap().get(copyWidget.getWidgetName()).deepClone((Widget)copyWidget, widget);
+					VkDesignerUtil.isDesignerMode = true;
+					if(invokingWidget instanceof Panel)
+						if(VkMenu.this.top > 0 && VkMenu.this.left > 0)
+							VkDesignerUtil.addWidget(widget , ((IPanel)invokingWidget)
+								, VkMenu.this.top - invokingWidget.getAbsoluteTop()
+									, VkMenu.this.left - invokingWidget.getAbsoluteTop());
+						else
+							VkDesignerUtil.addWidget(widget , ((IPanel)invokingWidget));
+					else
+						Window.alert("Only a panel allows pasting a widget");
+				}
+			}
+		};
+	}
 	protected void hideMenu() {
 		if(invokingWidget != null)
 		{
-			this.top = getElement().getOffsetTop() - VkDesignerUtil.getCumulativeTop(invokingWidget.getElement());
+			this.top = getElement().getAbsoluteTop();
 			this.top = this.top - (this.top % VkDesignerUtil.SNAP_TO_FIT_TOP);
-			this.left = getElement().getOffsetLeft() - VkDesignerUtil.getCumulativeLeft(invokingWidget.getElement());
+			this.left = getElement().getAbsoluteLeft();
 			this.left = this.left - (this.left % VkDesignerUtil.SNAP_TO_FIT_LEFT);
 		}
 		VkMenu.this.setVisible(false);

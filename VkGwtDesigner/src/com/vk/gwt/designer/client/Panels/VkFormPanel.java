@@ -41,15 +41,19 @@ HasVkUrl, HasVkFormEncoding{
 	public void addSubmitCompleteHandler(String js) {
 		if(submitCompleteHandler != null)
 			submitCompleteHandler.removeHandler();
-		submitCompleteJs = js;
-		submitCompleteHandler = addSubmitCompleteHandler(new SubmitCompleteHandler() {
-			@Override
-			public void onSubmitComplete(SubmitCompleteEvent event) {
-				Map<String, String> eventproperties = new HashMap<String, String>();
-				eventproperties.put("resultHtml", event.getResults());
-				VkDesignerUtil.executeEvent(submitCompleteJs, eventproperties);
-			}
-		});
+		submitCompleteHandler = null;
+		submitCompleteJs = js.trim();
+		if(!submitCompleteJs.isEmpty())
+		{
+			submitCompleteHandler = addSubmitCompleteHandler(new SubmitCompleteHandler() {
+				@Override
+				public void onSubmitComplete(SubmitCompleteEvent event) {
+					Map<String, String> eventproperties = new HashMap<String, String>();
+					eventproperties.put("resultHtml", event.getResults());
+					VkDesignerUtil.executeEvent(submitCompleteJs, eventproperties);
+				}
+			});
+		}
 	}
 	@Override
 	public void addSubmitHandler(String js) {

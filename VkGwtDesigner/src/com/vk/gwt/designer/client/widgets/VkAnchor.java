@@ -28,8 +28,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.HasDirection;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
@@ -37,8 +37,6 @@ import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkDirection;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
-import com.vk.gwt.designer.client.api.attributes.HasVkTarget;
-import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
@@ -51,15 +49,15 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
+import com.vk.gwt.designer.client.api.attributes.HasVkTarget;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.attributes.HasVkUrl;
 import com.vk.gwt.designer.client.api.attributes.HasVkWordWrap;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkAnchor extends Anchor implements IVkWidget, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler
-, HasVkHorizontalAlignment,HasVkName, HasVkHtml, HasVkText, HasVkWordWrap, HasVkDirection, HasVkAccessKey, HasVkTabIndex, HasVkUrl, HasVkTarget{
+, HasVkName, HasVkHtml, HasVkText, HasVkWordWrap, HasVkDirection, HasVkAccessKey, HasVkTabIndex, HasVkUrl, HasVkTarget{
 	public static final String NAME = "Anchor";
 	private HandlerRegistration clickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
@@ -91,145 +89,193 @@ public class VkAnchor extends Anchor implements IVkWidget, HasVkAllKeyHandlers, 
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)
 			clickHandlerRegistration.removeHandler();
-		clickJs = js;
-		clickHandlerRegistration = addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				VkDesignerUtil.executeEvent(clickJs, event);
-			}
-		});
+		clickHandlerRegistration = null;
+		clickJs  = js.trim();
+		if(!clickJs.isEmpty())
+		{
+			clickHandlerRegistration = addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					VkDesignerUtil.executeEvent(clickJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseDownHandler(String js) {
 		if(mouseDownHandlerRegistration != null)
 			mouseDownHandlerRegistration.removeHandler();
-		mouseDownJs = js;
-		mouseDownHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
-			@Override
-			public void onMouseDown(MouseDownEvent event) {
-				VkDesignerUtil.executeEvent(mouseDownJs, event);
-			}
-		});
+		mouseDownHandlerRegistration = null;
+		mouseDownJs = js.trim();
+		if(!mouseDownJs.isEmpty())
+		{
+			mouseDownHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
+				@Override
+				public void onMouseDown(MouseDownEvent event) {
+					VkDesignerUtil.executeEvent(mouseDownJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseUpHandler(String js) {
 		if(mouseUpHandlerRegistration != null)
 			mouseUpHandlerRegistration.removeHandler();
-		mouseUpJs = js;
-		mouseUpHandlerRegistration = addMouseUpHandler(new MouseUpHandler() {
-			@Override
-			public void onMouseUp(MouseUpEvent event) {
-				VkDesignerUtil.executeEvent(mouseUpJs, event);
-			}
-		});
+		mouseUpHandlerRegistration = null;
+		mouseUpJs = js.trim();
+		if(!mouseUpJs.isEmpty())
+		{
+			mouseUpHandlerRegistration = addMouseUpHandler(new MouseUpHandler() {
+				@Override
+				public void onMouseUp(MouseUpEvent event) {
+					VkDesignerUtil.executeEvent(mouseUpJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseMoveHandler(String js) {
 		if(mouseMoveHandlerRegistration != null)
 			mouseMoveHandlerRegistration.removeHandler();
-		mouseMoveJs = js;
-		mouseMoveHandlerRegistration = addMouseMoveHandler(new MouseMoveHandler() {
-			@Override
-			public void onMouseMove(MouseMoveEvent event) {
-				VkDesignerUtil.executeEvent(mouseMoveJs, event);
-			}
-		});
+		mouseMoveHandlerRegistration = null;
+		mouseMoveJs = js.trim();
+		if(!mouseMoveJs.isEmpty())
+		{
+			mouseMoveHandlerRegistration = addMouseMoveHandler(new MouseMoveHandler() {
+				@Override
+				public void onMouseMove(MouseMoveEvent event) {
+					VkDesignerUtil.executeEvent(mouseMoveJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseOverHandler(String js) {
 		if(mouseOverHandlerRegistration != null)
 			mouseOverHandlerRegistration.removeHandler();
-		mouseOverJs = js;
-		mouseOverHandlerRegistration = addMouseOverHandler(new MouseOverHandler() {
-			@Override
-			public void onMouseOver(MouseOverEvent event) {
-				VkDesignerUtil.executeEvent(mouseOverJs, event);
-			}
-		});
+		mouseOverHandlerRegistration = null;
+		mouseOverJs = js.trim();
+		if(!mouseOverJs.isEmpty())
+		{
+			mouseOverHandlerRegistration = addMouseOverHandler(new MouseOverHandler() {
+				@Override
+				public void onMouseOver(MouseOverEvent event) {
+					VkDesignerUtil.executeEvent(mouseOverJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseOutHandler(String js) {
 		if(mouseOutHandlerRegistration != null)
 			mouseOutHandlerRegistration.removeHandler();
-		mouseOutJs = js;
-		mouseOutHandlerRegistration = addMouseOutHandler(new MouseOutHandler() {
-			@Override
-			public void onMouseOut(MouseOutEvent event) {
-				VkDesignerUtil.executeEvent(mouseOutJs, event);
-			}
-		});
+		mouseOutHandlerRegistration = null;
+		mouseOutJs = js.trim();
+		if(!mouseOutJs.isEmpty())
+		{
+			mouseOutHandlerRegistration = addMouseOutHandler(new MouseOutHandler() {
+				@Override
+				public void onMouseOut(MouseOutEvent event) {
+					VkDesignerUtil.executeEvent(mouseOutJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addMouseWheelHandler(String js) {
 		if(mouseWheelHandlerRegistration != null)
 			mouseWheelHandlerRegistration.removeHandler();
-		mouseWheelJs = js;
-		mouseWheelHandlerRegistration = addMouseWheelHandler(new MouseWheelHandler() {
-			@Override
-			public void onMouseWheel(MouseWheelEvent event) {
-				VkDesignerUtil.executeEvent(mouseWheelJs, event);
-			}
-		});
+		mouseWheelHandlerRegistration = null;
+		mouseWheelJs = js.trim();
+		if(!mouseWheelJs.isEmpty())
+		{
+			mouseWheelHandlerRegistration = addMouseWheelHandler(new MouseWheelHandler() {
+				@Override
+				public void onMouseWheel(MouseWheelEvent event) {
+					VkDesignerUtil.executeEvent(mouseWheelJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addKeyDownHandler(String js) {
 		if(keyDownHandlerRegistration != null)
 			keyDownHandlerRegistration.removeHandler();
-		keyDownJs = js;
-		keyDownHandlerRegistration = addKeyDownHandler(new KeyDownHandler() {
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				VkDesignerUtil.executeEvent(keyDownJs, event);
-			}
-		});
+		keyDownHandlerRegistration = null;
+		keyDownJs = js.trim();
+		if(!keyDownJs.isEmpty())
+		{
+			keyDownHandlerRegistration = addKeyDownHandler(new KeyDownHandler() {
+				@Override
+				public void onKeyDown(KeyDownEvent event) {
+					VkDesignerUtil.executeEvent(keyDownJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addKeyUpHandler(String js) {
 		if(keyUpHandlerRegistration != null)
 			keyUpHandlerRegistration.removeHandler();
-		keyUpJs = js;
-		keyUpHandlerRegistration = addKeyUpHandler(new KeyUpHandler() {
-			@Override
-			public void onKeyUp(KeyUpEvent event) {
-				VkDesignerUtil.executeEvent(keyUpJs, event);
-			}
-		});
+		keyUpHandlerRegistration = null;
+		keyUpJs = js.trim();
+		if(!keyUpJs.isEmpty())
+		{
+			keyUpHandlerRegistration = addKeyUpHandler(new KeyUpHandler() {
+				@Override
+				public void onKeyUp(KeyUpEvent event) {
+					VkDesignerUtil.executeEvent(keyUpJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addKeyPressHandler(String js) {
 		if(keyPressHandlerRegistration != null)
 			keyPressHandlerRegistration.removeHandler();
-		keyPressJs = js;
-		keyPressHandlerRegistration = addKeyPressHandler(new KeyPressHandler() {
-			@Override
-			public void onKeyPress(KeyPressEvent event) {
-				VkDesignerUtil.executeEvent(keyPressJs, event);
-			}
-		});
+		keyPressHandlerRegistration = null;
+		keyPressJs = js.trim();
+		if(!keyPressJs.isEmpty())
+		{
+			keyPressHandlerRegistration = addKeyPressHandler(new KeyPressHandler() {
+				@Override
+				public void onKeyPress(KeyPressEvent event) {
+					VkDesignerUtil.executeEvent(keyPressJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addFocusHandler(String js) {
 		if(focusHandlerRegistration != null)
 			focusHandlerRegistration.removeHandler();
-		focusJs = js;
-		focusHandlerRegistration = addFocusHandler(new FocusHandler() {
-			@Override
-			public void onFocus(FocusEvent event) {
-				VkDesignerUtil.executeEvent(focusJs, event);
-			}
-		});
+		focusHandlerRegistration = null;
+		focusJs = js.trim();
+		if(!focusJs.isEmpty())
+		{
+			focusHandlerRegistration = addFocusHandler(new FocusHandler() {
+				@Override
+				public void onFocus(FocusEvent event) {
+					VkDesignerUtil.executeEvent(focusJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public void addBlurHandler(String js) {
 		if(blurHandlerRegistration != null)
 			blurHandlerRegistration.removeHandler();
-		blurJs = js;
-		blurHandlerRegistration = addBlurHandler(new BlurHandler() {
-			@Override
-			public void onBlur(BlurEvent event) {
-				VkDesignerUtil.executeEvent(blurJs, event);
-			}
-		});
+		blurHandlerRegistration = null;
+		blurJs = js.trim();
+		if(!blurJs.isEmpty())
+		{
+			blurHandlerRegistration = addBlurHandler(new BlurHandler() {
+				@Override
+				public void onBlur(BlurEvent event) {
+					VkDesignerUtil.executeEvent(blurJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public String getPriorJs(String eventName) {
@@ -285,26 +331,6 @@ public class VkAnchor extends Anchor implements IVkWidget, HasVkAllKeyHandlers, 
 	@Override
 	public String getWidgetName() {
 		return NAME;
-	}
-	@Override
-	public String getHorizontalAlignmentString()
-	{
-		if(getHorizontalAlignment() != null)
-			return getHorizontalAlignment().getTextAlignString();
-		else
-			return "left";
-	}
-	@Override
-	public void setHorizontalAlignment(String horizontalAlignment) {
-		if(horizontalAlignment.equals(Label.ALIGN_CENTER.getTextAlignString()))
-			setHorizontalAlignment(Label.ALIGN_CENTER);
-		else if(horizontalAlignment.equals(Label.ALIGN_LEFT.getTextAlignString()))
-			setHorizontalAlignment(Label.ALIGN_LEFT);
-		else if(horizontalAlignment.equals(Label.ALIGN_RIGHT.getTextAlignString()))
-			setHorizontalAlignment(Label.ALIGN_RIGHT);
-		else
-			Window.alert("direction can only take one of the following values: " + Label.ALIGN_CENTER.getTextAlignString() + "," 
-				+ Label.ALIGN_LEFT.getTextAlignString() + "," +	Label.ALIGN_RIGHT.getTextAlignString());
 	}
 	@Override
 	public String getDirectionString()

@@ -330,15 +330,19 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	public void addClickHandler(String js) {
 		if(clickHandlerRegistration != null)
 			clickHandlerRegistration.removeHandler();
-		clickJs = js;
-		clickHandlerRegistration = addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				Cell cell = getCellForEvent(event);
-				setUpCellCallingEvent(cell.getRowIndex(), cell.getCellIndex());
-				VkDesignerUtil.executeEvent(clickJs, event);
-			}			
-		});
+		clickHandlerRegistration = null;
+		clickJs = js.trim();
+		if(!clickJs.isEmpty())
+		{
+			clickHandlerRegistration = addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					Cell cell = getCellForEvent(event);
+					setUpCellCallingEvent(cell.getRowIndex(), cell.getCellIndex());
+					VkDesignerUtil.executeEvent(clickJs, event);
+				}			
+			});
+		}
 	}
 	/**
 	 * Sets up cell indices on which cell event was called in the vkEvent global variable.
