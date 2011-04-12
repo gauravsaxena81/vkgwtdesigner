@@ -300,15 +300,19 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	public void addClickHandler(String js) {
 		if(clickHandlerRegistration != null)
 			clickHandlerRegistration.removeHandler();
-		clickJs = js;
-		clickHandlerRegistration = addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				VkDesignerUtil.executeEvent(clickJs, event);
-				Cell cell = getCellForEvent(event);
-				setUpCellCallingEvent(cell.getRowIndex(), cell.getCellIndex());
-			}			
-		});
+		clickHandlerRegistration = null;
+		clickJs = js.trim();
+		if(!clickJs.isEmpty())
+		{
+			clickHandlerRegistration = addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					Cell cell = getCellForEvent(event);
+					setUpCellCallingEvent(cell.getRowIndex(), cell.getCellIndex());
+					VkDesignerUtil.executeEvent(clickJs, event);
+				}			
+			});
+		}
 	}
 	/**
 	 * Sets up cell indices on which cell event was called in the vkEvent global variable.

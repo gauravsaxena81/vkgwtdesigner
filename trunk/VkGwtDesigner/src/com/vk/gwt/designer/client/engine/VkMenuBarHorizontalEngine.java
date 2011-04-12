@@ -124,7 +124,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		origDialog.add(dialog);
 		origDialog.setText("Provide html for item name and JS to execute on its click");
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-		
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.MAX_VALUE + "");
 		HorizontalPanel nameHp = new HorizontalPanel();
 		nameHp.setWidth("100%");
 		dialog.add(nameHp);
@@ -192,6 +192,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		origDialog.setText("Provide html for item name and JS to execute on its click");
 		dialog.setWidth("100%");
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.MAX_VALUE + "");
 		
 		HorizontalPanel nameHp = new HorizontalPanel();
 		nameHp.setWidth("100%");

@@ -12,11 +12,13 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.Panels.VkAbsolutePanel;
 import com.vk.gwt.designer.client.Panels.VkCaptionPanel;
@@ -140,7 +142,7 @@ public class VkDesignerUtil {
 	private static VkEngine vkEngine = new VkEngine();
 	public static boolean isDesignerMode = true;
 	
-	public native static void addPressAndHoldEvent(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) /*-{
+	native static void initDesignerEvents(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) /*-{
 		var element = widget.@com.google.gwt.user.client.ui.Widget::getElement()();
 		setTimeout(createMouseDownEvent, 200);//widgets(like images) may take time to load, thus event is not attached successfully if not waited for it
 		function isChild(target, parent)
@@ -156,14 +158,18 @@ public class VkDesignerUtil {
 		}
 		function createMouseDownEvent()
 		{
-			element.onmousedown = function(ev){
-				if(element.id != '' && @com.vk.gwt.designer.client.designer.VkDesignerUtil::isDesignerMode)
+			if(element.addEventListener)
+				element.addEventListener("mousedown", mouseDownHandler, false);
+			else if(element.attachEvent)
+				element.attachEvent("onmousedown", mouseDownHandler);
+			function mouseDownHandler(ev){
+				if(element.id != '')
 				{
 					if(typeof ev == 'undefined')
 						ev = $wnd.event;
 					var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
-					menu.@com.vk.gwt.designer.client.designer.VkMenu::intializeMenu(Lcom/google/gwt/user/client/ui/Widget;Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widget, widgetEngine);
-					if(typeof ev.stopPropagation == 'undefined' || ev.stopPropagation == null)
+					menu.@com.vk.gwt.designer.client.designer.VkMenu::initializeMenu(Lcom/google/gwt/user/client/ui/Widget;Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widget, widgetEngine);
+					if(ev.cancelBubble)
 						ev.cancelBubble = true;
 					else
 						ev.stopPropagation();
@@ -175,7 +181,7 @@ public class VkDesignerUtil {
 			element.oncontextmenu = function(ev){
 				if(typeof ev == 'undefined')
 					ev = $wnd.event;
-				if(element.id != '' && @com.vk.gwt.designer.client.designer.VkDesignerUtil::isDesignerMode)
+				if(element.id != '')
 				{
 					var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
 					menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu(Lcom/google/gwt/user/client/ui/Widget;Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widget, widgetEngine);
@@ -183,10 +189,10 @@ public class VkDesignerUtil {
 					{
 						menu = menu.@com.vk.gwt.designer.client.designer.VkMenu::getElement()();
 						menu.style.display = "block";
-						menu.style.left = ev.clientX + "px";
+						menu.style.left = ev.clientX + "px"
 						menu.style.top = ev.clientY 
 							- @com.vk.gwt.designer.client.designer.VkDesignerUtil::drawingPanel.@com.vk.gwt.designer.client.Panels.VkAbsolutePanel::getElement()().offsetTop 
-							+ "px";
+							+ $wnd.document.body.scrollTop + "px";
 						menu.focus();
 					}
 				}
@@ -195,6 +201,36 @@ public class VkDesignerUtil {
 				else
 					ev.stopPropagation();
 				return false;
+			};
+			$wnd.document.onkeydown = function(ev){
+				if(typeof ev == 'undefined')
+					ev = $wnd.event;
+				var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
+				if(ev.keyCode == 67 && ev.ctrlKey)//copy
+				{
+					var copyCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCopyCommand()();
+					copyCommand.@com.google.gwt.user.client.Command::execute()();
+				}
+				else if(ev.keyCode == 86 && ev.ctrlKey)//paste
+				{
+					var pasteCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getPasteCommand()();
+					pasteCommand.@com.google.gwt.user.client.Command::execute()();
+				}
+				else if(ev.keyCode == 88 && ev.ctrlKey)//redo
+				{
+					var cutCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCutCommand()();
+					cutCommand.@com.google.gwt.user.client.Command::execute()();
+				}
+				else if(ev.keyCode == 89 && ev.ctrlKey)//redo
+				{
+					var redoCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getRedoCOmmand()();
+					redoCommand.@com.google.gwt.user.client.Command::execute()();
+				}
+				else if(ev.keyCode == 90 && ev.ctrlKey)//undo
+				{
+					var undoCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getUndoCommand()();
+					undoCommand.@com.google.gwt.user.client.Command::execute()();
+				}
 			};
 		}
 	}-*/;
@@ -223,7 +259,7 @@ public class VkDesignerUtil {
 		var idArray = js.match(/&\(.+?\)/g);
 		if(idArray != null)
 			for(var i = 0; i < idArray.length; i++)
-				js = js.replace(idArray[i],"$wnd.document.getElementById('" + idArray[i].substr(2,idArray[i].length - 3) + "')");
+				js = js.replace(idArray[i],"window.document.getElementById('" + idArray[i].substr(2,idArray[i].length - 3) + "')");
 		return js;
 	}-*/;
 
@@ -231,20 +267,23 @@ public class VkDesignerUtil {
 		widget.getElement().setId(++widgetCount + "");
 	}
 
-	public static void makeMovable(final Widget invokingWidget) {
+	@SuppressWarnings("unused")//being used in native function
+	private static void makeMovable(final Widget invokingWidget) {
 		final HTML draggingWidget = new HTML("&nbsp;");
 		getDrawingPanel().add(draggingWidget);
 		DOM.setStyleAttribute(draggingWidget.getElement(), "background", "blue");
 		draggingWidget.getElement().getStyle().setOpacity(0.2);
 		DOM.setStyleAttribute(draggingWidget.getElement(), "position", "absolute");
 		draggingWidget.setPixelSize(invokingWidget.getOffsetWidth(), invokingWidget.getOffsetHeight());
-		DOM.setStyleAttribute(draggingWidget.getElement(), "top", invokingWidget.getElement().getAbsoluteTop() - drawingPanel.getElement().getOffsetTop() + "px");
+		DOM.setStyleAttribute(draggingWidget.getElement(), "top", invokingWidget.getElement().getAbsoluteTop() 
+			- drawingPanel.getElement().getOffsetTop() - RootPanel.getBodyElement().getScrollTop() + "px");
 		DOM.setStyleAttribute(draggingWidget.getElement(), "left", invokingWidget.getElement().getAbsoluteLeft() + "px");
 		DOM.setCapture(draggingWidget.getElement());
 		draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
 			@Override
 			public void onMouseMove(MouseMoveEvent event) {
-				int top = event.getClientY() - VkDesignerUtil.getDrawingPanel().getElement().getOffsetTop();
+				int top = event.getClientY() - VkDesignerUtil.getDrawingPanel().getElement().getOffsetTop()
+					+ RootPanel.getBodyElement().getScrollTop();
 				int left = event.getClientX() - VkDesignerUtil.getDrawingPanel().getElement().getOffsetLeft();
 				if(top % SNAP_TO_FIT_TOP == 0)
 					DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
@@ -261,7 +300,6 @@ public class VkDesignerUtil {
 				+ draggingWidget.getElement().getAbsoluteTop() - invokingWidget.getElement().getAbsoluteTop();
 				final int finalLeft = invokingWidget.getElement().getOffsetLeft() 
 				+ draggingWidget.getElement().getAbsoluteLeft() - invokingWidget.getElement().getAbsoluteLeft();
-				final Widget widget = invokingWidget;
 				new Command(){
 					private final Command redoCommand = this;
 					@Override
@@ -278,6 +316,11 @@ public class VkDesignerUtil {
 				}}.execute();
 				DOM.releaseCapture(draggingWidget.getElement());
 				draggingWidget.removeFromParent();
+				if(finalLeft - initialLeft == 1 && finalTop  - initialTop == 1)//draggingwidget is 1 pixel off in position
+				{
+					invokingWidget.fireEvent(event);
+					invokingWidget.onBrowserEvent((Event) event.getNativeEvent());
+				}
 			}
 		});
 	}
@@ -286,10 +329,10 @@ public class VkDesignerUtil {
 	}
 	public static void addWidget(Widget widget, IPanel invokingWidget, int top, int left) {
 		placeAddedElement(widget.getElement(), invokingWidget, top, left);
-		if(!(widget instanceof PopupPanel))//Pop up panels should not be added to DOM
-			invokingWidget.add(widget);
-		else
+		if(!isDesignerMode && (widget instanceof PopupPanel))
 			((PopupPanel)widget).center();
+		else
+			invokingWidget.add(widget);
 	}
 	private static void placeAddedElement(Element element, IPanel invokingWidget, int top, int left) {
 		if(invokingWidget instanceof AbsolutePanel)
@@ -305,7 +348,8 @@ public class VkDesignerUtil {
 	{
 		setUpEngineMap();
 		drawingPanel = new VkMainDrawingPanel();
-		VkDesignerUtil.addPressAndHoldEvent(drawingPanel, getEngineMap().get(VkMainDrawingPanel.NAME));
+		if(isDesignerMode)
+			VkDesignerUtil.initDesignerEvents(drawingPanel, getEngineMap().get(VkMainDrawingPanel.NAME));
 		drawingPanel.getElement().setId("drawingPanel");
 		drawingPanel.setPixelSize(Window.getClientWidth() - 10, Window.getClientHeight() - 10);
 		DOM.setStyleAttribute(drawingPanel.getElement(), "border", "solid 1px gray");
@@ -411,9 +455,9 @@ public class VkDesignerUtil {
 		//JSNI was not able to work with methods of NativeElement and kept on throwing errors which made no sense.
 		//Have a look at the issue raised at http://stackoverflow.com/questions/4086392/jsni-cannot-find-a-method-in-nativeevent-class-of-gwt 
 		prepareLocalEvent(event, event.getNativeEvent().getAltKey(), event.getNativeEvent().getButton(), event.getNativeEvent().getClientX() 
-				, event.getNativeEvent().getClientY(), event.getNativeEvent().getCtrlKey(), currentEventTargetElement, eventTargetElement
-				, event.getNativeEvent().getKeyCode(), event.getNativeEvent().getMetaKey(), event.getNativeEvent().getMouseWheelVelocityY()
-				, relativeEventTargetElement, event.getNativeEvent().getScreenX(), event.getNativeEvent().getScreenY(),event.getNativeEvent().getShiftKey());
+			, event.getNativeEvent().getClientY(), event.getNativeEvent().getCtrlKey(), currentEventTargetElement, eventTargetElement
+			, event.getNativeEvent().getKeyCode(), event.getNativeEvent().getMetaKey(), event.getNativeEvent().getMouseWheelVelocityY()
+			, relativeEventTargetElement, event.getNativeEvent().getScreenX(), event.getNativeEvent().getScreenY(),event.getNativeEvent().getShiftKey());
 		runJs( VkDesignerUtil.formatJs(js));
 	}
 	private static native void runJs(String formatJs) /*-{

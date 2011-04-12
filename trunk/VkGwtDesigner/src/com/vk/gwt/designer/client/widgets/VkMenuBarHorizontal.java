@@ -43,15 +43,19 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 	public void addCloseHandler(String js) {
 		if(closeRegistration != null)
 			closeRegistration.removeHandler();
-		closeJs = js;
-		closeRegistration = addCloseHandler(new CloseHandler<PopupPanel>() {
-			@Override
-			public void onClose(CloseEvent<PopupPanel> event) {
-				Map<String, String> map = new HashMap<String, String>();
-				map.put("autoClosed",Boolean.toString(event.isAutoClosed()));
-				VkDesignerUtil.executeEvent(closeJs, map);
-			}
-		});
+		closeRegistration = null;
+		closeJs = js.trim();
+		if(!closeJs.isEmpty())
+		{
+			closeRegistration = addCloseHandler(new CloseHandler<PopupPanel>() {
+				@Override
+				public void onClose(CloseEvent<PopupPanel> event) {
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("autoClosed",Boolean.toString(event.isAutoClosed()));
+					VkDesignerUtil.executeEvent(closeJs, map);
+				}
+			});
+		}
 	}
 
 	@Override

@@ -30,13 +30,17 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IPanel, 
 	public void addScrollHandler(String js) {
 		if(scrollHandlerRegistration != null)
 			scrollHandlerRegistration.removeHandler();
-		scrollJs  = js;
-		scrollHandlerRegistration = addScrollHandler(new ScrollHandler() {
-			@Override
-			public void onScroll(ScrollEvent event) {
-				VkDesignerUtil.executeEvent(scrollJs, event);
-			}
-		});
+		scrollHandlerRegistration = null;
+		scrollJs  = js.trim();
+		if(!scrollJs.isEmpty())
+		{
+			scrollHandlerRegistration = addScrollHandler(new ScrollHandler() {
+				@Override
+				public void onScroll(ScrollEvent event) {
+					VkDesignerUtil.executeEvent(scrollJs, event);
+				}
+			});
+		}
 	}
 	@Override
 	public String getPriorJs(String eventName) {

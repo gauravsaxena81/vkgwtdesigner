@@ -12,7 +12,8 @@ import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
-public class VkVerticalPanel extends VerticalPanel implements IPanel,HasVkWidgets, HasVkHorizontalAlignment, HasVkVerticalAlignment{
+public class VkVerticalPanel extends VerticalPanel implements IPanel,HasVkWidgets, HasVkHorizontalAlignment
+, HasVkVerticalAlignment{
 	public static final String NAME = "Vertical Panel";
 	@Override
 	protected void add(Widget child, Element container) 
@@ -31,7 +32,7 @@ public class VkVerticalPanel extends VerticalPanel implements IPanel,HasVkWidget
 		else if(horizontalAlignment.equals(HorizontalPanel.ALIGN_RIGHT.getTextAlignString()))
 			setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
 		else 
-			Window.alert("direction can only take one of the following values: " + HorizontalPanel.ALIGN_CENTER.getTextAlignString() + "," 
+			Window.alert("Horinzontal Alignment can only take one of the following values: " + HorizontalPanel.ALIGN_CENTER.getTextAlignString() + "," 
 				+ HorizontalPanel.ALIGN_LEFT.getTextAlignString() + "," +	HorizontalPanel.ALIGN_RIGHT.getTextAlignString());
 	}
 	public void setVerticalAlignment(String verticalAlignment) {

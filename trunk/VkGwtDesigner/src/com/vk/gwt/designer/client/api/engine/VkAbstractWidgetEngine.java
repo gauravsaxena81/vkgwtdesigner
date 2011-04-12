@@ -42,6 +42,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkListBoxMultiple;
+import com.vk.gwt.designer.client.api.attributes.HasVkListBoxRenderMode;
 import com.vk.gwt.designer.client.api.attributes.HasVkLoadHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMaxLength;
 import com.vk.gwt.designer.client.api.attributes.HasVkModal;
@@ -169,6 +170,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			((HasVkAlternateText)widgetTarget).setAlt(((HasVkAlternateText)widgetSource).getAlt());
 		if(widgetSource instanceof HasVkListBoxMultiple)
 			((HasVkListBoxMultiple)widgetTarget).setMultipleEnabled(((HasVkListBoxMultiple)widgetSource).isMultipleEnabled());
+		if(widgetSource instanceof HasVkListBoxRenderMode)
+			((HasVkListBoxRenderMode)widgetTarget).setDropDown(((HasVkListBoxRenderMode)widgetSource).isDropDown());
 		if(widgetSource instanceof HasVkAutoOpen)
 			((HasVkAutoOpen)widgetTarget).setAutoOpen(((HasVkAutoOpen)widgetSource).getAutoOpen());
 		if(widgetSource instanceof HasVkTabHeaderText)
@@ -264,6 +267,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			buffer.append(",'" ).append(HasVkAlternateText.NAME).append("':").append("'").append(((HasVkAlternateText)widgetSource).getAlt().replace("'", "\\'").replace("\"", "\\\"")).append("'");
 		if(widgetSource instanceof HasVkListBoxMultiple)
 			buffer.append(",'" ).append(HasVkListBoxMultiple.NAME).append("':").append(((HasVkListBoxMultiple)widgetSource).isMultipleEnabled());
+		if(widgetSource instanceof HasVkListBoxRenderMode)
+			buffer.append(",'" ).append(HasVkListBoxRenderMode.NAME).append("':").append(((HasVkListBoxRenderMode)widgetSource).isDropDown());
 		if(widgetSource instanceof HasVkAutoOpen)
 			buffer.append(",'" ).append(HasVkAutoOpen.NAME).append("':").append(((HasVkAutoOpen)widgetSource).getAutoOpen());
 		if(widgetSource instanceof HasVkTabHeaderText && !((HasVkTabHeaderText)widgetSource).getTabText().isEmpty())
@@ -324,7 +329,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 	{
 		if(jsonString.trim().isEmpty())
 			return;
-		JSONObject jsonObj = JSONParser.parse(jsonString).isObject();
+		JSONObject jsonObj = JSONParser.parseLenient(jsonString).isObject();
 		if(jsonObj.isObject() == null)
 		{
 			Window.alert("JSON String is not well-formed. Application cannot be built.");
@@ -465,6 +470,9 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		attributeJsObj = childObj.get(HasVkListBoxMultiple.NAME);
 		if(attributeJsObj != null && (attributeBooleanObj = attributeJsObj.isBoolean()) != null)
 			((HasVkListBoxMultiple)widget).setMultipleEnabled(attributeBooleanObj.booleanValue());
+		attributeJsObj = childObj.get(HasVkListBoxRenderMode.NAME);
+		if(attributeJsObj != null && (attributeBooleanObj = attributeJsObj.isBoolean()) != null)
+			((HasVkListBoxRenderMode)widget).setDropDown(attributeBooleanObj.booleanValue());
 		attributeJsObj = childObj.get(HasVkAutoOpen.NAME);
 		if(attributeJsObj != null && (attributeBooleanObj = attributeJsObj.isBoolean()) != null)
 			((HasVkAutoOpen)widget).setAutoOpen(attributeBooleanObj.booleanValue());

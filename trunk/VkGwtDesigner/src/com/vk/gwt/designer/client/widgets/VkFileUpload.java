@@ -3,30 +3,36 @@ package com.vk.gwt.designer.client.widgets;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkChangeHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkFileUpload extends FileUpload implements IVkWidget, HasVkName, HasVkChangeHandler, HasVkEnabled{
 	public static final String NAME = "File Upload";
 	private HandlerRegistration changeHandlerRegistration;
 	private String changeJs;
+	private boolean isEnabled = true;
 	@Override
 	public void addChangeHandler(String js) {
 		if(changeHandlerRegistration != null)
 			changeHandlerRegistration.removeHandler();
-		changeJs  = js;
-		changeHandlerRegistration = addChangeHandler(new ChangeHandler() {
-			@Override
-			public void onChange(ChangeEvent event) {
-				VkDesignerUtil.executeEvent(changeJs, event);
-			}
-		});
+		changeHandlerRegistration = null;
+		changeJs  = js.trim();
+		if(!changeJs.isEmpty())
+		{
+			changeHandlerRegistration = addChangeHandler(new ChangeHandler() {
+				@Override
+				public void onChange(ChangeEvent event) {
+					VkDesignerUtil.executeEvent(changeJs, event);
+				}
+			});
+		}
 	}
 
 	@Override
@@ -60,14 +66,19 @@ public class VkFileUpload extends FileUpload implements IVkWidget, HasVkName, Ha
 	}
 	@Override
 	@Export
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
+	public void setEnabled(boolean enabled)
+	{
+		if(!VkDesignerUtil.isDesignerMode)
+			super.setEnabled(enabled);
+		else if(!enabled)
+			Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");
+		isEnabled  = enabled;
 	}
 	@Override
 	@Export
 	public boolean isEnabled()
 	{
-		return super.isEnabled();
+		return isEnabled;
 	}
 	@Override
 	@Export

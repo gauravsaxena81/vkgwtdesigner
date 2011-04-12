@@ -168,14 +168,7 @@ import com.vk.gwt.designer.client.widgets.VkTree;
 
 
 public class VkEngine implements IEngine{
-	public static final String REMOVE = "Remove";
-	public static final String RESIZE = "Resize";
-	public static final String COPY = "Copy";
-	public static final String PASTE = "Paste";
-	public static final String SAVE = "Save";
-	public static final String LOAD = "Load";
-	public static final String COPY_STYLE = "Copy Style";
-	public static final String PASTE_STYLE = "Paste Style";
+	
 	private JsBridgable jsBridgable = GWT.create(JsBridgable.class);
 	
 	public interface IEventRegister{
@@ -188,15 +181,14 @@ public class VkEngine implements IEngine{
 		IWidgetEngine widgetEngine = VkDesignerUtil.getEngineMap().get(widgetName);
 		Widget widget= widgetEngine.getWidget();
 		if(widget != null)
-		{
 			prepareWidget(widget, widgetEngine);
-		}
 		return widget;
 	}
 	@SuppressWarnings("unchecked")
 	public void prepareWidget(Widget widget, IWidgetEngine widgetEngine) {
 			VkDesignerUtil.assignId(widget);
-			VkDesignerUtil.addPressAndHoldEvent(widget, widgetEngine);
+			if(VkDesignerUtil.isDesignerMode)
+				VkDesignerUtil.initDesignerEvents(widget, widgetEngine);
 			if(widget instanceof IPanel)//all panels
 				addJavascriptAddWidgetFunction((IPanel) widget);
 			addRemoveJsFunction(widget);
@@ -229,18 +221,19 @@ public class VkEngine implements IEngine{
 		List<String> operationsList = new ArrayList<String>();
 		if(!(invokingWidget instanceof VkMainDrawingPanel))
 		{
-			operationsList.add(REMOVE);
-			operationsList.add(RESIZE);
-			operationsList.add(COPY_STYLE);
-			operationsList.add(PASTE_STYLE);
-			operationsList.add(COPY);
+			operationsList.add(IEngine.REMOVE);
+			operationsList.add(IEngine.RESIZE);
+			operationsList.add(IEngine.COPY_STYLE);
+			operationsList.add(IEngine.PASTE_STYLE);
+			operationsList.add(IEngine.CUT);
+			operationsList.add(IEngine.COPY);
 		}
 		if(invokingWidget instanceof IPanel)
 			operationsList.add(PASTE);
 		if((invokingWidget instanceof VkMainDrawingPanel))
 		{
-			operationsList.add(SAVE);
-			operationsList.add(LOAD);
+			operationsList.add(IEngine.SAVE);
+			operationsList.add(IEngine.LOAD);
 		}
 		return operationsList;
 	}
@@ -248,7 +241,7 @@ public class VkEngine implements IEngine{
 	public List<String> getAttributesList(Widget invokingWidget) {
 		List<String> optionList = new ArrayList<String>();
 		optionList.add("Class Name");
-		optionList.add("Title");
+		optionList.add("Tool Tip");
 		if(invokingWidget instanceof HasVkText)
 			optionList.add(HasVkText.NAME);
 		if(invokingWidget instanceof HasVkAccessKey)
@@ -467,7 +460,7 @@ public class VkEngine implements IEngine{
 	public void applyAttribute(String attributeName, Widget invokingWidget) {
 		if(attributeName.equals("Class Name"))
 			showAddClassNameDialog(invokingWidget);
-		if(attributeName.equals("Title"))
+		if(attributeName.equals("Tool Tip"))
 			showAddTitleDialog(invokingWidget);
 		else if(attributeName.equals(HasVkText.NAME))
 			showAddTextDialog((HasVkText) invokingWidget);
@@ -908,11 +901,15 @@ public class VkEngine implements IEngine{
 		final TextBox addTextTb = new TextBox();
 		addTextTb.setWidth("100px");
 		addTextTb.setText(Integer.toString(invokingWidget.getMaxLength()));
-		showAddTextAttributeDialog("Please add maxlength below", addTextTb, new IEventRegister() {
+		showAddTextAttributeDialog("Please add maxlength below (-1 to remove)", addTextTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
 				try{
-					invokingWidget.setMaxLength(Integer.parseInt(addTextTb.getText()));
+					int maxLength = Integer.parseInt(addTextTb.getText());
+					if(maxLength >= 0)
+						invokingWidget.setMaxLength(maxLength);
+					else
+						invokingWidget.removeMaxLength();
 				}
 				catch(NumberFormatException e)
 				{
