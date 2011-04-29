@@ -136,7 +136,6 @@ public class VkDesignerUtil {
 	public static final int SNAP_TO_FIT_LEFT = 5;
 	private static int widgetCount = 0;
 	private static VkMenu vkMenu = new VkMenu();
-	private static VkMenu menu = vkMenu;
 	private static Map<String, IWidgetEngine<? extends Widget>> engineMap = new LinkedHashMap<String, IWidgetEngine<? extends Widget>>();
 	private static VkMainDrawingPanel drawingPanel;
 	private static VkEngine vkEngine = new VkEngine();
@@ -168,7 +167,7 @@ public class VkDesignerUtil {
 					if(typeof ev == 'undefined')
 						ev = $wnd.event;
 					var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
-					menu.@com.vk.gwt.designer.client.designer.VkMenu::initializeMenu(Lcom/google/gwt/user/client/ui/Widget;Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widget, widgetEngine);
+					menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu(Lcom/google/gwt/user/client/ui/Widget;Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widget, widgetEngine);
 					if(ev.cancelBubble)
 						ev.cancelBubble = true;
 					else
@@ -183,18 +182,19 @@ public class VkDesignerUtil {
 					ev = $wnd.event;
 				if(element.id != '')
 				{
-					var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
-					menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu(Lcom/google/gwt/user/client/ui/Widget;Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widget, widgetEngine);
-					if(isChild(!!ev.target ? ev.target : ev.srcElement, element))
-					{
-						menu = menu.@com.vk.gwt.designer.client.designer.VkMenu::getElement()();
-						menu.style.display = "block";
-						menu.style.left = ev.clientX + "px"
-						menu.style.top = ev.clientY 
-							- @com.vk.gwt.designer.client.designer.VkDesignerUtil::drawingPanel.@com.vk.gwt.designer.client.Panels.VkAbsolutePanel::getElement()().offsetTop 
-							+ $wnd.document.body.scrollTop + "px";
-						menu.focus();
-					}
+					//var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
+					//if(isChild(!!ev.target ? ev.target : ev.srcElement, element))
+					//{
+					//	menu = menu.@com.vk.gwt.designer.client.designer.VkMenu::getElement()();
+					//	menu.style.display = "block";
+					//	menu.style.left = ev.clientX + "px"
+					//	menu.style.top = ev.clientY 
+					//		- @com.vk.gwt.designer.client.designer.VkDesignerUtil::drawingPanel.@com.vk.gwt.designer.client.Panels.VkAbsolutePanel::getElement()().offsetTop 
+					//		+ $wnd.document.body.scrollTop + "px";
+					//	menu.focus();
+					//}
+					//var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
+					//menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu(Lcom/google/gwt/user/client/ui/Widget;Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widget, widgetEngine);
 				}
 				if(typeof ev.stopPropagation == 'undefined' || ev.stopPropagation == null)
 					ev.cancelBubble = true;
@@ -223,7 +223,7 @@ public class VkDesignerUtil {
 				}
 				else if(ev.keyCode == 89 && ev.ctrlKey)//redo
 				{
-					var redoCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getRedoCOmmand()();
+					var redoCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getRedoCommand()();
 					redoCommand.@com.google.gwt.user.client.Command::execute()();
 				}
 				else if(ev.keyCode == 90 && ev.ctrlKey)//undo
@@ -341,8 +341,8 @@ public class VkDesignerUtil {
 			DOM.setStyleAttribute(element, "top", top + "px");
 			DOM.setStyleAttribute(element, "left", left + "px");
 		}
-		else if(!DOM.getStyleAttribute(element, "position").equals("absolute"))
-			DOM.setStyleAttribute(element, "position", "relative");
+		else //if(!DOM.getStyleAttribute(element, "position").equals("absolute"))
+			DOM.setStyleAttribute(element, "position", "");
 	}
 	private static void init()
 	{
@@ -353,7 +353,7 @@ public class VkDesignerUtil {
 		drawingPanel.getElement().setId("drawingPanel");
 		drawingPanel.setPixelSize(Window.getClientWidth() - 10, Window.getClientHeight() - 10);
 		DOM.setStyleAttribute(drawingPanel.getElement(), "border", "solid 1px gray");
-		drawingPanel.add((Widget) menu);
+		vkMenu.prepareMenu(drawingPanel, VkDesignerUtil.getEngineMap().get(VkMainDrawingPanel.NAME));
 	}
 	private static void setUpEngineMap() {
 		engineMap.put(VkMainDrawingPanel.NAME, new VkMainDrawingPanelEngine());
@@ -421,11 +421,11 @@ public class VkDesignerUtil {
 	}
 	public static VkMenu getMenu()
 	{
-		return menu;
+		return vkMenu;
 	}
 	public static void setMenu(VkMenu vkMenu)
 	{
-		menu = vkMenu;
+		VkDesignerUtil.vkMenu = vkMenu;
 	}
 	public static VkMainDrawingPanel getDrawingPanel() {
 		if(drawingPanel == null)

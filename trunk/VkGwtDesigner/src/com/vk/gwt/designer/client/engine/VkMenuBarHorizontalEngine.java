@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
@@ -23,6 +24,7 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
@@ -136,25 +138,27 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		nameTextArea.setText(menuBar.getMenuItem(index).getHTML());
 		nameHp.add(nameTextArea);
 		nameTextArea.setSize("250px", "40px");
-		Timer t = new Timer(){
+		new Timer(){
 			@Override
 			public void run() {
 				VkDesignerUtil.centerDialog(dialog);
 				nameTextArea.setFocus(true);
 			}
-		};
-		t.schedule(100);
-		HorizontalPanel jsHp = new HorizontalPanel();
-		jsHp.setWidth("100%");
-		dialog.add(jsHp);
-		jsHp.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
-		jsHp.add(new Label("Command Js:"));
-		jsHp.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
-		jsHp.setCellWidth(jsHp.getWidget(0), "35%");
+		}.schedule(100);
 		final VkEventTextArea jsTextArea = new VkEventTextArea();
-		jsTextArea.setSize("250px","80px");
-		jsHp.add(jsTextArea);
-		jsTextArea.setText(menuBar.getCommandJs().get(index));
+		if(menuBar.getCommandJs().containsKey(index))
+		{
+			HorizontalPanel jsHp = new HorizontalPanel();
+			jsHp.setWidth("100%");
+			dialog.add(jsHp);
+			jsHp.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT);
+			jsHp.add(new Label("Command Js:"));
+			jsHp.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
+			jsHp.setCellWidth(jsHp.getWidget(0), "35%");
+			jsTextArea.setSize("250px","80px");
+			jsHp.add(jsTextArea);
+			jsTextArea.setText(menuBar.getCommandJs().get(index));
+		}
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);
 		Button saveButton = new Button("Save");
@@ -162,17 +166,19 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				menuBar.getCommandJs().remove(index);
-				menuBar.getCommandJs().add(index, jsTextArea.getText());
+				origDialog.hide();
 				MenuItem item = menuBar.getMenuItem(index);
 				item.setHTML(nameTextArea.getText());
-				item.setCommand(new Command() {
-					@Override
-					public void execute() {
-						VkDesignerUtil.executeEvent(jsTextArea.getText(), (Map<String, String>)null);
-					}
-				});
-				origDialog.hide();
+				if(menuBar.getCommandJs().containsKey(index))
+				{
+					menuBar.getCommandJs().put(index, jsTextArea.getText());
+					item.setCommand(new Command() {
+						@Override
+						public void execute() {
+							VkDesignerUtil.executeEvent(jsTextArea.getText(), (Map<String, String>)null);
+						}
+					});
+				}
 			}
 		});
 		Button cancelButton = new Button("Cancel");
@@ -229,7 +235,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				menuBar.getCommandJs().add(jsTextArea.getText());
+				menuBar.getCommandJs().put(menuBar.getItemCount(), jsTextArea.getText());
 				addMenuItem(menuBar, nameTextArea.getText(), jsTextArea.getText());
 				origDialog.hide();
 			}
@@ -265,7 +271,13 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		{
 			buffer.append("{html:'").append(menuBar.getItems().get(i).getHTML()).append("'");
 			if(menuBar.getItems().get(i).getSubMenu()== null)
-				buffer.append(",js:'").append(menuBar.getCommandJs().get(menuBar.getItems().indexOf(menuBar.getItems().get(i))).replace('\'', '"')).append("'");
+			{
+				if(menuBar.getCommandJs().containsKey(i))
+					buffer.append(",js:'").append(menuBar.getCommandJs().get(i).replace('\'', '"')).append("'");
+				else
+					buffer.append(",child:")
+						.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)menuBar.getWidgets().get(i)).getWidgetName()).serialize((IVkWidget) menuBar.getWidgets().get(i)));
+			}
 			else
 				buffer.append(",menu:").append(serialize((IVkWidget) menuBar.getItems().get(i).getSubMenu()));
 			buffer.append("},");
@@ -292,6 +304,15 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			if(js != null)
 				((VkMenuBarHorizontalEngine)VkDesignerUtil.getEngineMap().get(((IVkWidget)tree).getWidgetName()))
 					.addMenuItem(tree, item.get("html").isString().stringValue(), item.get("js").isString().stringValue());
+			else if(item.containsKey("child"))
+			{
+				JSONObject childObj = item.get("child").isObject();
+				JSONString widgetName = childObj.get("widgetName").isString();
+				Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
+				VkDesignerUtil.addWidget(widget, ((IPanel)tree));
+				VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
+				addAttributes(childObj, widget);
+			}
 			else if(item.get("separator") == null)
 			{
 				VkMenuBarHorizontal subTree = (VkMenuBarHorizontal)VkDesignerUtil.getEngine().getWidget(VkMenuBarVertical.NAME);//all submenus are vertical

@@ -11,6 +11,7 @@ import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 public class VkGwtDesigner implements EntryPoint {
 	public void onModuleLoad() {
 		RootPanel.get().add(VkDesignerUtil.getDrawingPanel());
+		RootPanel.get().insert(VkDesignerUtil.getMenu(), 0);
 		//VkDesignerUtil.setEngineMap()Up
 		//VkDesignerUtil.setEngine();
 		//VkDesignerUtil.setMenu(vkMenu)
