@@ -214,7 +214,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		if(widgetSource instanceof HasVkText && !((HasVkText)widgetSource).getText().isEmpty())
 			buffer.append(",'").append(HasVkText.NAME).append("':").append("'").append(((HasVkText)widgetSource).getText().replace("'", "\\'").replace("\"", "\\\"")).append("'");
 		if(widgetSource instanceof HasVkAccessKey && ((HasVkAccessKey)widgetSource).getAccessKey() != 0)
-			buffer.append(",'" ).append(HasVkAccessKey.NAME).append("':").append(((HasVkAccessKey)widgetSource).getAccessKey());
+			buffer.append(",'" ).append(HasVkAccessKey.NAME).append("':'").append(((HasVkAccessKey)widgetSource).getAccessKey()).append("'");
 		if(widgetSource instanceof HasVkTabIndex)
 			buffer.append(",'" ).append(HasVkTabIndex.NAME).append("':").append(((HasVkTabIndex)widgetSource).getTabIndex());
 		if(widgetSource instanceof HasVkHtml && !((HasVkHtml)widgetSource).getHTML().isEmpty())
@@ -291,7 +291,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		if(widgetSource instanceof HasVkMouseDownHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseDownHandler.NAME).isEmpty())
 			buffer.append(",'" ).append(HasVkMouseDownHandler.NAME).append("':").append("'").append(((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseDownHandler.NAME).replace("'", "\\'")).append("'");
 		if(widgetSource instanceof HasVkMouseMoveHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseMoveHandler.NAME).isEmpty())
-			buffer.append(",'" ).append(HasVkMouseDownHandler.NAME).append("':").append("'").append(((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseDownHandler.NAME).replace("'", "\\'")).append("'");
+			buffer.append(",'" ).append(HasVkMouseMoveHandler.NAME).append("':").append("'").append(((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseMoveHandler.NAME).replace("'", "\\'")).append("'");
 		if(widgetSource instanceof HasVkMouseUpHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseUpHandler.NAME).isEmpty())
 			buffer.append(",'" ).append(HasVkMouseUpHandler.NAME).append("':").append("'").append(((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseUpHandler.NAME).replace("'", "\\'")).append("'");
 		if(widgetSource instanceof HasVkMouseOutHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseOutHandler.NAME).isEmpty())

@@ -824,11 +824,14 @@ public class VkEngine implements IEngine{
 		final TextBox addTextTb = new TextBox();
 		addTextTb.setWidth("100px");
 		addTextTb.setMaxLength(1);
-		addTextTb.setText(Character.toString(invokingWidget.getAccessKey()));
+		if(invokingWidget.getAccessKey() > 0)
+			addTextTb.setText(Character.toString(invokingWidget.getAccessKey()));
 		showAddTextAttributeDialog("Please add access key below", addTextTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
-				invokingWidget.setAccessKey(addTextTb.getText().charAt(0));
+				String charString = addTextTb.getText().trim();
+				if(charString.length() > 0)
+					invokingWidget.setAccessKey(charString.charAt(0));
 			}
 		});
 	}
