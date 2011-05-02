@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -44,6 +45,7 @@ public class VkDisclosurePanelEngine extends VkAbstractWidgetEngine<VkDisclosure
 	}
 	private void showSetOpenDialog(final ListBox listBox, final VkDisclosurePanel invokingWidget) {
 		final DialogBox origDialog = new DialogBox();
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
 		origDialog.setText("Please add Text below:");

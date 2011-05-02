@@ -97,6 +97,7 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 	}
 	private void showProvideLayoutDialog(final ListBox listBox, final Widget widget) {
 		final DialogBox origDialog = new DialogBox();
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
 		origDialog.setText("Please Select Direction below:");
@@ -159,6 +160,7 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 	}
 	public void showSetCellAlignmentDialog(final ListBox listBox, final IAlignment iAlignment) {
 		final DialogBox origDialog = new DialogBox();
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
 		origDialog.setText("Cell Alignment Dialog");

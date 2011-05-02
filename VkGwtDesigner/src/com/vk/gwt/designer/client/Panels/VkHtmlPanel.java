@@ -2,6 +2,7 @@ package com.vk.gwt.designer.client.Panels;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -31,6 +32,7 @@ public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IPanel {
 	}
 	private void showAddTextAttributeDialog(final Widget widget) {
 		final DialogBox origDialog = new DialogBox();
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
 		origDialog.setText("Please provide id of element in which widget will be contained");

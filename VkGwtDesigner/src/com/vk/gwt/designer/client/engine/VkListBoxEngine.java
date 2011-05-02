@@ -48,6 +48,7 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 	}
 	private void showAddItemDialog(final VkListBox invokingWidget) {
 		final DialogBox origDialog = new DialogBox();
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
 		origDialog.setText("Provide Text and value of item");
@@ -63,7 +64,7 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 		textHp.setCellWidth(textHp.getWidget(0), "50%");
 		final TextBox textTextBox = new TextBox();
 		textHp.add(textTextBox);
-		textTextBox.setWidth("50px");
+		textTextBox.setWidth("200px");
 		Timer t = new Timer(){
 			@Override
 			public void run() {
@@ -80,7 +81,7 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 		valueHp.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
 		valueHp.setCellWidth(valueHp.getWidget(0), "50%");
 		final TextBox valueTextBox = new TextBox();
-		valueTextBox.setWidth("50px");
+		valueTextBox.setWidth("200px");
 		valueHp.add(valueTextBox);
 		
 		HorizontalPanel indexHp = new HorizontalPanel();
@@ -91,7 +92,7 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 		indexHp.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
 		indexHp.setCellWidth(indexHp.getWidget(0), "50%");
 		final TextBox indexTextBox = new TextBox();
-		indexTextBox.setWidth("50px");
+		indexTextBox.setWidth("200px");
 		indexHp.add(indexTextBox);
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);
