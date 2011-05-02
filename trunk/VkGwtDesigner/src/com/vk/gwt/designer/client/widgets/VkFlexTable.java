@@ -87,6 +87,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	}
 	private void showAddTextAttributeDialog() {
 		final DialogBox origDialog = new DialogBox();
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
 		origDialog.setText("Provide number of rows and columns");

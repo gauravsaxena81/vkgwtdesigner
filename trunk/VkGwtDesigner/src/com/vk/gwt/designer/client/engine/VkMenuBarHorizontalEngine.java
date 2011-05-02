@@ -122,6 +122,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 	}
 	private void showEditItemAttributeDialog(final VkMenuBarHorizontal menuBar, final int index) {
 		final DialogBox origDialog = new DialogBox();
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
 		origDialog.setText("Provide html for item name and JS to execute on its click");
@@ -193,6 +194,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 	}
 	private void showAddItemAttributeDialog(final VkMenuBarHorizontal menuBar) {
 		final DialogBox origDialog = new DialogBox();
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
 		origDialog.setText("Provide html for item name and JS to execute on its click");

@@ -180,9 +180,11 @@ public class VkDesignerUtil {
 			element.oncontextmenu = function(ev){
 				if(typeof ev == 'undefined')
 					ev = $wnd.event;
-				if(element.id != '')
+				if(element.id != '' && element.id != 'drawingPanel')
 				{
-					//var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
+					var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
+					var resizeCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getResizeCommand()();
+					resizeCommand.@com.google.gwt.user.client.Command::execute()();
 					//if(isChild(!!ev.target ? ev.target : ev.srcElement, element))
 					//{
 					//	menu = menu.@com.vk.gwt.designer.client.designer.VkMenu::getElement()();
@@ -206,7 +208,22 @@ public class VkDesignerUtil {
 				if(typeof ev == 'undefined')
 					ev = $wnd.event;
 				var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
-				if(ev.keyCode == 67 && ev.ctrlKey)//copy
+				if(ev.keyCode == 46)//remove widget
+				{
+					var deleteCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getRemoveCommand()();
+					deleteCommand.@com.google.gwt.user.client.Command::execute()();
+				}
+				else if(ev.keyCode == 67 && ev.ctrlKey && ev.shiftKey)//copy style
+				{
+					var copyCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCopyStyleCommand()()
+					copyCommand.@com.google.gwt.user.client.Command::execute()();
+				}
+				else if(ev.keyCode == 86 && ev.ctrlKey && ev.shiftKey)//paste style
+				{
+					var pasteCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getPasteStyleCommand()();
+					pasteCommand.@com.google.gwt.user.client.Command::execute()();
+				}
+				else if(ev.keyCode == 67 && ev.ctrlKey)//copy
 				{
 					var copyCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCopyCommand()();
 					copyCommand.@com.google.gwt.user.client.Command::execute()();
@@ -268,7 +285,7 @@ public class VkDesignerUtil {
 	}
 
 	@SuppressWarnings("unused")//being used in native function
-	private static void makeMovable(final Widget invokingWidget) {
+	static void makeMovable(final Widget invokingWidget) {
 		final HTML draggingWidget = new HTML("&nbsp;");
 		getDrawingPanel().add(draggingWidget);
 		DOM.setStyleAttribute(draggingWidget.getElement(), "background", "blue");
@@ -300,20 +317,23 @@ public class VkDesignerUtil {
 				+ draggingWidget.getElement().getAbsoluteTop() - invokingWidget.getElement().getAbsoluteTop();
 				final int finalLeft = invokingWidget.getElement().getOffsetLeft() 
 				+ draggingWidget.getElement().getAbsoluteLeft() - invokingWidget.getElement().getAbsoluteLeft();
-				new Command(){
-					private final Command redoCommand = this;
-					@Override
-					public void execute() {
-						DOM.setStyleAttribute(invokingWidget.getElement(), "top", finalTop + "px"); 
-						DOM.setStyleAttribute(invokingWidget.getElement(), "left", finalLeft + "px");
-						vkMenu.getUndoStack().push(new Command(){
-							@Override
-							public void execute() {
-								DOM.setStyleAttribute(invokingWidget.getElement(), "top", initialTop + "px"); 
-								DOM.setStyleAttribute(invokingWidget.getElement(), "left", initialLeft + "px");
-								vkMenu.getRedoStack().push(redoCommand);
-							}});
-				}}.execute();
+				if(initialTop != finalTop - 1 || initialLeft != finalLeft - 1)//-1 is hack for FF
+				{
+					new Command(){
+						private final Command redoCommand = this;
+						@Override
+						public void execute() {
+							DOM.setStyleAttribute(invokingWidget.getElement(), "top", finalTop + "px"); 
+							DOM.setStyleAttribute(invokingWidget.getElement(), "left", finalLeft + "px");
+							vkMenu.getUndoStack().push(new Command(){
+								@Override
+								public void execute() {
+									DOM.setStyleAttribute(invokingWidget.getElement(), "top", initialTop + "px"); 
+									DOM.setStyleAttribute(invokingWidget.getElement(), "left", initialLeft + "px");
+									vkMenu.getRedoStack().push(redoCommand);
+								}});
+					}}.execute();
+				}
 				DOM.releaseCapture(draggingWidget.getElement());
 				draggingWidget.removeFromParent();
 				if(finalLeft - initialLeft == 1 && finalTop  - initialTop == 1)//draggingwidget is 1 pixel off in position
