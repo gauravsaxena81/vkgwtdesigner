@@ -25,6 +25,10 @@ public class VkFrame extends Frame implements IVkWidget, HasVkUrl, HasVkName{
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

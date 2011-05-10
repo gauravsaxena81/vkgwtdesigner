@@ -56,11 +56,13 @@ import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.attributes.HasVkValue;
+import com.vk.gwt.designer.client.api.attributes.HasVkWordWrap;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 
 public class VkCheckbox extends CheckBox implements IVkWidget, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler
-, HasVkChangeHandler, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkName, HasVkText, HasVkHtml, HasVkValue<Boolean>{
+, HasVkChangeHandler, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkName, HasVkText, HasVkHtml, HasVkWordWrap
+, HasVkValue<Boolean>{
 	public static final String NAME = "Checkbox";
 	private HandlerRegistration clickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
@@ -367,7 +369,21 @@ public class VkCheckbox extends CheckBox implements IVkWidget, HasVkAllKeyHandle
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
+	@Override
+	@Export
+	public boolean getWordWrap() {
+		return super.getWordWrap();
+	}
+	@Override
+	@Export
+	public void setWordWrap(boolean wordwrap) {
+		super.setWordWrap(wordwrap);
+	}
 	@Override
 	@Export
 	public void setText(String text)
@@ -379,6 +395,18 @@ public class VkCheckbox extends CheckBox implements IVkWidget, HasVkAllKeyHandle
 	public String getText()
 	{
 		return super.getText();
+	}
+	@Override
+	@Export
+	public void setHTML(String html)
+	{
+		super.setHTML(html);
+	}
+	@Override
+	@Export
+	public String getHTML()
+	{
+		return super.getHTML();
 	}
 	@Override
 	@Export

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
@@ -51,30 +52,42 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 		if(attributeName.equals(SET_FORMAT))
 		{
 			List<ICustomSuggestion> suggestions = new ArrayList<ICustomSuggestion>();
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFullDateFormat().getPattern()
-					, DateTimeFormat.getFullDateFormat().getPattern() + "(" + DateTimeFormat.getFullDateFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFullDateTimeFormat().getPattern(), 
-					DateTimeFormat.getFullDateTimeFormat().getPattern() + "(" + DateTimeFormat.getFullDateTimeFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFullTimeFormat().getPattern(), 
-					DateTimeFormat.getFullTimeFormat().getPattern() + "(" + DateTimeFormat.getFullTimeFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getLongDateFormat().getPattern(), 
-					DateTimeFormat.getLongDateFormat().getPattern() + "(" + DateTimeFormat.getLongDateFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getLongDateTimeFormat().getPattern(), 
-					DateTimeFormat.getLongDateTimeFormat().getPattern() + "(" + DateTimeFormat.getLongDateTimeFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getLongTimeFormat().getPattern(), 
-					DateTimeFormat.getLongTimeFormat().getPattern() + "(" + DateTimeFormat.getLongTimeFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getMediumDateFormat().getPattern(), 
-					DateTimeFormat.getMediumDateFormat().getPattern() + "(" + DateTimeFormat.getMediumDateFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getMediumDateTimeFormat().getPattern(), 
-					DateTimeFormat.getMediumDateTimeFormat().getPattern() + "(" + DateTimeFormat.getMediumDateTimeFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getMediumTimeFormat().getPattern(), 
-					DateTimeFormat.getMediumTimeFormat().getPattern() + "(" + DateTimeFormat.getMediumTimeFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getShortDateFormat().getPattern(), 
-					DateTimeFormat.getShortDateFormat().getPattern() + "(" + DateTimeFormat.getShortDateFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getShortDateTimeFormat().getPattern(), 
-					DateTimeFormat.getShortDateTimeFormat().getPattern() + "(" + DateTimeFormat.getShortDateTimeFormat().format(new Date()) +")"));
-			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getShortTimeFormat().getPattern(), 
-					DateTimeFormat.getShortTimeFormat().getPattern() + "(" + DateTimeFormat.getShortTimeFormat().format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.DATE_FULL).getPattern()
+				, DateTimeFormat.getFormat(PredefinedFormat.DATE_FULL).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_FULL).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_FULL).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_FULL).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_FULL).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.TIME_FULL).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.TIME_FULL).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.TIME_FULL).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.DATE_LONG).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.DATE_LONG).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.DATE_LONG).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_LONG).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_LONG).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_LONG).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.TIME_LONG).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.TIME_LONG).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.TIME_LONG).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.DATE_MEDIUM).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.DATE_MEDIUM).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.DATE_MEDIUM).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_MEDIUM).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_MEDIUM).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_MEDIUM).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.TIME_MEDIUM).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.TIME_MEDIUM).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.TIME_MEDIUM).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.DATE_TIME_SHORT).format(new Date()) +")"));
+			suggestions.add(new CustomSuggestionImpl(DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT).getPattern(), 
+				DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT).getPattern() 
+				+ "(" + DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT).format(new Date()) +")"));
 			
 			CustomSuggestionAutoCompleterTextBox textBox = new CustomSuggestionAutoCompleterTextBox(suggestions);
 			//AutoCompleterTextBox textBox = new AutoCompleterTextBox(suggestions);

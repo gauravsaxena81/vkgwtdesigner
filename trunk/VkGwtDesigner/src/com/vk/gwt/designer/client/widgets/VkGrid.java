@@ -400,6 +400,10 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
@@ -523,7 +527,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 		VkAbsolutePanel panel = (VkAbsolutePanel)getWidget(row, col);
 		panel.clear();
 		DOM.setInnerHTML(panel.getElement(), "");
-		VkDesignerUtil.addWidget(VkDesignerUtil.getEngine().getWidget(VkHTML.NAME), panel);
+		VkDesignerUtil.getEngine().addWidget(VkDesignerUtil.getEngine().getWidget(VkHTML.NAME), panel);
 	}
 	@Override
 	@Export
@@ -543,7 +547,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	{
 		VkAbsolutePanel panel = (VkAbsolutePanel)getWidget(row, col);
 		panel.clear();
-		VkDesignerUtil.addWidget(VkDesignerUtil.getEngine().getWidget(VkLabel.NAME), panel);
+		VkDesignerUtil.getEngine().addWidget(VkDesignerUtil.getEngine().getWidget(VkLabel.NAME), panel);
 	}
 	@Override
 	@Export

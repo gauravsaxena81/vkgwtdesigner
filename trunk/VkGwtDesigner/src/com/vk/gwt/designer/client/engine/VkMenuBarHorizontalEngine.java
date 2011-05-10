@@ -311,7 +311,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 				JSONObject childObj = item.get("child").isObject();
 				JSONString widgetName = childObj.get("widgetName").isString();
 				Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
-				VkDesignerUtil.addWidget(widget, ((IPanel)tree));
+				VkDesignerUtil.getEngine().addWidget(widget, ((IPanel)tree));
 				VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 				addAttributes(childObj, widget);
 			}

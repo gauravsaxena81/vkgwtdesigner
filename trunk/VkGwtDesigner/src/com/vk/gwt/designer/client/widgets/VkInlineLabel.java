@@ -190,16 +190,16 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 	}
 	public String getDirectionString()
 	{
-		return getDirection().toString();
+		return getTextDirection().toString();
 	}
 	public void setDirection(String direction)
 	{
 		if(direction.equals(HasDirection.Direction.LTR.toString()))
-			setDirection(HasDirection.Direction.LTR);
+			setText(getText(), HasDirection.Direction.LTR);
 		else if(direction.equals(HasDirection.Direction.RTL.toString()))
-			setDirection(HasDirection.Direction.RTL);
+			setText(getText(), HasDirection.Direction.RTL);
 		else if(direction.equals(HasDirection.Direction.DEFAULT.toString()))
-			setDirection(HasDirection.Direction.DEFAULT);
+			setText(getText(), HasDirection.Direction.DEFAULT);
 		else 
 			Window.alert("direction can only take one of the following values: " + HasDirection.Direction.LTR.toString() + "," 
 				+ HasDirection.Direction.RTL.toString() + "," +	HasDirection.Direction.DEFAULT.toString());
@@ -238,6 +238,10 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

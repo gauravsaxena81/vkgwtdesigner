@@ -124,6 +124,10 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Export
 	public String getHeaderText()

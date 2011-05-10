@@ -11,7 +11,6 @@ import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 public class VkGwtDesigner implements EntryPoint {
 	public void onModuleLoad() {
 		RootPanel.get().add(VkDesignerUtil.getDrawingPanel());
-		RootPanel.get().insert(VkDesignerUtil.getMenu(), 0);
 		//VkDesignerUtil.setEngineMap()Up
 		//VkDesignerUtil.setEngine();
 		//VkDesignerUtil.setMenu(vkMenu)
@@ -20,6 +19,8 @@ public class VkGwtDesigner implements EntryPoint {
 			VkDesignerUtil.loadApplication(getLoadString());
 			VkDesignerUtil.isDesignerMode = false;
 		}
+		if(VkDesignerUtil.isDesignerMode)
+			RootPanel.get().insert(VkDesignerUtil.getMenu(), 0);
 	}
 	private native String getLoadString() /*-{
 		return $wnd.opener.loadStr;

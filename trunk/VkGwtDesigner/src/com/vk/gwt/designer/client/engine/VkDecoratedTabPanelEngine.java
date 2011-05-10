@@ -130,7 +130,7 @@ public class VkDecoratedTabPanelEngine extends VkAbstractWidgetEngine<VkDecorate
 			JSONObject childWidgetObj = childObj.get("child").isObject();
 			JSONString widgetName = childWidgetObj.get("widgetName").isString();
 			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
-			VkDesignerUtil.addWidget(widget, ((IPanel)parent));
+			VkDesignerUtil.getEngine().addWidget(widget, ((IPanel)parent));
 			int tabIndex = ((VkDecoratedTabPanel)parent).getWidgetCount() - 1;
 			((VkDecoratedTabPanel)parent).setTabHeaderHtml(tabIndex, childObj.get("headerHtml").isString().stringValue());
 			((VkDecoratedTabPanel)parent).setTabEnabled(tabIndex, childObj.get("enabled").isBoolean().booleanValue());

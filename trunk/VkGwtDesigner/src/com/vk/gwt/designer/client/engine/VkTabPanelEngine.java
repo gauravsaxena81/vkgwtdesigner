@@ -130,7 +130,7 @@ public class VkTabPanelEngine extends VkAbstractWidgetEngine<VkTabPanel> {
 			JSONObject childWidgetObj = childObj.get("child").isObject();
 			JSONString widgetName = childWidgetObj.get("widgetName").isString();
 			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
-			VkDesignerUtil.addWidget(widget, ((IPanel)parent));
+			VkDesignerUtil.getEngine().addWidget(widget, ((IPanel)parent));
 			int tabIndex = ((VkTabPanel)parent).getWidgetCount() - 1;
 			((VkTabPanel)parent).setTabHeaderHtml(tabIndex, childObj.get("headerHtml").isString().stringValue());
 			((VkTabPanel)parent).setTabEnabled(tabIndex, childObj.get("enabled").isBoolean().booleanValue());

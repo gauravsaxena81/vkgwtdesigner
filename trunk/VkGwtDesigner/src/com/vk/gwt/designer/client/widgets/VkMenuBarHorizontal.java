@@ -149,6 +149,10 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 		((VkMenuBarHorizontal)targetWidget).seperatorIndices = new ArrayList<Integer>();
 		((VkMenuBarHorizontal)targetWidget).seperatorIndices.addAll(seperatorIndices);
 	}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	public HashMap<Integer, Widget> getWidgets() {
 		return widgets;
 	}	

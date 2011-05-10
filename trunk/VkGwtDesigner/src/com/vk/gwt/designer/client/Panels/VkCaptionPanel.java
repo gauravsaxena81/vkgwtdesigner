@@ -37,6 +37,10 @@ public class VkCaptionPanel extends CaptionPanel implements IPanel,HasVkWidgets,
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

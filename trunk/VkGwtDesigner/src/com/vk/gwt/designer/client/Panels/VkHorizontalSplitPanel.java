@@ -71,6 +71,10 @@ public class VkHorizontalSplitPanel extends SimplePanel implements IPanel, HasVk
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Export
 	public void setSplitPosition(String pos) {

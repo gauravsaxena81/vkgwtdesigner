@@ -64,7 +64,7 @@ public class VkStackPanelEngine extends VkAbstractWidgetEngine<VkStackPanel> {
 			JSONObject childWidgetObj = childObj.get("child").isObject();
 			JSONString widgetName = childWidgetObj.get("widgetName").isString();
 			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
-			VkDesignerUtil.addWidget(widget, ((IPanel)parent));
+			VkDesignerUtil.getEngine().addWidget(widget, ((IPanel)parent));
 			((VkStackPanel)parent).setHeaderHtml(((VkStackPanel)parent).getWidgetCount() - 1, childObj.get("headerHtml").isString().stringValue());
 			addAttributes(childWidgetObj, widget);
 			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);

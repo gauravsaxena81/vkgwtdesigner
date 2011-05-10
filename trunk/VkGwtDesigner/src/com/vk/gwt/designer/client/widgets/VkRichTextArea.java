@@ -383,6 +383,10 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Export
 	public void createLink(String link)

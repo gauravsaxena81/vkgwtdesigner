@@ -186,16 +186,16 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 	}
 	public String getDirectionString()
 	{
-		return getDirection().toString();
+		return getTextDirection().toString();
 	}
 	public void setDirection(String direction)
 	{
 		if(direction.equals(HasDirection.Direction.LTR.toString()))
-			setDirection(HasDirection.Direction.LTR);
+			setHTML(getHTML(), HasDirection.Direction.LTR);
 		else if(direction.equals(HasDirection.Direction.RTL.toString()))
-			setDirection(HasDirection.Direction.RTL);
+			setHTML(getHTML(), HasDirection.Direction.RTL);
 		else if(direction.equals(HasDirection.Direction.DEFAULT.toString()))
-			setDirection(HasDirection.Direction.DEFAULT);
+			setHTML(getHTML(), HasDirection.Direction.DEFAULT);
 		else 
 			Window.alert("direction can only take one of the following values: " + HasDirection.Direction.LTR.toString() + "," 
 				+ HasDirection.Direction.RTL.toString() + "," +	HasDirection.Direction.DEFAULT.toString());
@@ -216,6 +216,10 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

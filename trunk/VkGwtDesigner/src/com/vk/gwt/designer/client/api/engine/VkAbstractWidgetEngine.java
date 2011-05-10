@@ -357,7 +357,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 				return;
 			JSONString widgetName = childObj.get("widgetName").isString();
 			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
-			VkDesignerUtil.addWidget(widget, ((IPanel)parent));
+			VkDesignerUtil.getEngine().addWidget(widget, ((IPanel)parent));
 			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 			addAttributes(childObj, widget);
 		}

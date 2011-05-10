@@ -377,6 +377,10 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 		targetButton.imageUpSrc = imageUpSrc;
 		targetButton.imageUpHoveringSrc = imageUpHoveringSrc;
 	}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Export
 	public void setVkPushButtonEabled(boolean enabled)

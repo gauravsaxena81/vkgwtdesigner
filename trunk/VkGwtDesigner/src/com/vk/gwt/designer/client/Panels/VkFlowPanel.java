@@ -14,6 +14,10 @@ public class VkFlowPanel extends FlowPanel implements IPanel, HasVkWidgets{
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

@@ -4,7 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -14,7 +17,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -41,7 +43,6 @@ import com.vk.gwt.designer.client.Panels.VkTabPanel;
 import com.vk.gwt.designer.client.Panels.VkVerticalPanel;
 import com.vk.gwt.designer.client.Panels.VkVerticalSplitPanel;
 import com.vk.gwt.designer.client.api.attributes.HasVkLoadHandler;
-import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.engine.VkAbsolutePanelEngine;
@@ -140,6 +141,8 @@ public class VkDesignerUtil {
 	private static VkMainDrawingPanel drawingPanel;
 	private static VkEngine vkEngine = new VkEngine();
 	public static boolean isDesignerMode = true;
+	private static PopupPanel moveImagePanel = new PopupPanel(true);
+	private static Widget popUpAssociateWidget;;
 	
 	native static void initDesignerEvents(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) /*-{
 		var element = widget.@com.google.gwt.user.client.ui.Widget::getElement()();
@@ -158,16 +161,26 @@ public class VkDesignerUtil {
 		function createMouseDownEvent()
 		{
 			if(element.addEventListener)
+			{
 				element.addEventListener("mousedown", mouseDownHandler, false);
+				element.addEventListener("mouseover", mouseOverHandler, false);
+			}
 			else if(element.attachEvent)
 				element.attachEvent("onmousedown", mouseDownHandler);
+			function mouseOverHandler(ev)
+			{
+				if(element.id != 'drawingPanel')
+				{
+					@com.vk.gwt.designer.client.designer.VkDesignerUtil::showMoveIcon(Lcom/google/gwt/user/client/ui/Widget;)(widget);
+				}
+			}
 			function mouseDownHandler(ev){
 				if(element.id != '')
 				{
 					if(typeof ev == 'undefined')
 						ev = $wnd.event;
 					var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
-					menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu(Lcom/google/gwt/user/client/ui/Widget;Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widget, widgetEngine);
+					menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu(Lcom/vk/gwt/designer/client/api/widgets/IVkWidget;)(widget);
 					if(ev.cancelBubble)
 						ev.cancelBubble = true;
 					else
@@ -211,32 +224,41 @@ public class VkDesignerUtil {
 				if(ev.keyCode == 46)//remove widget
 				{
 					var deleteCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getRemoveCommand()();
-					deleteCommand.@com.google.gwt.user.client.Command::execute()();
+					if(deleteCommand != null)
+					{
+						deleteCommand.@com.google.gwt.user.client.Command::execute()();
+						@com.vk.gwt.designer.client.designer.VkDesignerUtil::hideMoveIcon()();
+					}
 				}
 				else if(ev.keyCode == 67 && ev.ctrlKey && ev.shiftKey)//copy style
 				{
-					var copyCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCopyStyleCommand()()
-					copyCommand.@com.google.gwt.user.client.Command::execute()();
+					var copyCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCopyStyleCommand()();
+					if(copyCommand != null)
+						copyCommand.@com.google.gwt.user.client.Command::execute()();
 				}
 				else if(ev.keyCode == 86 && ev.ctrlKey && ev.shiftKey)//paste style
 				{
 					var pasteCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getPasteStyleCommand()();
-					pasteCommand.@com.google.gwt.user.client.Command::execute()();
+					if(pasteCommand != null)
+						pasteCommand.@com.google.gwt.user.client.Command::execute()();
 				}
 				else if(ev.keyCode == 67 && ev.ctrlKey)//copy
 				{
 					var copyCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCopyCommand()();
-					copyCommand.@com.google.gwt.user.client.Command::execute()();
+					if(copyCommand != null)
+						copyCommand.@com.google.gwt.user.client.Command::execute()();
 				}
 				else if(ev.keyCode == 86 && ev.ctrlKey)//paste
 				{
 					var pasteCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getPasteCommand()();
-					pasteCommand.@com.google.gwt.user.client.Command::execute()();
+					if(pasteCommand != null)
+						pasteCommand.@com.google.gwt.user.client.Command::execute()();
 				}
 				else if(ev.keyCode == 88 && ev.ctrlKey)//redo
 				{
 					var cutCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCutCommand()();
-					cutCommand.@com.google.gwt.user.client.Command::execute()();
+					if(cutCommand != null)
+						cutCommand.@com.google.gwt.user.client.Command::execute()();
 				}
 				else if(ev.keyCode == 89 && ev.ctrlKey)//redo
 				{
@@ -251,6 +273,12 @@ public class VkDesignerUtil {
 			};
 		}
 	}-*/;
+	public static void showMoveIcon(Widget widget)
+	{
+		moveImagePanel.showRelativeTo(widget);
+		moveImagePanel.setPopupPosition(moveImagePanel.getPopupLeft(), moveImagePanel.getPopupTop() - widget.getOffsetHeight() - moveImagePanel.getOffsetHeight() + 5);
+		popUpAssociateWidget = widget;
+	}
 	public static int getCumulativeTop(Element invokingWidgetElement) {
 		int top = 0;
 		Element tempWidget = invokingWidgetElement;
@@ -325,15 +353,19 @@ public class VkDesignerUtil {
 						public void execute() {
 							DOM.setStyleAttribute(invokingWidget.getElement(), "top", finalTop + "px"); 
 							DOM.setStyleAttribute(invokingWidget.getElement(), "left", finalLeft + "px");
+							showMoveIcon(invokingWidget);
 							vkMenu.getUndoStack().push(new Command(){
 								@Override
 								public void execute() {
 									DOM.setStyleAttribute(invokingWidget.getElement(), "top", initialTop + "px"); 
 									DOM.setStyleAttribute(invokingWidget.getElement(), "left", initialLeft + "px");
+									showMoveIcon(invokingWidget);
 									vkMenu.getRedoStack().push(redoCommand);
 								}});
 					}}.execute();
 				}
+				else
+					showMoveIcon(invokingWidget);
 				DOM.releaseCapture(draggingWidget.getElement());
 				draggingWidget.removeFromParent();
 				if(finalLeft - initialLeft == 1 && finalTop  - initialTop == 1)//draggingwidget is 1 pixel off in position
@@ -344,26 +376,6 @@ public class VkDesignerUtil {
 			}
 		});
 	}
-	public static void addWidget(Widget widget, IPanel invokingWidget) {
-		addWidget(widget, invokingWidget, 0, 0);
-	}
-	public static void addWidget(Widget widget, IPanel invokingWidget, int top, int left) {
-		placeAddedElement(widget.getElement(), invokingWidget, top, left);
-		if(!isDesignerMode && (widget instanceof PopupPanel))
-			((PopupPanel)widget).center();
-		else
-			invokingWidget.add(widget);
-	}
-	private static void placeAddedElement(Element element, IPanel invokingWidget, int top, int left) {
-		if(invokingWidget instanceof AbsolutePanel)
-		{
-			DOM.setStyleAttribute(element, "position", "absolute");
-			DOM.setStyleAttribute(element, "top", top + "px");
-			DOM.setStyleAttribute(element, "left", left + "px");
-		}
-		else //if(!DOM.getStyleAttribute(element, "position").equals("absolute"))
-			DOM.setStyleAttribute(element, "position", "");
-	}
 	private static void init()
 	{
 		setUpEngineMap();
@@ -373,7 +385,45 @@ public class VkDesignerUtil {
 		drawingPanel.getElement().setId("drawingPanel");
 		drawingPanel.setPixelSize(Window.getClientWidth() - 10, Window.getClientHeight() - 10);
 		DOM.setStyleAttribute(drawingPanel.getElement(), "border", "solid 1px gray");
-		vkMenu.prepareMenu(drawingPanel, VkDesignerUtil.getEngineMap().get(VkMainDrawingPanel.NAME));
+		if(isDesignerMode)
+		{
+			vkMenu.prepareMenu(drawingPanel);
+			HTML moveImage = new HTML("<img src='../images/cursor_move.png' height=16 width=16>");
+			moveImage.addMouseDownHandler(new MouseDownHandler(){
+				@Override
+				public void onMouseDown(MouseDownEvent event) {
+					vkMenu.prepareMenu((IVkWidget) popUpAssociateWidget);
+					if(event.getNativeButton() == NativeEvent.BUTTON_LEFT)
+					{
+						makeMovable(popUpAssociateWidget);
+						moveImagePanel.hide();
+					}
+				}});
+			addResizeOnRightClick(moveImage);
+			moveImagePanel.add(moveImage);
+			moveImage.setTitle("drag to move widget, right click to resize");
+			moveImagePanel.setStyleName("none");
+		}
+	}
+	private native static void addResizeOnRightClick(Widget m) /*-{
+		var element = m.@com.google.gwt.user.client.ui.Widget::getElement()();
+		element.oncontextmenu = function(ev){
+			if(typeof ev == 'undefined')
+			ev = $wnd.event;
+			var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
+			menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu(Lcom/vk/gwt/designer/client/api/widgets/IVkWidget;)(@com.vk.gwt.designer.client.designer.VkDesignerUtil::popUpAssociateWidget);
+			var resizeCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getResizeCommand()();
+			resizeCommand.@com.google.gwt.user.client.Command::execute()();
+			if(typeof ev.stopPropagation == 'undefined' || ev.stopPropagation == null)
+				ev.cancelBubble = true;
+			else
+				ev.stopPropagation();
+			return false;
+		}
+	}-*/;
+	static void hideMoveIcon()
+	{
+		moveImagePanel.hide();
 	}
 	private static void setUpEngineMap() {
 		engineMap.put(VkMainDrawingPanel.NAME, new VkMainDrawingPanelEngine());

@@ -459,6 +459,10 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	public void clone(Widget targetWidget) {
 		((VkDateBox)targetWidget).pattern = pattern;
 	}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
