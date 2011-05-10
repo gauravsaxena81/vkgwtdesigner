@@ -11,6 +11,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkBeforeSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
@@ -20,7 +21,6 @@ import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderText;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidgets, IPanel, HasVkAnimation, HasVkTabHeaderText, HasVkTabHeaderHtml
 , HasVkEnabled, HasVkBeforeSelectionHandler, HasVkSelectionHandler{
@@ -155,6 +155,10 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

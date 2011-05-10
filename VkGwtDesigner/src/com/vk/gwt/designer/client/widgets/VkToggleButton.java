@@ -348,6 +348,10 @@ HasVkFocusHandler, HasVkBlurHandler{
 		((VkToggleButton)targetWidget).imageDownSrc = imageDownSrc;
 		((VkToggleButton)targetWidget).imageUpSrc = imageUpSrc;
 	}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

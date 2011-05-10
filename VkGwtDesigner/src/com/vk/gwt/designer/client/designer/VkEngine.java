@@ -7,12 +7,15 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.TextBoxBase;
@@ -133,6 +136,7 @@ import com.vk.gwt.designer.client.api.widgets.HasVkTabBar;
 import com.vk.gwt.designer.client.api.widgets.HasVkTextBox;
 import com.vk.gwt.designer.client.api.widgets.HasVkToggleButton;
 import com.vk.gwt.designer.client.api.widgets.HasVkTree;
+import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.widgets.VkAnchor;
 import com.vk.gwt.designer.client.widgets.VkButton;
 import com.vk.gwt.designer.client.widgets.VkCheckbox;
@@ -186,25 +190,24 @@ public class VkEngine implements IEngine{
 	}
 	@SuppressWarnings("unchecked")
 	public void prepareWidget(Widget widget, IWidgetEngine widgetEngine) {
-			VkDesignerUtil.assignId(widget);
-			if(VkDesignerUtil.isDesignerMode)
-				VkDesignerUtil.initDesignerEvents(widget, widgetEngine);
-			if(widget instanceof IPanel)//all panels
-				addJavascriptAddWidgetFunction((IPanel) widget);
-			addRemoveJsFunction(widget);
-			jsBridgable.createBridge(widget);
-		}
+		VkDesignerUtil.assignId(widget);
+		if(VkDesignerUtil.isDesignerMode)
+			VkDesignerUtil.initDesignerEvents(widget, widgetEngine);
+		if(widget instanceof IPanel)//all panels
+			addJavascriptAddWidgetFunction((IPanel) widget);
+		addRemoveJsFunction(widget);
+		jsBridgable.createBridge(widget);
+	}
 	//being used in native function
 	@SuppressWarnings("unused")
 	private void addWidget(IPanel invokingWidget, String widgetName)
 	{
 		Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName);
 		if(widget != null)
-			VkDesignerUtil.addWidget(widget, invokingWidget);
+			addWidget(widget, invokingWidget);
 		else
 			Window.alert("Widget with name '" + widgetName +"' not found");
 	}
-
 	private native void addJavascriptAddWidgetFunction(IPanel invokingWidget) /*-{
 		var a = this;
 		invokingWidget.@com.google.gwt.user.client.ui.Panel::getElement()().addWidget = $entry(function(widgetName){
@@ -217,6 +220,26 @@ public class VkEngine implements IEngine{
 			widget.@com.google.gwt.user.client.ui.Widget::removeFromParent()();
 		});
 	}-*/;
+	public void addWidget(Widget widget, IPanel invokingWidget) {
+		addWidget(widget, invokingWidget, 0, 0);
+	}
+	public void addWidget(Widget widget, IPanel invokingWidget, int top, int left) {
+		placeAddedElement(widget.getElement(), invokingWidget, top, left);
+		if(!VkDesignerUtil.isDesignerMode && (widget instanceof PopupPanel))
+			((PopupPanel)widget).center();
+		else
+			invokingWidget.add(widget);
+	}
+	private void placeAddedElement(Element element, IPanel invokingWidget, int top, int left) {
+		if(invokingWidget instanceof AbsolutePanel)
+		{
+			DOM.setStyleAttribute(element, "position", "absolute");
+			DOM.setStyleAttribute(element, "top", top + "px");
+			DOM.setStyleAttribute(element, "left", left + "px");
+		}
+		else //if(!DOM.getStyleAttribute(element, "position").equals("absolute"))
+			DOM.setStyleAttribute(element, "position", "");
+	}
 	public List<String> getOperationsList(Widget invokingWidget) {
 		List<String> operationsList = new ArrayList<String>();
 		if(!(invokingWidget instanceof VkMainDrawingPanel))
@@ -428,7 +451,7 @@ public class VkEngine implements IEngine{
 		return optionList;
 	}
 	
-	public List<String> getPanelsList(Widget invokingWidget) {
+	public List<String> getPanelsList(IVkWidget invokingWidget) {
 		List<String> optionList = new ArrayList<String>();
 		if(invokingWidget instanceof IPanel)
 		{
@@ -982,7 +1005,7 @@ public class VkEngine implements IEngine{
 	private void showAddUrlDialog(final HasVkUrl invokingWidget) {
 		final TextBox actionTb = new TextBox();
 		actionTb.setText(((HasVkUrl) invokingWidget).getUrl());
-		actionTb.setWidth("100px");
+		actionTb.setWidth("300px");
 		actionTb.setText(invokingWidget.getUrl());
 		showAddTextAttributeDialog("Please add url below", actionTb, new IEventRegister() {
 			@Override
@@ -994,7 +1017,7 @@ public class VkEngine implements IEngine{
 	private void showAddImageUrlDialog(final HasVkImageUrl invokingWidget) {
 		final TextBox actionTb = new TextBox();
 		actionTb.setText(((HasVkImageUrl) invokingWidget).getImageUrl());
-		actionTb.setWidth("100px");
+		actionTb.setWidth("300px");
 		actionTb.setText(invokingWidget.getImageUrl());
 		showAddTextAttributeDialog("Please add url below", actionTb, new IEventRegister() {
 			@Override
@@ -1026,7 +1049,7 @@ public class VkEngine implements IEngine{
 		targetList.add("_parent");
 		targetList.add("_blank");
 		AutoCompleterTextBox targetTb = new AutoCompleterTextBox(targetList);
-		targetTb.setWidth("100px");
+		targetTb.setWidth("300px");
 		targetTb.setText(invokingWidget.getTarget());
 		targetTb.setSuggestionWidth(100);
 		showAddAutoCompleteTextDialog("Please provide Form Target", targetTb, new IEventRegister() {
@@ -1055,7 +1078,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddNameDialog(final HasVkName invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setWidth("100px");
+		actionTb.setWidth("300px");
 		actionTb.setText(invokingWidget.getName());
 		showAddTextAttributeDialog("Please provide name of widget", actionTb, new IEventRegister() {
 			@Override
@@ -1066,7 +1089,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddCaptionTextDialog(final HasVkCaptionText invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setWidth("100px");
+		actionTb.setWidth("300px");
 		actionTb.setText(invokingWidget.getCaptionText());
 		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
 			@Override
@@ -1120,9 +1143,9 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddGlassStyleDialog(final HasVkGlassStyle invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setWidth("100px");
+		actionTb.setWidth("300px");
 		actionTb.setText(invokingWidget.getGlassStyleName());
-		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
+		showAddTextAttributeDialog("Please provide stylename of the glass", actionTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String name) {
 				invokingWidget.setGlassStyleName(name);
@@ -1147,7 +1170,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showFormEncodingDialog(final HasVkFormEncoding invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setWidth("100px");
+		actionTb.setWidth("300px");
 		actionTb.setText(invokingWidget.getEncoding());
 		showAddTextAttributeDialog("Please provide Form encoding", actionTb, new IEventRegister() {
 			@Override
@@ -1158,7 +1181,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showHistoryTokenDialog(final HasVkHistoryToken invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setWidth("100px");
+		actionTb.setWidth("300px");
 		actionTb.setText(invokingWidget.getTargetHistoryToken());
 		showAddTextAttributeDialog("Please provide history token", actionTb, new IEventRegister() {
 			@Override
@@ -1169,7 +1192,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAlternateTextDialog(final HasVkAlternateText invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setWidth("100px");
+		actionTb.setWidth("300px");
 		actionTb.setText(invokingWidget.getAlt());
 		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
 			@Override
@@ -1212,7 +1235,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddTabHeaderTextDialog(final HasVkTabHeaderText invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setWidth("100px");
+		actionTb.setWidth("300px");
 		actionTb.setText(invokingWidget.getTabText());
 		showAddTextAttributeDialog("Please provide text for tab header", actionTb, new IEventRegister() {
 			@Override
@@ -1237,8 +1260,8 @@ public class VkEngine implements IEngine{
 	private void showAddValueDialog(final HasVkValue invokingWidget) {
 		final TextBox actionTb = new TextBox();
 		actionTb.setText(invokingWidget.getValue().toString());
-		actionTb.setWidth("100px");
-		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
+		actionTb.setWidth("300px");
+		showAddTextAttributeDialog("Please provide value of widget", actionTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
 				invokingWidget.setValue(text);

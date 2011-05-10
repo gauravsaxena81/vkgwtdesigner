@@ -17,6 +17,10 @@ public class VkHyperlink extends Hyperlink implements IVkWidget, HasVkHtml, HasV
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+			return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

@@ -411,6 +411,10 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 		((VkSuggestBox) targetWidget).suggestions = new ArrayList<String>();
 		((VkSuggestBox) targetWidget).suggestions.addAll(suggestions);
 	}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

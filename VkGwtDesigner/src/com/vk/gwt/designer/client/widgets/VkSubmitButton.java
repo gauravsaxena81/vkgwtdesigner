@@ -330,6 +330,10 @@ public class VkSubmitButton extends SubmitButton implements HasVkText, HasVkAllM
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

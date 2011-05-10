@@ -64,6 +64,10 @@ public class VkVerticalPanel extends VerticalPanel implements IPanel,HasVkWidget
 	}
 	@Override
 	public void clone(Widget targetWidget) {}
+	@Override
+	public boolean showMenu() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
