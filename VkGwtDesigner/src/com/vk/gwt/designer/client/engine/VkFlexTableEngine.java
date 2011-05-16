@@ -112,7 +112,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 						table.removeCell(i, j--);
 						colCount--;
 					}
-					else //if(col + table.getColSpan(i, j) >= Integer.parseInt(origCol))
+					else
 						table.setColSpan(i, j, table.getColSpan(i, j) - 1);
 				}
 			}
@@ -161,7 +161,6 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 			if(table.getRowSpan(row, i) == 1)
 				table.removeCell(row, i);
 			else
-				//table.setRowSpan(row, i, table.getRowSpan(row, i) - 1);
 			{
 				table.setRowSpan(row, i, table.getRowSpan(row, i) - 1);
 				int col = Integer.parseInt(
@@ -180,10 +179,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 						break;
 					}
 				}
-				//if(i - 1 > 0)
-					//table.getRowFormatter().getElement(row + 1).insertAfter(td, refNode);
-				//else
-					table.getRowFormatter().getElement(row + 1).insertBefore(td, refNode);
+				table.getRowFormatter().getElement(row + 1).insertBefore(td, refNode);
 			}
 			i--;
 			colCount--;
@@ -265,6 +261,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 				}catch(NumberFormatException e)
 				{
 					Window.alert("Cell Padding cannot be non-numeric");
+					addCellPadding(table);
 				}
 			}
 		});
@@ -280,6 +277,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 				}catch(NumberFormatException e)
 				{
 					Window.alert("Cell Spacing cannot be non-numeric");
+					addCellSpacing(table);
 				}
 			}
 		});
@@ -340,7 +338,8 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 		int rowCount = flexTable.getRowCount();
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < rowCount; i++)
-			buf.append(DOM.getElementAttribute(flexTable.getRowFormatter().getElement(i), "height"));
+			buf.append(DOM.getElementAttribute(flexTable.getRowFormatter().getElement(i), "height").replaceAll("px", ""))
+				.append(",");
 		if(buf.length() > 0)
 			buf.deleteCharAt(buf.length() - 1);
 		return buf;
@@ -352,7 +351,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 			numberOfCols = Math.max(numberOfCols, flexTable.getCellCount(i));
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < numberOfCols; i++)
-			buf.append(DOM.getElementAttribute(flexTable.getColumnFormatter().getElement(i), "width"))
+			buf.append(DOM.getElementAttribute(flexTable.getColumnFormatter().getElement(i), "width").replaceAll("px", ""))
 				.append(",");
 		if(buf.length() > 0)
 			buf.deleteCharAt(buf.length() - 1);
@@ -361,21 +360,28 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 	@Override
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		VkFlexTable flexTable =  (VkFlexTable)parent;
+		addAttributes(jsonObj, parent);
 		JSONArray cellsArray = jsonObj.get("cells").isArray();
+		int lastRow = 0;
 		for(int i = 0, colNum = 0; i < cellsArray.size(); i++)
 		{
 			int row = (int)cellsArray.get(i).isObject().get("row").isNumber().doubleValue();
 			int col = (int)cellsArray.get(i).isObject().get("col").isNumber().doubleValue();
+			if(row != lastRow)
+			{
+				colNum = 0;
+				lastRow = row;
+			}
 			if(row >= flexTable.getRowCount())
 				flexTable.insertRow(flexTable.getRowCount());
 			int colSpan = (int)cellsArray.get(i).isObject().get("colSpan").isNumber().doubleValue();
-			flexTable.makeCell(row, col, flexTable.getRowCount(), colNum);
+			flexTable.makeCell(row, col, colNum);
 			colNum += colSpan;
 			Widget widget = flexTable.getWidget(row, flexTable.getCellCount(row) - 1);
 			flexTable.setRowSpan(row, col, (int)cellsArray.get(i).isObject().get("rowSpan").isNumber()
 					.doubleValue());
 			flexTable.setColSpan(row, col, colSpan);
-			addAttributes(cellsArray.get(i).isObject().get("child").isObject(), widget);
+			//addAttributes(cellsArray.get(i).isObject().get("child").isObject(), widget);
 			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName())
 				.buildWidget(cellsArray.get(i).isObject().get("child").isObject(), widget);
 		}
@@ -398,7 +404,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 			int columnCount = sourceTable.getCellCount(i);
 			for(int j = 0, colNum = 0; j < columnCount; j++)
 			{
-				targetTable.makeCell(i, j , rowCount, colNum);
+				targetTable.makeCell(i, j , colNum);
 				int colspan = sourceTable.getColSpan(i, j);
 				colNum += colspan;
 				targetTable.setRowSpan(i, j, sourceTable.getRowSpan(i, j));

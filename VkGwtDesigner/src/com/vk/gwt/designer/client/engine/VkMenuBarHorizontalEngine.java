@@ -298,6 +298,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 	@Override
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		VkMenuBarHorizontal tree =  (VkMenuBarHorizontal)parent;
+		addAttributes(jsonObj, parent);
 		JSONArray items = jsonObj.get("items").isArray();
 		for(int i = 0; i < items.size(); i++)
 		{
@@ -313,12 +314,12 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 				Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
 				VkDesignerUtil.getEngine().addWidget(widget, ((IPanel)tree));
 				VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
-				addAttributes(childObj, widget);
+				//addAttributes(childObj, widget);
 			}
 			else if(item.get("separator") == null)
 			{
 				VkMenuBarHorizontal subTree = (VkMenuBarHorizontal)VkDesignerUtil.getEngine().getWidget(VkMenuBarVertical.NAME);//all submenus are vertical
-				addAttributes(item.get("menu").isObject(), subTree);
+				//addAttributes(item.get("menu").isObject(), subTree);
 				tree.addItem(new MenuItem(item.get("html").isString().stringValue(), subTree));
 				VkDesignerUtil.getEngineMap().get(((IVkWidget)tree).getWidgetName()).buildWidget(item.get("menu").isObject(), subTree);
 			}

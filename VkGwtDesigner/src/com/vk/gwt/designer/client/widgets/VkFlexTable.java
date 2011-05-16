@@ -213,7 +213,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 						columnFormatter.setWidth(i, "80px");*/
 					for(int i = 0; i < rowCount; i++)
 						for(int j = 0; j < initialColumnCount; j++)
-							makeCell(i, j , rowCount, j);
+							makeCell(i, j , j);
 					origDialog.hide();
 				}catch(NumberFormatException e)
 				{
@@ -231,16 +231,16 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		});
 		origDialog.center();
 	}
-	public void makeCell(final int row, final int col, int rowCount, int actualCol)
+	public void makeCell(final int row, final int col, int actualCol)
 	{
 		VkFlexTableAbsolutePanel l2 = new VkFlexTableAbsolutePanel();
 		DOM.setStyleAttribute(l2.getElement(), "border", "solid 1px gray");
 		VkDesignerUtil.getEngine().prepareWidget(l2, VkDesignerUtil.getEngineMap().get(VkAbsolutePanel.NAME));
+		boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
 		VkDesignerUtil.isDesignerMode = false;//important as call routes to inserRow here instead of super's
 		setWidget(row, col, l2);
-		VkDesignerUtil.isDesignerMode = true;
-		DOM.setElementAttribute(getFlexCellFormatter().getElement(row, col), "col"
-			, Integer.toString(actualCol));
+		VkDesignerUtil.isDesignerMode = isVkDesignerMode;
+		DOM.setElementAttribute(getFlexCellFormatter().getElement(row, col), "col", Integer.toString(actualCol));
 		DOM.setElementAttribute(VkFlexTable.this.getRowFormatter().getElement(row), "height", "40px");
 		DOM.setStyleAttribute(VkFlexTable.this.getFlexCellFormatter().getElement(row, col), "position", "relative");
 		columnFormatter.setWidth(actualCol, "80px");
@@ -391,7 +391,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 				public void onClick(ClickEvent event) {
 					Cell cell = getCellForEvent(event);
 					setUpCellCallingEvent(cell.getRowIndex(), cell.getCellIndex());
-					VkDesignerUtil.executeEvent(clickJs, event);
+					VkDesignerUtil.executeEvent(clickJs, event, false);
 				}			
 			});
 		}
@@ -489,7 +489,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	public void addCell(int row)
 	{
 		super.addCell(row);
-		makeCell(row, getCellCount(row) - 1, getRowCount(), initialColumnCount - 1);
+		makeCell(row, getCellCount(row) - 1, initialColumnCount - 1);
 	}
 	/**************************Export attribute Methods********************************/
 	@Override
@@ -512,7 +512,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		if(isCellPresent(beforeRow, beforeColumn - 1))
 			col = Integer.parseInt(DOM.getElementAttribute((com.google.gwt.user.client.Element) getCellElement(beforeRow, beforeColumn - 1)
 	    		, "col"));*/
-		makeCell(beforeRow, beforeColumn, getRowCount(),  initialColumnCount - 1);
+		makeCell(beforeRow, beforeColumn, initialColumnCount - 1);
 	}
 	@Override
 	@Export
@@ -520,10 +520,9 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	    int rowNum =  super.insertRow(beforeRow);
 	    if(VkDesignerUtil.isDesignerMode)
 	    {
-		    int rowCount = getRowCount();
 			int columnCount = initialColumnCount;
 		    for(int i = 0; i < columnCount; i++)
-		    	makeCell(rowNum, i, rowCount, i);
+		    	makeCell(rowNum, i, i);
 	    }
 	    initialRowCount++;
 	    return rowNum;

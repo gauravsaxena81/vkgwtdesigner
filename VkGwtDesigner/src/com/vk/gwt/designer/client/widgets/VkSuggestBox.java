@@ -117,7 +117,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			clickHandlerRegistration = super.getTextBox().addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					VkDesignerUtil.executeEvent(clickJs, event);
+					VkDesignerUtil.executeEvent(clickJs, event, true);
 				}
 			});
 		}
@@ -133,7 +133,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			mouseDownHandlerRegistration = super.getTextBox().addMouseDownHandler(new MouseDownHandler() {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
-					VkDesignerUtil.executeEvent(mouseDownJs, event);
+					VkDesignerUtil.executeEvent(mouseDownJs, event, true);
 				}
 			});
 		}
@@ -149,7 +149,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			mouseUpHandlerRegistration = super.getTextBox().addMouseUpHandler(new MouseUpHandler() {
 				@Override
 				public void onMouseUp(MouseUpEvent event) {
-					VkDesignerUtil.executeEvent(mouseUpJs, event);
+					VkDesignerUtil.executeEvent(mouseUpJs, event, true);
 				}
 			});
 		}
@@ -165,7 +165,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			mouseMoveHandlerRegistration = super.getTextBox().addMouseMoveHandler(new MouseMoveHandler() {
 				@Override
 				public void onMouseMove(MouseMoveEvent event) {
-					VkDesignerUtil.executeEvent(mouseMoveJs, event);
+					VkDesignerUtil.executeEvent(mouseMoveJs, event, true);
 				}
 			});
 		}
@@ -181,7 +181,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			mouseOverHandlerRegistration = super.getTextBox().addMouseOverHandler(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
-					VkDesignerUtil.executeEvent(mouseOverJs, event);
+					VkDesignerUtil.executeEvent(mouseOverJs, event, true);
 				}
 			});
 		}
@@ -197,7 +197,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			mouseOutHandlerRegistration = super.getTextBox().addMouseOutHandler(new MouseOutHandler() {
 				@Override
 				public void onMouseOut(MouseOutEvent event) {
-					VkDesignerUtil.executeEvent(mouseOutJs, event);
+					VkDesignerUtil.executeEvent(mouseOutJs, event, true);
 				}
 			});
 		}
@@ -213,7 +213,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			mouseWheelHandlerRegistration = super.getTextBox().addMouseWheelHandler(new MouseWheelHandler() {
 				@Override
 				public void onMouseWheel(MouseWheelEvent event) {
-					VkDesignerUtil.executeEvent(mouseWheelJs, event);
+					VkDesignerUtil.executeEvent(mouseWheelJs, event, true);
 				}
 			});
 		}
@@ -230,7 +230,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			keyDownHandlerRegistration = addKeyDownHandler(new KeyDownHandler() {
 				@Override
 				public void onKeyDown(KeyDownEvent event) {
-					VkDesignerUtil.executeEvent(keyDownJs, event);
+					VkDesignerUtil.executeEvent(keyDownJs, event, true);
 				}
 			});
 		}
@@ -246,7 +246,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			keyUpHandlerRegistration = addKeyUpHandler(new KeyUpHandler() {
 				@Override
 				public void onKeyUp(KeyUpEvent event) {
-					VkDesignerUtil.executeEvent(keyUpJs, event);
+					VkDesignerUtil.executeEvent(keyUpJs, event, true);
 				}
 			});
 		}
@@ -263,7 +263,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			keyPressHandlerRegistration = addKeyPressHandler(new KeyPressHandler() {
 				@Override
 				public void onKeyPress(KeyPressEvent event) {
-					VkDesignerUtil.executeEvent(keyPressJs, event);
+					VkDesignerUtil.executeEvent(keyPressJs, event, true);
 				}
 			});
 		}
@@ -279,7 +279,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			focusHandlerRegistration = super.getTextBox().addFocusHandler(new FocusHandler() {
 				@Override
 				public void onFocus(FocusEvent event) {
-					VkDesignerUtil.executeEvent(focusJs, event);
+					VkDesignerUtil.executeEvent(focusJs, event, true);
 				}
 			});
 		}
@@ -295,7 +295,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			blurHandlerRegistration = super.getTextBox().addBlurHandler(new BlurHandler() {
 				@Override
 				public void onBlur(BlurEvent event) {
-					VkDesignerUtil.executeEvent(blurJs, event);
+					VkDesignerUtil.executeEvent(blurJs, event, true);
 				}
 			});
 		}
@@ -311,7 +311,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			changeHandlerRegistration = super.getTextBox().addChangeHandler(new ChangeHandler() {
 				@Override
 				public void onChange(ChangeEvent event) {
-					VkDesignerUtil.executeEvent(changeJs, event);
+					VkDesignerUtil.executeEvent(changeJs, event, true);
 				}
 			});
 		}

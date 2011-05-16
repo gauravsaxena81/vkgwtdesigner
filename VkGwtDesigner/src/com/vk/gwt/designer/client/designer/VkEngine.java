@@ -6,6 +6,9 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -68,6 +71,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkImageUrl;
 import com.vk.gwt.designer.client.api.attributes.HasVkInitializeHandlers;
+import com.vk.gwt.designer.client.api.attributes.HasVkInitiallyShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
@@ -191,7 +195,7 @@ public class VkEngine implements IEngine{
 	@SuppressWarnings("unchecked")
 	public void prepareWidget(Widget widget, IWidgetEngine widgetEngine) {
 		VkDesignerUtil.assignId(widget);
-		if(VkDesignerUtil.isDesignerMode)
+		if(VkDesignerUtil.isDesignerMode || VkDesignerUtil.isLoadRunning)
 			VkDesignerUtil.initDesignerEvents(widget, widgetEngine);
 		if(widget instanceof IPanel)//all panels
 			addJavascriptAddWidgetFunction((IPanel) widget);
@@ -315,14 +319,16 @@ public class VkEngine implements IEngine{
 			optionList.add(HasVkModal.NAME);
 		if(invokingWidget instanceof HasVkFormEncoding)
 			optionList.add(HasVkFormEncoding.NAME);
-		if(invokingWidget instanceof HasVkHistoryToken)
-			optionList.add(HasVkHistoryToken.NAME);
+		/*if(invokingWidget instanceof HasVkHistoryToken)
+			optionList.add(HasVkHistoryToken.NAME);*/
 		if(invokingWidget instanceof HasVkAlternateText)
 			optionList.add(HasVkAlternateText.NAME);
 		if(invokingWidget instanceof HasVkListBoxMultiple)
 			optionList.add(HasVkListBoxMultiple.NAME);
 		if(invokingWidget instanceof HasVkAutoOpen)
 			optionList.add(HasVkAutoOpen.NAME);
+		if(invokingWidget instanceof HasVkInitiallyShowing)
+			optionList.add(HasVkInitiallyShowing.NAME);
 		if(invokingWidget instanceof HasVkTabHeaderText)
 			optionList.add(HasVkTabHeaderText.NAME);
 		if(invokingWidget instanceof HasVkTabHeaderHtml)
@@ -543,6 +549,8 @@ public class VkEngine implements IEngine{
 			showListBoxMultipleDialog((HasVkListBoxMultiple) invokingWidget);
 		else if(attributeName.equals(HasVkAutoOpen.NAME))
 			showAutoOpenDialog((HasVkAutoOpen) invokingWidget);
+		else if(attributeName.equals(HasVkInitiallyShowing.NAME))
+			showShowingDialog((HasVkInitiallyShowing) invokingWidget);
 		else if(attributeName.equals(HasVkTabHeaderText.NAME))
 			showAddTabHeaderTextDialog((HasVkTabHeaderText) invokingWidget);
 		else if(attributeName.equals(HasVkTabHeaderHtml.NAME))
@@ -1226,10 +1234,26 @@ public class VkEngine implements IEngine{
 		else
 			scrollLb.setSelectedIndex(1);
 		scrollLb.setWidth("100px");
-		showAddListDialog("Please choose form method", scrollLb, new IEventRegister() {
+		showAddListDialog("Please choose auto open option", scrollLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String value) {
 				invokingWidget.setAutoOpen(Boolean.valueOf(value));
+			}
+		});
+	}
+	private void showShowingDialog(final HasVkInitiallyShowing invokingWidget) {
+		ListBox scrollLb = new ListBox();
+		scrollLb.addItem("True", "true");
+		scrollLb.addItem("False", "false");
+		if(invokingWidget.isInitiallyShowing())
+			scrollLb.setSelectedIndex(0);
+		else
+			scrollLb.setSelectedIndex(1);
+		scrollLb.setWidth("100px");
+		showAddListDialog("Please choose if initially dialog is showing", scrollLb, new IEventRegister() {
+			@Override
+			public void registerEvent(String value) {
+				invokingWidget.setInitiallyShowing(Boolean.valueOf(value));
 			}
 		});
 	}
@@ -1295,6 +1319,12 @@ public class VkEngine implements IEngine{
 				listBox.setFocus(true);
 			}
 		}.schedule(100);
+		listBox.addKeyDownHandler(new KeyDownHandler(){
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				if(event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DELETE)
+					event.stopPropagation();
+			}});
 		dialog.add(listBox);
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);
@@ -1325,14 +1355,19 @@ public class VkEngine implements IEngine{
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		dialog.setWidth("100%");
 		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.MAX_VALUE + "");
-		Timer t = new Timer(){
+		new Timer(){
 			@Override
 			public void run() {
 				VkDesignerUtil.centerDialog(dialog);
 				addTextTa.setFocus(true);
 			}
-		};
-		t.schedule(100);
+		}.schedule(100);
+		addTextTa.addKeyDownHandler(new KeyDownHandler(){
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				if(event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DELETE)
+					event.stopPropagation();
+			}});
 		dialog.add(addTextTa);
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);
@@ -1402,13 +1437,18 @@ public class VkEngine implements IEngine{
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		dialog.setWidth("100%");
 		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.MAX_VALUE + "");
-		Timer t = new Timer(){
+		new Timer(){
 			@Override
 			public void run() {
 				targetTb.setFocus(true);
 			}
-		};
-		t.schedule(100);
+		}.schedule(100);
+		targetTb.addKeyDownHandler(new KeyDownHandler(){
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				if(event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DELETE)
+					event.stopPropagation();
+			}});
 		dialog.add(targetTb);
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);

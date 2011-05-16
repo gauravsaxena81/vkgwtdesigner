@@ -39,6 +39,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkImageUrl;
 import com.vk.gwt.designer.client.api.attributes.HasVkInitializeHandlers;
+import com.vk.gwt.designer.client.api.attributes.HasVkInitiallyShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
@@ -146,6 +147,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 	@Override
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		JSONArray childrenArray = jsonObj.put("children", null).isArray();
+		addAttributes(jsonObj, parent);
 		VkDockPanel dockPanel = (VkDockPanel)parent;
 		for(int i = 0; i < childrenArray.size(); i++)
 		{
@@ -156,7 +158,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 			dockPanel.add(widget, getDirectionConstant((int)childObj.get("direction").isNumber().doubleValue()));
 			dockPanel.setCellHorizontalAlignment(dockPanel.getWidgetCount() - 1, childObj.get("horizontalAlignment").isString().stringValue());
 			dockPanel.setCellVerticalAlignment(dockPanel.getWidgetCount() - 1, childObj.get("verticalAlignment").isString().stringValue());
-			addAttributes(childWidgetObj, widget);
+			//addAttributes(childWidgetObj, widget);
 			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 		}
 	}
@@ -281,6 +283,9 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 		attributeJsObj = childObj.get(HasVkAutoOpen.NAME);
 		if(attributeJsObj != null && (attributeBooleanObj = attributeJsObj.isBoolean()) != null)
 			((HasVkAutoOpen)widget).setAutoOpen(attributeBooleanObj.booleanValue());
+		attributeJsObj = childObj.get(HasVkInitiallyShowing.NAME);
+		if(attributeJsObj != null && (attributeBooleanObj = attributeJsObj.isBoolean()) != null)
+			((HasVkInitiallyShowing)widget).setInitiallyShowing(attributeBooleanObj.booleanValue());
 		attributeJsObj = childObj.get(HasVkTabHeaderText.NAME);
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			((HasVkTabHeaderText)widget).setTabText(attributeStringObj.stringValue());

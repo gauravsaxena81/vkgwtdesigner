@@ -16,8 +16,8 @@ public class VkGwtDesigner implements EntryPoint {
 		//VkDesignerUtil.setMenu(vkMenu)
 		if(Window.Location.getParameter("isDesignerMode") != null && Window.Location.getParameter("isDesignerMode").equals("false"))
 		{
-			VkDesignerUtil.loadApplication(getLoadString());
 			VkDesignerUtil.isDesignerMode = false;
+			VkDesignerUtil.loadApplication(getLoadString());
 		}
 		if(VkDesignerUtil.isDesignerMode)
 			RootPanel.get().insert(VkDesignerUtil.getMenu(), 0);

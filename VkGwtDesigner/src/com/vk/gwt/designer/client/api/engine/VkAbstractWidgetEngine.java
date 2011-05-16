@@ -12,6 +12,7 @@ import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAlternateText;
@@ -38,6 +39,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkImageUrl;
 import com.vk.gwt.designer.client.api.attributes.HasVkInitializeHandlers;
+import com.vk.gwt.designer.client.api.attributes.HasVkInitiallyShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
@@ -92,6 +94,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 	protected void init(Widget widget) {
 		widget.setPixelSize(100, 20);
 		DOM.setStyleAttribute(widget.getElement(), "border", "solid 1px gray");
+		DOM.setStyleAttribute(widget.getElement(), "padding", "5px");
 	}
 	@Override
 	public Widget deepClone(Widget sourceWidget, Widget targetWidget) {
@@ -174,6 +177,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			((HasVkListBoxRenderMode)widgetTarget).setDropDown(((HasVkListBoxRenderMode)widgetSource).isDropDown());
 		if(widgetSource instanceof HasVkAutoOpen)
 			((HasVkAutoOpen)widgetTarget).setAutoOpen(((HasVkAutoOpen)widgetSource).getAutoOpen());
+		if(widgetSource instanceof HasVkModal)
+			((HasVkInitiallyShowing)widgetTarget).setInitiallyShowing(((HasVkInitiallyShowing)widgetSource).isInitiallyShowing());
 		if(widgetSource instanceof HasVkTabHeaderText)
 			((HasVkTabHeaderText)widgetTarget).setTabText(((HasVkTabHeaderText)widgetSource).getTabText());
 		if(widgetSource instanceof HasVkTabHeaderHtml)
@@ -259,6 +264,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			buffer.append(",'" ).append(HasVkGlass.NAME).append("':").append(((HasVkGlass)widgetSource).isGlassEnabled());
 		if(widgetSource instanceof HasVkGlassStyle && !((HasVkGlassStyle)widgetSource).getGlassStyleName().isEmpty())
 			buffer.append(",'" ).append(HasVkGlassStyle.NAME).append("':").append("'").append(((HasVkGlassStyle)widgetSource).getGlassStyleName().replace("'", "\\'").replace("\"", "\\\"")).append("'");
+		if(widgetSource instanceof HasVkModal)
+			buffer.append(",'" ).append(HasVkModal.NAME).append("':").append(((HasVkModal)widgetSource).isModal());
 		if(widgetSource instanceof HasVkFormEncoding && !((HasVkFormEncoding)widgetSource).getEncoding().isEmpty())
 			buffer.append(",'" ).append(HasVkFormEncoding.NAME).append("':").append("'").append(((HasVkFormEncoding)widgetSource).getEncoding()).append("'");
 		if(widgetSource instanceof HasVkHistoryToken && !((HasVkHistoryToken)widgetSource).getTargetHistoryToken().isEmpty())
@@ -271,6 +278,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			buffer.append(",'" ).append(HasVkListBoxRenderMode.NAME).append("':").append(((HasVkListBoxRenderMode)widgetSource).isDropDown());
 		if(widgetSource instanceof HasVkAutoOpen)
 			buffer.append(",'" ).append(HasVkAutoOpen.NAME).append("':").append(((HasVkAutoOpen)widgetSource).getAutoOpen());
+		if(widgetSource instanceof HasVkInitiallyShowing)
+			buffer.append(",'" ).append(HasVkInitiallyShowing.NAME).append("':").append(((HasVkInitiallyShowing)widgetSource).isInitiallyShowing());
 		if(widgetSource instanceof HasVkTabHeaderText && !((HasVkTabHeaderText)widgetSource).getTabText().isEmpty())
 			buffer.append(",'" ).append(HasVkTabHeaderText.NAME).append("':").append("'").append(((HasVkTabHeaderText)widgetSource).getTabText().replace("'", "\\'").replace("\"", "\\\"")).append("'");
 		if(widgetSource instanceof HasVkTabHeaderHtml && !((HasVkTabHeaderHtml)widgetSource).getTabHTML().isEmpty())
@@ -335,8 +344,9 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			Window.alert("JSON String is not well-formed. Application cannot be built.");
 			return;
 		}
+		boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
 		VkDesignerUtil.isDesignerMode = false;
-		//((Panel)invokingWidget).clear(); Why do we need it, again?
+		((Panel)invokingWidget).clear();//for LOAD command
 		try{
 			VkDesignerUtil.getEngineMap().get(invokingWidget.getWidgetName()).buildWidget(jsonObj, (Widget) invokingWidget);//cast is safe because root of DOM is drawingPanel
 		}catch(Exception e)
@@ -344,12 +354,13 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			Window.alert("JSON String is not well-formed. Application cannot be built.");	
 			e.printStackTrace();
 		}
-		VkDesignerUtil.isDesignerMode = true;
+		VkDesignerUtil.isDesignerMode = isVkDesignerMode;
 	}
 	//TODO buildWidget should return a widget and the work of addition should be performed in the parent. It is not right to pass parent object and adding
 	//work is being done by the child
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		JSONArray childrenArray = jsonObj.put("children", null).isArray();
+		addAttributes(jsonObj, parent);
 		for(int i = 0; i < childrenArray.size(); i++)
 		{
 			JSONObject childObj = childrenArray.get(i).isObject();
@@ -359,7 +370,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
 			VkDesignerUtil.getEngine().addWidget(widget, ((IPanel)parent));
 			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
-			addAttributes(childObj, widget);
+			//addAttributes(childObj, widget);
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -476,6 +487,9 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		attributeJsObj = childObj.get(HasVkAutoOpen.NAME);
 		if(attributeJsObj != null && (attributeBooleanObj = attributeJsObj.isBoolean()) != null)
 			((HasVkAutoOpen)widget).setAutoOpen(attributeBooleanObj.booleanValue());
+		attributeJsObj = childObj.get(HasVkInitiallyShowing.NAME);
+		if(attributeJsObj != null && (attributeBooleanObj = attributeJsObj.isBoolean()) != null)
+			((HasVkInitiallyShowing)widget).setInitiallyShowing(attributeBooleanObj.booleanValue());
 		attributeJsObj = childObj.get(HasVkTabHeaderText.NAME);
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			((HasVkTabHeaderText)widget).setTabText(attributeStringObj.stringValue());
