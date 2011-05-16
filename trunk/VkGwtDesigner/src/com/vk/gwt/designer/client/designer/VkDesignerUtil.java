@@ -142,7 +142,8 @@ public class VkDesignerUtil {
 	private static VkEngine vkEngine = new VkEngine();
 	public static boolean isDesignerMode = true;
 	private static PopupPanel moveImagePanel = new PopupPanel(true);
-	private static Widget popUpAssociateWidget;;
+	private static Widget popUpAssociateWidget;
+	static boolean isLoadRunning = false;
 	
 	native static void initDesignerEvents(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) /*-{
 		var element = widget.@com.google.gwt.user.client.ui.Widget::getElement()();
@@ -171,6 +172,11 @@ public class VkDesignerUtil {
 			{
 				if(element.id != 'drawingPanel')
 				{
+					ev = ev || $wnd.event;
+					if(ev.cancelBubble)
+						ev.cancelBubble = true;
+					else
+						ev.stopPropagation();
 					@com.vk.gwt.designer.client.designer.VkDesignerUtil::showMoveIcon(Lcom/google/gwt/user/client/ui/Widget;)(widget);
 				}
 			}
@@ -334,6 +340,7 @@ public class VkDesignerUtil {
 					DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
 				if(left % SNAP_TO_FIT_LEFT == 0)
 					DOM.setStyleAttribute(draggingWidget.getElement(), "left", left + "px");
+				event.preventDefault();
 			}
 		});
 		draggingWidget.addMouseUpHandler(new MouseUpHandler() {
@@ -388,7 +395,7 @@ public class VkDesignerUtil {
 		if(isDesignerMode)
 		{
 			vkMenu.prepareMenu(drawingPanel);
-			HTML moveImage = new HTML("<img src='../images/cursor_move.png' height=16 width=16>");
+			HTML moveImage = new HTML("<img src='images/cursor_move.png' height=16 width=16>");
 			moveImage.addMouseDownHandler(new MouseDownHandler(){
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
@@ -403,6 +410,7 @@ public class VkDesignerUtil {
 			moveImagePanel.add(moveImage);
 			moveImage.setTitle("drag to move widget, right click to resize");
 			moveImagePanel.setStyleName("none");
+			popUpAssociateWidget = null;//for LOAD command
 		}
 	}
 	private native static void addResizeOnRightClick(Widget m) /*-{
@@ -514,8 +522,13 @@ public class VkDesignerUtil {
 			prepareLocalEvent(eventproperties);
 		runJs(VkDesignerUtil.formatJs(js));
 	}
+	/**
+	 * @param js
+	 * @param event
+	 * @param instantiateEventObject
+	 */
 	@SuppressWarnings("unchecked")
-	public static void executeEvent(String js, DomEvent event) {
+	public static void executeEvent(String js, DomEvent event, boolean instantiateEventObject) {
 		EventTarget currentEventTarget = event.getNativeEvent().getCurrentEventTarget();
 		Element currentEventTargetElement = currentEventTarget != null && Element.is(currentEventTarget)? (Element) Element.as(currentEventTarget) : null;
 		EventTarget eventTarget = event.getNativeEvent().getEventTarget();
@@ -524,7 +537,7 @@ public class VkDesignerUtil {
 		Element relativeEventTargetElement = relativeEventTarget != null ? (Element) Element.as(relativeEventTarget) : null;
 		//JSNI was not able to work with methods of NativeElement and kept on throwing errors which made no sense.
 		//Have a look at the issue raised at http://stackoverflow.com/questions/4086392/jsni-cannot-find-a-method-in-nativeevent-class-of-gwt 
-		prepareLocalEvent(event, event.getNativeEvent().getAltKey(), event.getNativeEvent().getButton(), event.getNativeEvent().getClientX() 
+		prepareLocalEvent(event, instantiateEventObject, event.getNativeEvent().getAltKey(), event.getNativeEvent().getButton(), event.getNativeEvent().getClientX() 
 			, event.getNativeEvent().getClientY(), event.getNativeEvent().getCtrlKey(), currentEventTargetElement, eventTargetElement
 			, event.getNativeEvent().getKeyCode(), event.getNativeEvent().getMetaKey(), event.getNativeEvent().getMouseWheelVelocityY()
 			, relativeEventTargetElement, event.getNativeEvent().getScreenX(), event.getNativeEvent().getScreenY(),event.getNativeEvent().getShiftKey());
@@ -547,10 +560,12 @@ public class VkDesignerUtil {
 		}
 	}-*/;
 	@SuppressWarnings("unchecked")
-	private native static void prepareLocalEvent(DomEvent event, boolean alt, int buttonNum, int clientx, int clienty, boolean ctrl
-			, Element currentEvtTarget, Element actualEvtTarget, int keycode, boolean meta, int mouseWheelVel, Element relativeEvtTarget, int screenx
-			, int screeny, boolean shift) /*-{
-		$wnd.vkEvent = {};
+	private native static void prepareLocalEvent(DomEvent event, boolean instantiateEventObject, boolean alt
+	, int buttonNum, int clientx, int clienty, boolean ctrl, Element currentEvtTarget, Element actualEvtTarget
+	, int keycode, boolean meta, int mouseWheelVel, Element relativeEvtTarget, int screenx, int screeny
+	, boolean shift) /*-{
+		if(instantiateEventObject)
+			$wnd.vkEvent = {};
 		$wnd.vkEvent.altKey = alt;
 		$wnd.vkEvent.button = buttonNum;
 		$wnd.vkEvent.clientX = clientx;

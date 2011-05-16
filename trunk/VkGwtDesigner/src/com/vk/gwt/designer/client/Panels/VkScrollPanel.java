@@ -37,7 +37,7 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IPanel, 
 			scrollHandlerRegistration = addScrollHandler(new ScrollHandler() {
 				@Override
 				public void onScroll(ScrollEvent event) {
-					VkDesignerUtil.executeEvent(scrollJs, event);
+					VkDesignerUtil.executeEvent(scrollJs, event, true);
 				}
 			});
 		}

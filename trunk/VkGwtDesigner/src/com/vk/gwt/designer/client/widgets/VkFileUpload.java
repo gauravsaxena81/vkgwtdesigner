@@ -29,7 +29,7 @@ public class VkFileUpload extends FileUpload implements IVkWidget, HasVkName, Ha
 			changeHandlerRegistration = addChangeHandler(new ChangeHandler() {
 				@Override
 				public void onChange(ChangeEvent event) {
-					VkDesignerUtil.executeEvent(changeJs, event);
+					VkDesignerUtil.executeEvent(changeJs, event, true);
 				}
 			});
 		}

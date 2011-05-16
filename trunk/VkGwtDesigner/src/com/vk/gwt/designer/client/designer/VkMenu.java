@@ -77,7 +77,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		public Command push(Command c)
 		{
 			if(size() == 10)
-				remove(9);
+				remove(0);
 			Command push = super.push(c);
 			refreshUndoRedo();
 			return push;
@@ -99,7 +99,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		public Command push(Command c)
 		{
 			if(size() == 10)
-				remove(9);
+				remove(0);
 			Command push = super.push(c);
 			refreshUndoRedo();
 			return push;
@@ -273,11 +273,9 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	}	
 	protected void makeToolbar()
 	{
-		//toolBar = new AbsolutePanel();
-		//toolBar.setStyleName("vkgwtdesigner-vertical-menu");
 		styleMenu = new MenuBar();
 		styleMenu.setStyleName("vkgwtdesigner-toolbar");
-		//toolBar.add(styleMenu);
+		styleMenu.setAutoOpen(true);
 		styleMenu.addItem(getBoldMenuItem());
 		styleMenu.addItem(getItalicMenuItem());
 		styleMenu.addItem(getUnderLineMenuItem());
@@ -951,7 +949,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		for (int i = 0; i < operationsList.size(); i++) 
 		{
 			if(operationsList.get(i).equals(IEngine.REMOVE))
-				operationsMenu.addItem(operationsList.get(i) + "(Delete)", getRemoveCommand());
+				operationsMenu.addItem(operationsList.get(i) + "(Del)", getRemoveCommand());
 			else if(operationsList.get(i).equals(IEngine.RESIZE))
 				operationsMenu.addItem(operationsList.get(i) + "(Right Click)", getResizeCommand());
 			else if(operationsList.get(i).equals(IEngine.CUT))
@@ -959,9 +957,9 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			else if(operationsList.get(i).equals(IEngine.COPY))
 				operationsMenu.addItem(operationsList.get(i) + "(Ctrl+C)", getCopyCommand());
 			else if(operationsList.get(i).equals(IEngine.COPY_STYLE))
-				operationsMenu.addItem(operationsList.get(i) + "(Ctrl + Shift + C)", getCopyStyleCommand());
+				operationsMenu.addItem(operationsList.get(i) + "(Ctrl+Shift+C)", getCopyStyleCommand());
 			else if(operationsList.get(i).equals(IEngine.PASTE_STYLE) && copyStyleWidget != null)
-				operationsMenu.addItem(operationsList.get(i) + "(Ctrl + Shift + V)", getPasteStyleCommand());
+				operationsMenu.addItem(operationsList.get(i) + "(Ctrl+Shift+V)", getPasteStyleCommand());
 			else if(operationsList.get(i).equals(IEngine.PASTE) && copyWidget != null)
 				operationsMenu.addItem(operationsList.get(i) + "(Ctrl+V)", getPasteCommand());
 			else if(operationsList.get(i).equals(IEngine.SAVE))
@@ -1000,8 +998,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 							if(widget != VkMenu.this)
 								widget.removeFromParent();
 						}
+						VkDesignerUtil.isLoadRunning = true;
 						VkDesignerUtil.loadApplication(ta.getText());
 						loadDialog.hide();
+						undoStack.clear();
+						redoStack.clear();
+						VkDesignerUtil.isLoadRunning = false;
 					}
 				});
 				Button cancel = new Button("Cancel");
@@ -1217,10 +1219,11 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						widget = (Widget) tempCopyWidget;
 					else
 					{
+						boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
 						VkDesignerUtil.isDesignerMode = false;
 						widget = VkDesignerUtil.getEngine().getWidget((tempCopyWidget).getWidgetName());
 						VkDesignerUtil.getEngineMap().get(tempCopyWidget.getWidgetName()).deepClone((Widget)copyWidget, widget);
-						VkDesignerUtil.isDesignerMode = true;
+						VkDesignerUtil.isDesignerMode = isVkDesignerMode;
 						VkDesignerUtil.initDesignerEvents(widget, widgetEngine);//since this was not called during get Widget as then isDesignerMode = false 
 					}
 					applyCommand(new Command(){
@@ -1233,12 +1236,16 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 								{
 									final int top = widget.getElement().getOffsetTop();
 									final int left = widget.getElement().getOffsetLeft();
+									widget.removeFromParent();
 									VkDesignerUtil.getEngine().addWidget(widget , ((IPanel)tempInvokingWidget));
 									undoStack.push(new Command(){
 										@Override
 										public void execute() {
 											if(tempExecuteCutsRemoveCommand)
+											{
+												widget.removeFromParent();
 												VkDesignerUtil.getEngine().addWidget(widget , (IPanel) prevParent, top, left);
+											}
 											else
 											{
 												invokingWidget = widget;

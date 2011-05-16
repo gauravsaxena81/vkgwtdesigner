@@ -87,7 +87,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 			clickHandlerRegistration = addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					VkDesignerUtil.executeEvent(clickJs, event);
+					VkDesignerUtil.executeEvent(clickJs, event, true);
 				}
 			});
 		}
@@ -103,7 +103,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 			mouseDownHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
-					VkDesignerUtil.executeEvent(mouseDownJs, event);
+					VkDesignerUtil.executeEvent(mouseDownJs, event, true);
 				}
 			});
 		}
@@ -119,7 +119,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 			mouseUpHandlerRegistration = addMouseUpHandler(new MouseUpHandler() {
 				@Override
 				public void onMouseUp(MouseUpEvent event) {
-					VkDesignerUtil.executeEvent(mouseUpJs, event);
+					VkDesignerUtil.executeEvent(mouseUpJs, event, true);
 				}
 			});
 		}
@@ -135,7 +135,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 			mouseMoveHandlerRegistration = addMouseMoveHandler(new MouseMoveHandler() {
 				@Override
 				public void onMouseMove(MouseMoveEvent event) {
-					VkDesignerUtil.executeEvent(mouseMoveJs, event);
+					VkDesignerUtil.executeEvent(mouseMoveJs, event, true);
 				}
 			});
 		}
@@ -151,7 +151,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 			mouseOverHandlerRegistration = addMouseOverHandler(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
-					VkDesignerUtil.executeEvent(mouseOverJs, event);
+					VkDesignerUtil.executeEvent(mouseOverJs, event, true);
 				}
 			});
 		}
@@ -167,7 +167,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 			mouseOutHandlerRegistration = addMouseOutHandler(new MouseOutHandler() {
 				@Override
 				public void onMouseOut(MouseOutEvent event) {
-					VkDesignerUtil.executeEvent(mouseOutJs, event);
+					VkDesignerUtil.executeEvent(mouseOutJs, event, true);
 				}
 			});
 		}
@@ -183,7 +183,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 			mouseWheelHandlerRegistration = addMouseWheelHandler(new MouseWheelHandler() {
 				@Override
 				public void onMouseWheel(MouseWheelEvent event) {
-					VkDesignerUtil.executeEvent(mouseWheelJs, event);
+					VkDesignerUtil.executeEvent(mouseWheelJs, event, true);
 				}
 			});
 		}

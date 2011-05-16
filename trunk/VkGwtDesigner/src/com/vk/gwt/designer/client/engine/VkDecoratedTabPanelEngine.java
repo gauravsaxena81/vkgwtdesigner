@@ -124,6 +124,7 @@ public class VkDecoratedTabPanelEngine extends VkAbstractWidgetEngine<VkDecorate
 	@Override
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		JSONArray childrenArray = jsonObj.put("children", null).isArray();
+		addAttributes(jsonObj, parent);
 		for(int i = 0; i < childrenArray.size(); i++)
 		{
 			JSONObject childObj = childrenArray.get(i).isObject();
@@ -134,7 +135,7 @@ public class VkDecoratedTabPanelEngine extends VkAbstractWidgetEngine<VkDecorate
 			int tabIndex = ((VkDecoratedTabPanel)parent).getWidgetCount() - 1;
 			((VkDecoratedTabPanel)parent).setTabHeaderHtml(tabIndex, childObj.get("headerHtml").isString().stringValue());
 			((VkDecoratedTabPanel)parent).setTabEnabled(tabIndex, childObj.get("enabled").isBoolean().booleanValue());
-			addAttributes(childWidgetObj, widget);
+			//addAttributes(childWidgetObj, widget);
 			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
 		}
 	}

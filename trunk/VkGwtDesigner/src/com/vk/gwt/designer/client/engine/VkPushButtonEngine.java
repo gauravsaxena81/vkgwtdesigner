@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -17,23 +18,24 @@ import com.vk.gwt.designer.client.widgets.VkPushButton;
 
 public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 	private static final String ADD_UP_IMAGE = "Add Up Image";
-	private static final String ADD_UP_HOVERING_IMAGE = "Add Up Hover Image";
-	private static final String ADD_UP_DISABLED_IMAGE = "Add Up Disabled Image";
-	private static final String ADD_DOWN_IMAGE = "Add Down Image";
-	private static final String ADD_DOWN_HOVERING_IMAGE = "Add Down Hover Image";
-	private static final String ADD_DOWN_DISABLED_IMAGE = "Add Down Disabled Image";
 	private static final String ADD_UP_HTML = "Add Up Html";
-	private static final String ADD_UP_HOVERING_HTML = "Add Up Hover Html";
-	private static final String ADD_UP_DISABLED_HTML = "Add Up Disabled Html";
-	private static final String ADD_DOWN_HTML = "Add Down Html";
-	private static final String ADD_DOWN_HOVERING_HTML = "Add Down Hover Html";
-	private static final String ADD_DOWN_DISABLED_HTML = "Add Down Disabled Html";
 	private static final String ADD_UP_TEXT = "Add Up Text";
+	private static final String ADD_UP_HOVERING_IMAGE = "Add Up Hover Image";
+	private static final String ADD_UP_HOVERING_HTML = "Add Up Hover Html";
 	private static final String ADD_UP_HOVERING_TEXT = "Add Up Hover Text";
+	private static final String ADD_UP_DISABLED_IMAGE = "Add Up Disabled Image";
+	private static final String ADD_UP_DISABLED_HTML = "Add Up Disabled Html";
 	private static final String ADD_UP_DISABLED_TEXT = "Add Up Disabled Text";
+	private static final String ADD_DOWN_IMAGE = "Add Down Image";
+	private static final String ADD_DOWN_HTML = "Add Down Html";
 	private static final String ADD_DOWN_TEXT = "Add Down Text";
+	private static final String ADD_DOWN_HOVERING_IMAGE = "Add Down Hover Image";
+	private static final String ADD_DOWN_HOVERING_HTML = "Add Down Hover Html";
 	private static final String ADD_DOWN_HOVERING_TEXT = "Add Down Hover Text";
+	private static final String ADD_DOWN_DISABLED_IMAGE = "Add Down Disabled Image";
+	private static final String ADD_DOWN_DISABLED_HTML = "Add Down Disabled Html";
 	private static final String ADD_DOWN_DISABLED_TEXT = "Add Down Disabled Text";
+	private static final String ALLOW_HOLD_DOWN = "Click Holds Button Down";
 	
 	@Override
 	public VkPushButton getWidget() {
@@ -149,6 +151,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_UP_HTML))
 		{
 			TextArea ta = new TextArea();
+			ta.setText(widget.getUpFace().getHTML());
 			ta.setSize("100px","50px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up html", ta
 					, new IEventRegister() {
@@ -162,6 +165,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_UP_HOVERING_HTML))
 		{
 			TextArea ta = new TextArea();
+			ta.setText(widget.getUpHoveringFace().getHTML());
 			ta.setSize("100px","50px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up hover html", ta
 					, new IEventRegister() {
@@ -175,6 +179,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_UP_DISABLED_HTML))
 		{
 			TextArea ta = new TextArea();
+			ta.setText(widget.getUpDisabledFace().getHTML());
 			ta.setSize("100px","50px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up disabled html", ta
 					, new IEventRegister() {
@@ -188,6 +193,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_DOWN_HTML))
 		{
 			TextArea ta = new TextArea();
+			ta.setText(widget.getDownFace().getHTML());
 			ta.setSize("100px","50px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down html", ta
 					, new IEventRegister() {
@@ -201,6 +207,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_DOWN_HOVERING_HTML))
 		{
 			TextArea ta = new TextArea();
+			ta.setText(widget.getDownHoveringFace().getHTML());
 			ta.setSize("100px","50px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down hover html", ta
 					, new IEventRegister() {
@@ -214,6 +221,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_DOWN_DISABLED_HTML))
 		{
 			TextArea ta = new TextArea();
+			ta.setText(widget.getDownDisabledFace().getHTML());
 			ta.setSize("100px","50px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down disabled html", ta
 					, new IEventRegister() {
@@ -227,6 +235,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_UP_TEXT))
 		{
 			TextBox tb = new TextBox();
+			tb.setText(widget.getUpFace().getText());
 			tb.setWidth("100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up text", tb
 					, new IEventRegister() {
@@ -240,6 +249,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_UP_HOVERING_TEXT))
 		{
 			TextBox tb = new TextBox();
+			tb.setText(widget.getUpHoveringFace().getText());
 			tb.setWidth("100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up hover text", tb
 					, new IEventRegister() {
@@ -253,6 +263,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_UP_DISABLED_TEXT))
 		{
 			TextBox tb = new TextBox();
+			tb.setText(widget.getUpDisabledFace().getText());
 			tb.setWidth("100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up disabled text", tb
 					, new IEventRegister() {
@@ -266,19 +277,21 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_DOWN_TEXT))
 		{
 			TextBox tb = new TextBox();
+			tb.setText(widget.getDownFace().getText());
 			tb.setWidth("100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down text", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String text) {
-							widget.getDownFace().setText(text);
 							widget.setImageDownSrc(null);
+							widget.getDownFace().setText(text);
 						}
 					});
 		}
 		else if(attributeName.equals(ADD_DOWN_HOVERING_TEXT))
 		{
 			TextBox tb = new TextBox();
+			tb.setText(widget.getDownHoveringFace().getText());
 			tb.setWidth("100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down hover text", tb
 					, new IEventRegister() {
@@ -292,6 +305,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		else if(attributeName.equals(ADD_DOWN_DISABLED_TEXT))
 		{
 			TextBox tb = new TextBox();
+			tb.setText(widget.getDownDisabledFace().getText());
 			tb.setWidth("100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down disabled text", tb
 					, new IEventRegister() {
@@ -302,6 +316,21 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 						}
 					});
 		}
+		else if(attributeName.equals(ALLOW_HOLD_DOWN))
+		{
+			final ListBox listBox = new ListBox();
+			listBox.addItem("True","0");
+			listBox.addItem("False","1");
+			listBox.setSelectedIndex(widget.isAllowHoldDown() ? 0 : 1);
+			VkDesignerUtil.getEngine().showAddListDialog("Please provide option for holding button down on click", listBox, new IEventRegister(){
+				@Override
+				public void registerEvent(String js) {
+					if(listBox.getSelectedIndex() == 0)
+						widget.setAllowHoldDown(true);
+					else
+						widget.setAllowHoldDown(false);
+				}});
+		}
 		else
 			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
 	}
@@ -310,23 +339,24 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 	{
 		List<String> list = new ArrayList<String>();
 		list.add(ADD_UP_IMAGE);
-		list.add(ADD_UP_HOVERING_IMAGE);
-		list.add(ADD_UP_DISABLED_IMAGE);
-		list.add(ADD_DOWN_IMAGE);
-		list.add(ADD_DOWN_HOVERING_IMAGE);
-		list.add(ADD_DOWN_DISABLED_IMAGE);
 		list.add(ADD_UP_HTML);
-		list.add(ADD_UP_HOVERING_HTML);
-		list.add(ADD_UP_DISABLED_HTML);
-		list.add(ADD_DOWN_HTML);
-		list.add(ADD_DOWN_HOVERING_HTML);
-		list.add(ADD_DOWN_DISABLED_HTML);
 		list.add(ADD_UP_TEXT);
+		list.add(ADD_UP_HOVERING_IMAGE);
+		list.add(ADD_UP_HOVERING_HTML);
 		list.add(ADD_UP_HOVERING_TEXT);
+		list.add(ADD_UP_DISABLED_IMAGE);
+		list.add(ADD_UP_DISABLED_HTML);
 		list.add(ADD_UP_DISABLED_TEXT);
+		list.add(ADD_DOWN_IMAGE);
+		list.add(ADD_DOWN_HTML);
 		list.add(ADD_DOWN_TEXT);
+		list.add(ADD_DOWN_HOVERING_IMAGE);
+		list.add(ADD_DOWN_HOVERING_HTML);
 		list.add(ADD_DOWN_HOVERING_TEXT);
+		list.add(ADD_DOWN_DISABLED_IMAGE);
+		list.add(ADD_DOWN_DISABLED_HTML);
 		list.add(ADD_DOWN_DISABLED_TEXT);
+		list.add(ALLOW_HOLD_DOWN);
 		list.addAll(VkDesignerUtil.getEngine().getAttributesList(invokingWidget));
 		return list;
 	}
@@ -377,6 +407,8 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			buttonTarget.getDownDisabledFace().setHTML(buttonSource.getDownDisabledFace().getHTML());
 		else
 			buttonTarget.getDownDisabledFace().setImage(new Image(buttonSource.getImageDownDisabledSrc()));
+		buttonTarget.setAllowHoldDown(buttonSource.isAllowHoldDown());
+		buttonTarget.setDown(buttonSource.isDown());
 	}
 	@Override
 	public String serialize(IVkWidget widget)
@@ -416,10 +448,13 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			buffer.append("image:'").append(button.getImageDownHoveringSrc()).append("'}");
 		else
 			buffer.append("html:'").append(button.getDownHoveringFace().getHTML()).append("'}");
+		buffer.append(",allowHoldDown:").append(button.isAllowHoldDown());
+		buffer.append(",isDown:").append(button.isDown());
 		buffer.append(",children:[").append("]}");
 		return buffer.toString();
 	}
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
+		addAttributes(jsonObj, parent);
 		VkPushButton button = (VkPushButton)parent;
 		JSONObject faceObj = jsonObj.get("upDisabledFace").isObject();
 		if(faceObj.get("image") != null)
@@ -450,6 +485,8 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		if(faceObj.get("image") != null)
 			button.getDownHoveringFace().setImage(new Image(faceObj.get("image").isString().stringValue()));
 		else
-			button.getDownHoveringFace().setHTML(faceObj.get("html").isString().stringValue());			
+			button.getDownHoveringFace().setHTML(faceObj.get("html").isString().stringValue());
+		button.setAllowHoldDown(jsonObj.get("allowHoldDown").isBoolean().booleanValue());
+		button.setDown(jsonObj.get("isDown").isBoolean().booleanValue());
 	}
 }

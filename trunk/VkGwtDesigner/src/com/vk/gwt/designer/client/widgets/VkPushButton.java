@@ -25,6 +25,7 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
@@ -35,7 +36,6 @@ import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
-import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyUpHandler;
@@ -46,11 +46,10 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseOverHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
-import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 
-public class VkPushButton extends PushButton implements IVkWidget, HasVkText, HasVkHtml, HasVkEnabled, HasVkAccessKey, HasVkTabIndex, HasVkAllMouseHandlers
+public class VkPushButton extends PushButton implements IVkWidget, HasVkEnabled, HasVkAccessKey, HasVkTabIndex, HasVkAllMouseHandlers
 , HasVkAllKeyHandlers, HasVkFocusHandler, HasVkBlurHandler{
 	final public static String NAME = "Push Button";
 
@@ -85,6 +84,12 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 	private String imageDownDisabledSrc;
 	private String imageDownHoveringSrc;
 	private char accessKey;
+	private boolean allowHoldDown = false;
+	
+	public VkPushButton()
+	{
+		super("Up","Down");
+	}
 	
 	@Override
 	public String getPriorJs(String eventName) {
@@ -125,7 +130,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			clickHandlerRegistration = addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					VkDesignerUtil.executeEvent(clickJs, event);
+					VkDesignerUtil.executeEvent(clickJs, event, true);
 				}
 			});
 		}
@@ -141,7 +146,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			mouseDownHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
-					VkDesignerUtil.executeEvent(mouseDownJs, event);
+					VkDesignerUtil.executeEvent(mouseDownJs, event, true);
 				}
 			});
 		}
@@ -157,7 +162,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			mouseUpHandlerRegistration = addMouseUpHandler(new MouseUpHandler() {
 				@Override
 				public void onMouseUp(MouseUpEvent event) {
-					VkDesignerUtil.executeEvent(mouseUpJs, event);
+					VkDesignerUtil.executeEvent(mouseUpJs, event, true);
 				}
 			});
 		}
@@ -173,7 +178,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			mouseMoveHandlerRegistration = addMouseMoveHandler(new MouseMoveHandler() {
 				@Override
 				public void onMouseMove(MouseMoveEvent event) {
-					VkDesignerUtil.executeEvent(mouseMoveJs, event);
+					VkDesignerUtil.executeEvent(mouseMoveJs, event, true);
 				}
 			});
 		}
@@ -189,7 +194,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			mouseOverHandlerRegistration = addMouseOverHandler(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
-					VkDesignerUtil.executeEvent(mouseOverJs, event);
+					VkDesignerUtil.executeEvent(mouseOverJs, event, true);
 				}
 			});
 		}
@@ -205,7 +210,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			mouseOutHandlerRegistration = addMouseOutHandler(new MouseOutHandler() {
 				@Override
 				public void onMouseOut(MouseOutEvent event) {
-					VkDesignerUtil.executeEvent(mouseOutJs, event);
+					VkDesignerUtil.executeEvent(mouseOutJs, event, true);
 				}
 			});
 		}
@@ -221,7 +226,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			mouseWheelHandlerRegistration = addMouseWheelHandler(new MouseWheelHandler() {
 				@Override
 				public void onMouseWheel(MouseWheelEvent event) {
-					VkDesignerUtil.executeEvent(mouseWheelJs, event);
+					VkDesignerUtil.executeEvent(mouseWheelJs, event, true);
 				}
 			});
 		}
@@ -237,7 +242,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			keyDownHandlerRegistration = addKeyDownHandler(new KeyDownHandler() {
 				@Override
 				public void onKeyDown(KeyDownEvent event) {
-					VkDesignerUtil.executeEvent(keyDownJs, event);
+					VkDesignerUtil.executeEvent(keyDownJs, event, true);
 				}
 			});
 		}
@@ -253,7 +258,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			keyUpHandlerRegistration = addKeyUpHandler(new KeyUpHandler() {
 				@Override
 				public void onKeyUp(KeyUpEvent event) {
-					VkDesignerUtil.executeEvent(keyUpJs, event);
+					VkDesignerUtil.executeEvent(keyUpJs, event, true);
 				}
 			});
 		}
@@ -269,7 +274,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			keyPressHandlerRegistration = addKeyPressHandler(new KeyPressHandler() {
 				@Override
 				public void onKeyPress(KeyPressEvent event) {
-					VkDesignerUtil.executeEvent(keyPressJs, event);
+					VkDesignerUtil.executeEvent(keyPressJs, event, true);
 				}
 			});
 		}
@@ -285,7 +290,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			focusHandlerRegistration = addFocusHandler(new FocusHandler() {
 				@Override
 				public void onFocus(FocusEvent event) {
-					VkDesignerUtil.executeEvent(focusJs, event);
+					VkDesignerUtil.executeEvent(focusJs, event, true);
 				}
 			});
 		}
@@ -301,7 +306,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 			blurHandlerRegistration = addBlurHandler(new BlurHandler() {
 				@Override
 				public void onBlur(BlurEvent event) {
-					VkDesignerUtil.executeEvent(blurJs, event);
+					VkDesignerUtil.executeEvent(blurJs, event, true);
 				}
 			});
 		}
@@ -381,6 +386,40 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	  protected void onClick() {
+		if(allowHoldDown)
+		{
+			boolean down = isDown();
+			super.onClick();
+			if(down)
+				setDown(false);
+			else
+				setDown(true);
+		}
+		else
+			super.onClick();
+	  }
+	@Override
+	protected void onClickStart() {
+		if(!allowHoldDown)
+			super.onClickStart();
+	}
+	public boolean isAllowHoldDown() {
+		return allowHoldDown;
+	}
+
+	public void setAllowHoldDown(boolean allowHoldDown) {
+		this.allowHoldDown = allowHoldDown;
+	}
+	@Override
+	public void setDown(boolean down){
+		super.setDown(down);
+	}
+	@Override
+	public boolean isDown(){
+		return super.isDown();
+	}
 	/**************************Export attribute Methods********************************/
 	@Export
 	public void setVkPushButtonEabled(boolean enabled)
@@ -391,30 +430,6 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 	public boolean isVkPushButtonEnabled()
 	{
 		return super.isEnabled();
-	}
-	@Override
-	@Export
-	public void setText(String text)
-	{
-		super.setText(text);
-	}
-	@Override
-	@Export
-	public String getText()
-	{
-		return super.getText();
-	}
-	@Override
-	@Export
-	public void setHTML(String html)
-	{
-		super.setHTML(html);
-	}
-	@Override
-	@Export
-	public String getHTML()
-	{
-		return super.getHTML();
 	}
 	@Export
 	public void setButtonEnabled(boolean enabled)
@@ -456,5 +471,140 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkText, Ha
 	public void removeStyleName(String className)
 	{
 		super.removeStyleName(className);
+	}
+	@Export
+	public String getDownText()
+	{
+		return getDownFace().getText();
+	}
+	@Export
+	public String getDownHTML()
+	{
+		return getDownFace().getHTML();
+	}
+	@Export
+	public String getDownImageSrc()
+	{
+		return imageDownSrc;
+	}
+	@Export
+	public String getDownHoveringText()
+	{
+		return getDownHoveringFace().getText();
+	}
+	@Export
+	public String getDownHoveringHTML()
+	{
+		return getDownHoveringFace().getHTML();
+	}
+	@Export
+	public String getDownHoveringImageSrc()
+	{
+		return imageDownHoveringSrc;
+	}
+	@Export
+	public String getDownDisabledText()
+	{
+		return getDownFace().getText();
+	}
+	@Export
+	public String getDownDisabledHTML()
+	{
+		return getDownFace().getHTML();
+	}
+	@Export
+	public String getDownDisabledImageSrc()
+	{
+		return imageDownDisabledSrc;
+	}
+	@Export
+	public void setUpText(String text)
+	{
+		getUpFace().setText(text);
+	}
+	@Export
+	public void setUpHTML(String html)
+	{
+		getUpFace().setHTML(html);
+	}
+	@Export
+	public void setUpImageSrc(String src)
+	{
+		getUpFace().setImage(new Image(src));
+	}
+	@Export
+	public void setUpHoveringText(String text)
+	{
+		getUpHoveringFace().setText(text);
+	}
+	@Export
+	public void setUpHoveringHTML(String html)
+	{
+		getUpHoveringFace().setHTML(html);
+	}
+	@Export
+	public void setUpHoveringImageSrc(String src)
+	{
+		getUpHoveringFace().setImage(new Image(src));
+	}
+	@Export
+	public void setUpDisabledText(String text)
+	{
+		getUpFace().setText(text);
+	}
+	@Export
+	public void setUpDisabledHTML(String html)
+	{
+		getUpFace().setHTML(html);
+	}
+	@Export
+	public void setUpDisabledImageSrc(String src)
+	{
+		getUpFace().setImage(new Image(src));
+	}
+	@Export
+	public void setDownText(String text)
+	{
+		getDownFace().setText(text);
+	}
+	@Export
+	public void setDownHTML(String html)
+	{
+		getDownFace().setHTML(html);
+	}
+	@Export
+	public void setDownImageSrc(String src)
+	{
+		getDownFace().setImage(new Image(src));
+	}
+	@Export
+	public void setDownHoveringText(String text)
+	{
+		getDownHoveringFace().setText(text);
+	}
+	@Export
+	public void setDownHoveringHTML(String html)
+	{
+		getDownHoveringFace().setHTML(html);
+	}
+	@Export
+	public void setDownHoveringImageSrc(String src)
+	{
+		getDownHoveringFace().setImage(new Image(src));
+	}
+	@Export
+	public void setDownDisabledText(String text)
+	{
+		getDownFace().setText(text);
+	}
+	@Export
+	public void setDownDisabledHTML(String html)
+	{
+		getDownFace().setHTML(html);
+	}
+	@Export
+	public void setDownDisabledImageSrc(String src)
+	{
+		getDownFace().setImage(new Image(src));
 	}
 }

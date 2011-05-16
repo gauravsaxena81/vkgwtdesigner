@@ -58,6 +58,7 @@ public class VkDecoratedStackPanelEngine extends VkAbstractWidgetEngine<VkDecora
 	@Override
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		JSONArray childrenArray = jsonObj.put("children", null).isArray();
+		addAttributes(jsonObj, parent);
 		for(int i = 0; i < childrenArray.size(); i++)
 		{
 			JSONObject childObj = childrenArray.get(i).isObject();
@@ -67,7 +68,7 @@ public class VkDecoratedStackPanelEngine extends VkAbstractWidgetEngine<VkDecora
 			VkDesignerUtil.getEngine().addWidget(widget, ((IPanel)parent));
 			((VkDecoratedStackPanel)parent).setHeaderHtml(((VkDecoratedStackPanel)parent).getWidgetCount() - 1
 					, childObj.get("headerHtml").isString().stringValue());
-			addAttributes(childWidgetObj, widget);
+			//addAttributes(childWidgetObj, widget);
 			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
 		}
 	}

@@ -3,6 +3,8 @@ package com.vk.gwt.designer.client.widgets;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -12,26 +14,31 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
+import com.vk.gwt.designer.client.Panels.VkAbsolutePanel;
 import com.vk.gwt.designer.client.api.attributes.HasVkAutoHide;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionText;
 import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkGlass;
 import com.vk.gwt.designer.client.api.attributes.HasVkGlassStyle;
+import com.vk.gwt.designer.client.api.attributes.HasVkInitiallyShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkModal;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkDialogBox extends DialogBox implements IPanel, HasVkCloseHandler, HasVkCaptionText, HasVkCaptionHtml, HasVkAutoHide, HasVkGlass
-, HasVkGlassStyle, HasVkModal{
+, HasVkGlassStyle, HasVkModal, HasVkInitiallyShowing{
 	public static final String NAME = "Dialog Box(added to Page)";
 	private HandlerRegistration closeRegistration;
 	private String closeJs = "";
+	private boolean isInitiallyShowing = true;
 	public VkDialogBox()
 	{
 		setText("Untitled");
 		setModal(false);
+		if(VkDesignerUtil.isDesignerMode)
+			add(VkDesignerUtil.getEngine().getWidget(VkAbsolutePanel.NAME));
 	}
 	@Override
 	public void add(Widget w) {
@@ -39,6 +46,17 @@ public class VkDialogBox extends DialogBox implements IPanel, HasVkCloseHandler,
 			Window.alert("DialogBox can add only one widget");
 		else
 			super.add(w);
+	}
+	//to suppress its own dragging during designer mode
+	@Override
+	protected void beginDragging(MouseDownEvent event) {
+		if(!VkDesignerUtil.isDesignerMode)
+			super.beginDragging(event);
+	}
+	@Override
+	protected void endDragging(MouseUpEvent event) {
+		if(!VkDesignerUtil.isDesignerMode)
+			super.endDragging(event);
 	}
 	@Override
 	public void addCloseHandler(String js) {
@@ -68,19 +86,32 @@ public class VkDialogBox extends DialogBox implements IPanel, HasVkCloseHandler,
 	@Override
 	public void setHeight(String height)
 	{
-		Window.alert("Please resize the contained widget to resize the dialogbox");
+		//Window.alert("Please resize the contained widget to resize the dialogbox");
+		if(getWidget() != null)
+			getWidget().setHeight(height);
 	}
 	@Override
 	public String getWidgetName() {
 		return NAME;
 	}
 	@Override
-	public void setWidth(String width){}
+	public void setWidth(String width){
+		if(getWidget() != null)
+			getWidget().setWidth(width);
+	}
 	@Override
 	public void clone(Widget targetWidget) {}
 	@Override
 	public boolean showMenu() {
 		return true;
+	}
+	@Override
+	public boolean isInitiallyShowing() {
+		return isInitiallyShowing;
+	}
+	@Override
+	public void setInitiallyShowing(boolean showing) {
+		this.isInitiallyShowing = showing;
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

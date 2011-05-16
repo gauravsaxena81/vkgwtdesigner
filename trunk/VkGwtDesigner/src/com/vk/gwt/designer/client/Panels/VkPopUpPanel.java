@@ -11,22 +11,24 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkAutoHide;
 import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkGlass;
 import com.vk.gwt.designer.client.api.attributes.HasVkGlassStyle;
+import com.vk.gwt.designer.client.api.attributes.HasVkInitiallyShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkModal;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkPopUpPanel extends PopupPanel implements HasVkWidgets, IPanel, HasVkCloseHandler, HasVkAnimation, HasVkAutoHide, HasVkGlass, HasVkGlassStyle,
-HasVkModal{
+HasVkModal, HasVkInitiallyShowing{
 	public static final String NAME = "Popup Panel(added to Page)";
 	private HandlerRegistration closeRegistration;
 	private String closeJs = "";
+	private boolean isShowing = true;
 	public VkPopUpPanel() {
 		show();
 	}
@@ -71,6 +73,14 @@ HasVkModal{
 	@Override
 	public boolean showMenu() {
 		return true;
+	}
+	@Override
+	public void setInitiallyShowing(boolean showing) {
+		isShowing = showing;
+	}
+	@Override
+	public boolean isInitiallyShowing() {
+		return isShowing;
 	}
 	/**************************Export attribute Methods********************************/
 	@Override
