@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -30,6 +31,8 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -372,6 +375,16 @@ public class VkCheckbox extends CheckBox implements IVkWidget, HasVkAllKeyHandle
 	@Override
 	public boolean showMenu() {
 		return true;
+	}
+	@Override
+	public void onBrowserEvent(Event event) {
+		switch (DOM.eventGetType(event)) {
+			case Event.ONMOUSEOUT:
+			case Event.ONMOUSEOVER:
+				DomEvent.fireNativeEvent(event, this, this.getElement());
+			default:
+				super.onBrowserEvent(event);
+		}
 	}
 	/**************************Export attribute Methods********************************/
 	@Override
