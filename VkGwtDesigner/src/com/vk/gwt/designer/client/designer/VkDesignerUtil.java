@@ -539,7 +539,7 @@ public class VkDesignerUtil {
 		//Have a look at the issue raised at http://stackoverflow.com/questions/4086392/jsni-cannot-find-a-method-in-nativeevent-class-of-gwt 
 		prepareLocalEvent(event, instantiateEventObject, event.getNativeEvent().getAltKey(), event.getNativeEvent().getButton(), event.getNativeEvent().getClientX() 
 			, event.getNativeEvent().getClientY(), event.getNativeEvent().getCtrlKey(), currentEventTargetElement, eventTargetElement
-			, event.getNativeEvent().getKeyCode(), event.getNativeEvent().getMetaKey(), event.getNativeEvent().getMouseWheelVelocityY()
+			, event.getNativeEvent().getKeyCode(), event.getNativeEvent().getCharCode(), event.getNativeEvent().getMetaKey(), event.getNativeEvent().getMouseWheelVelocityY()
 			, relativeEventTargetElement, event.getNativeEvent().getScreenX(), event.getNativeEvent().getScreenY(),event.getNativeEvent().getShiftKey());
 		runJs( VkDesignerUtil.formatJs(js));
 	}
@@ -562,7 +562,7 @@ public class VkDesignerUtil {
 	@SuppressWarnings("unchecked")
 	private native static void prepareLocalEvent(DomEvent event, boolean instantiateEventObject, boolean alt
 	, int buttonNum, int clientx, int clienty, boolean ctrl, Element currentEvtTarget, Element actualEvtTarget
-	, int keycode, boolean meta, int mouseWheelVel, Element relativeEvtTarget, int screenx, int screeny
+	, int keyCode, int charCode, boolean meta, int mouseWheelVel, Element relativeEvtTarget, int screenx, int screeny
 	, boolean shift) /*-{
 		if(instantiateEventObject)
 			$wnd.vkEvent = {};
@@ -573,7 +573,8 @@ public class VkDesignerUtil {
 		$wnd.vkEvent.ctrlKey = ctrl;
 		$wnd.vkEvent.currentEventTarget = currentEvtTarget;
 		$wnd.vkEvent.eventTarget = actualEvtTarget;
-		$wnd.vkEvent.keyCode = keycode;
+		$wnd.vkEvent.keyCode = keyCode;
+		$wnd.vkEvent.charCode = charCode;
 		$wnd.vkEvent.metaKey = meta;
 		$wnd.vkEvent.mouseWheelVelocity = mouseWheelVel;
 		$wnd.vkEvent.relativeEventTarget = relativeEvtTarget;
@@ -589,11 +590,11 @@ public class VkDesignerUtil {
 	}-*/;
 
 	public static void centerDialog(Panel dialog) {
-			dialog.setVisible(true);
-			DOM.setStyleAttribute(dialog.getElement(), "top", 
-					(VkDesignerUtil.getDrawingPanel().getOffsetHeight() / 2 - dialog.getOffsetHeight() / 2) +  "px");
-			DOM.setStyleAttribute(dialog.getElement(), "left", 
-					(VkDesignerUtil.getDrawingPanel().getOffsetWidth() / 2 - dialog.getOffsetWidth() / 2) +  "px");
+		dialog.setVisible(true);
+		DOM.setStyleAttribute(dialog.getElement(), "top", 
+				(VkDesignerUtil.getDrawingPanel().getOffsetHeight() / 2 - dialog.getOffsetHeight() / 2) +  "px");
+		DOM.setStyleAttribute(dialog.getElement(), "left", 
+				(VkDesignerUtil.getDrawingPanel().getOffsetWidth() / 2 - dialog.getOffsetWidth() / 2) +  "px");
 	}
 	public static native String getComputedStyleAttribute(Element elem, String attr) 
 	  /*-{

@@ -29,7 +29,8 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.logical.shared.InitializeEvent;
 import com.google.gwt.event.logical.shared.InitializeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -104,6 +105,14 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 		setWidget(0, 0, toolbar);
 		setWidget(1, 0, richTextArea);
 		richTextArea.setWidth("100%");
+		if(VkDesignerUtil.isDesignerMode)
+		{
+			toolbar.addDomHandler(new MouseDownHandler(){
+				@Override
+				public void onMouseDown(MouseDownEvent event) {
+					event.stopPropagation();
+				}}, MouseDownEvent.getType());
+		}
 	}
 	protected RichTextArea getRichTextArea()
 	{
@@ -116,6 +125,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	@Override
 	public void setHeight(String height)
 	{
+		super.setHeight(height);
 		richTextArea.setHeight((Integer.parseInt(height.replace("px","")) - toolbar.getOffsetHeight()) + "px");
 	}
 	@Override
@@ -126,7 +136,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 		clickJs = js.trim();
 		if(!clickJs.isEmpty())
 		{
-			clickHandlerRegistration = addClickHandler(new ClickHandler() {
+			clickHandlerRegistration = richTextArea.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
 					VkDesignerUtil.executeEvent(clickJs, event, true);
@@ -214,7 +224,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 			});
 		}
 	}
-	@Override
+	@Override//doesn't work because it doesn't work in gwt
 	public void addMouseWheelHandler(String js) {
 		if(mouseWheelHandlerRegistration != null)
 			mouseWheelHandlerRegistration.removeHandler();
@@ -318,9 +328,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 		initializeJs = js.trim();
 		if(!initializeJs.isEmpty())
 		{
-			initializeHandlerRegistration = richTextArea.addInitializeHandler(new InitializeHandler() {
-				private String initializeJs;
-	
+			initializeHandlerRegistration = richTextArea.addInitializeHandler(new InitializeHandler() {	
 				@Override
 				public void onInitialize(InitializeEvent event) {
 					VkDesignerUtil.executeEvent(initializeJs, (Map<String, String>) null);
@@ -541,10 +549,10 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	@Export
 	public void setEnabled(boolean enabled)
 	{
-		if(!VkDesignerUtil.isDesignerMode)
+		//if(!VkDesignerUtil.isDesignerMode)
 			richTextArea.setEnabled(enabled);
-		else if(!enabled)
-			Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");
+		//else if(!enabled)
+			//Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");
 		isEnabled  = enabled;
 	}
 	@Override
