@@ -532,7 +532,8 @@ public class VkDesignerUtil {
 		EventTarget currentEventTarget = event.getNativeEvent().getCurrentEventTarget();
 		Element currentEventTargetElement = currentEventTarget != null && Element.is(currentEventTarget)? (Element) Element.as(currentEventTarget) : null;
 		EventTarget eventTarget = event.getNativeEvent().getEventTarget();
-		Element eventTargetElement = eventTarget != null ? (Element) Element.as(eventTarget) : null;
+		Element eventTargetElement = eventTarget != null && Element.is(eventTarget)
+			? (Element) Element.as(eventTarget) : null;
 		EventTarget relativeEventTarget = event.getNativeEvent().getRelatedEventTarget();
 		Element relativeEventTargetElement = relativeEventTarget != null ? (Element) Element.as(relativeEventTarget) : null;
 		//JSNI was not able to work with methods of NativeElement and kept on throwing errors which made no sense.

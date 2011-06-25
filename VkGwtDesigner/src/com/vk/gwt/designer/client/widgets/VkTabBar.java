@@ -19,7 +19,8 @@ import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
-public class VkTabBar extends TabBar implements IVkWidget, HasVkBeforeSelectionHandler, HasVkSelectionHandler, HasVkTabHeaderText, HasVkTabHeaderHtml{
+public class VkTabBar extends TabBar implements IVkWidget, HasVkBeforeSelectionHandler, HasVkSelectionHandler
+, HasVkTabHeaderText, HasVkTabHeaderHtml{
 	public static final String NAME = "Tab Bar";
 	private HandlerRegistration beforeSelectionHandler;
 	private HandlerRegistration selectionHandler;

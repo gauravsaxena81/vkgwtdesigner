@@ -75,7 +75,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 	private HandlerRegistration keyPressHandlerRegistration;
 	private HandlerRegistration focusHandlerRegistration;
 	private HandlerRegistration blurHandlerRegistration;
-	private HandlerRegistration selectionHandler;
+	private HandlerRegistration selectionHandlerRegsitration;
 	private HandlerRegistration closeHandlerRegistration;
 	private HandlerRegistration openHandlerRegistration;
 	private String mouseDownJs = "";
@@ -137,6 +137,10 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			return focusJs;
 		else if(eventName.equals(HasVkBlurHandler.NAME))
 			return blurJs;
+		else if(eventName.equals(HasVkOpenHandler.NAME))
+			return openJs;
+		else if(eventName.equals(HasVkCloseHandler.NAME))
+			return closeJs;
 		else if(eventName.equals(HasVkSelectionHandler.NAME))
 			return selectionJs;
 		else return "";
@@ -319,13 +323,13 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 	}
 	@Override
 	public void addSelectionHandler(String js) {
-		if(selectionHandler != null)
-			selectionHandler.removeHandler();
-		selectionHandler = null;
+		if(selectionHandlerRegsitration != null)
+			selectionHandlerRegsitration.removeHandler();
+		selectionHandlerRegsitration = null;
 		selectionJs = js.trim();
 		if(!selectionJs.isEmpty())
 		{
-			selectionHandler = super.addSelectionHandler(new SelectionHandler<TreeItem>() {
+			selectionHandlerRegsitration = super.addSelectionHandler(new SelectionHandler<TreeItem>() {
 				@SuppressWarnings("unchecked")
 				@Override
 				public void onSelection(SelectionEvent<TreeItem> event) {

@@ -55,6 +55,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		else if(attributeName.equals(REMOVE_ITEM))
 		{
 			final ListBox listBox = new ListBox();
+			listBox.setWidth("200px");
 			int itemCount = menuBar.getItemCount();
 			if(itemCount == 0)
 			{
@@ -73,6 +74,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		else if(attributeName.equals(EDIT_ITEM))
 		{
 			final ListBox listBox = new ListBox();
+			listBox.setWidth("200px");
 			int itemCount = menuBar.getItemCount();
 			if(itemCount == 0)
 			{
@@ -92,7 +94,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		else if(attributeName.equals(ADD_MENU))
 		{
 			final TextBox nameTb = new TextBox();
-			nameTb.setWidth("80px");
+			nameTb.setWidth("300px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide name of sub-menu", nameTb, new IEventRegister() {
 				
 				@Override
@@ -138,7 +140,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		final TextArea nameTextArea = new TextArea();
 		nameTextArea.setText(menuBar.getMenuItem(index).getHTML());
 		nameHp.add(nameTextArea);
-		nameTextArea.setSize("250px", "40px");
+		nameTextArea.setSize("300px", "100px");
 		new Timer(){
 			@Override
 			public void run() {
@@ -211,7 +213,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		nameHp.setCellWidth(nameHp.getWidget(0), "35%");
 		final TextArea nameTextArea = new TextArea();
 		nameHp.add(nameTextArea);
-		nameTextArea.setSize("250px", "40px");
+		nameTextArea.setSize("300px", "100px");
 		Timer t = new Timer(){
 			@Override
 			public void run() {

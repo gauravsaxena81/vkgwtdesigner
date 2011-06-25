@@ -37,12 +37,12 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
         }
 
         @Override
-        public String asHTML(int position, String currentTextValue) {
+        public String getDisplayString(int position, String currentTextValue) {
                 return html;
         }
 
         @Override
-        public String getFilterKey() {
+        public String getValueString() {
                 return filterKey;
         }
 	}

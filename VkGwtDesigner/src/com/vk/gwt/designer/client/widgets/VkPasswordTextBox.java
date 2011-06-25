@@ -92,6 +92,13 @@ public class VkPasswordTextBox extends PasswordTextBox implements IVkWidget, Has
 	private char accessKey;
 	private boolean isEnabled = true;
 
+	public VkPasswordTextBox() {
+		super.addKeyDownHandler(new KeyDownHandler(){
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				event.stopPropagation();
+			}});
+	}
 	@Override
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)

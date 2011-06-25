@@ -57,7 +57,9 @@ public class VkDecoratedTabPanelEngine extends VkAbstractWidgetEngine<VkDecorate
 				Window.alert("Select a tab before this operation");
 			else
 			{
-				VkDesignerUtil.getEngine().showAddTextAttributeDialog("Add Tab number to enable", new TextBox()
+				TextBox textBox = new TextBox();
+				textBox.setWidth("300px");
+				VkDesignerUtil.getEngine().showAddTextAttributeDialog("Add Tab number to enable", textBox
 				, new IEventRegister() {
 					@Override
 					public void registerEvent(String text) {

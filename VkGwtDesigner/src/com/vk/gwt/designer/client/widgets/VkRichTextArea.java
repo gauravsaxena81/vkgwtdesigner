@@ -31,6 +31,8 @@ import com.google.gwt.event.logical.shared.InitializeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -45,6 +47,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkInitializeHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyPressHandler;
@@ -62,8 +65,9 @@ import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
 import com.vk.gwt.designer.client.widgets.richtexttoolbar.RichTextToolbar;
 
-public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler
-, HasVkBlurHandler, HasVkInitializeHandlers, HasVkAccessKey, HasVkTabIndex, HasVkEnabled{
+public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkHtml, HasVkAllKeyHandlers
+, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler, HasVkInitializeHandlers, HasVkAccessKey
+, HasVkTabIndex, HasVkEnabled{
 	public static final String NAME = "Rich Text Area";
 	private RichTextArea richTextArea;
 	private RichTextToolbar toolbar;
@@ -94,17 +98,37 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	private String clickJs = "";
 	private String initializeJs = "";
 	private char accessKey;
-	private boolean isEnabled = true;
+	private boolean enabled = true;
 	public VkRichTextArea()
 	{
 		super(2,1);
-		richTextArea = new RichTextArea();
+		richTextArea = new RichTextArea(){
+			@Override
+			public void onBrowserEvent(Event event){
+				System.out.println(Integer.toHexString(DOM.eventGetType(event)));
+				if(!enabled)
+					setEnabled(false);
+				else
+					super.onBrowserEvent(event);
+			};
+		};
 		richTextArea.setPixelSize(100, 20);
 		toolbar = new RichTextToolbar(richTextArea);
 		toolbar.setWidth("100%");
+		richTextArea.setWidth("100%");
+		if(!VkDesignerUtil.isDesignerMode){
+			richTextArea.addInitializeHandler(new InitializeHandler(){
+				@Override
+				public void onInitialize(InitializeEvent event) {
+					new Timer(){
+						@Override
+						public void run() {
+							makeEnable(enabled);
+						}}.schedule(100);
+				}});
+		}
 		setWidget(0, 0, toolbar);
 		setWidget(1, 0, richTextArea);
-		richTextArea.setWidth("100%");
 		if(VkDesignerUtil.isDesignerMode)
 		{
 			toolbar.addDomHandler(new MouseDownHandler(){
@@ -400,7 +424,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	public void createLink(String link)
 	{
 		final TextBox tb = new TextBox();
-		tb.setWidth("100px");
+		tb.setWidth("300px");
 		VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide a link", tb
 			, new IEventRegister() {
 				@Override
@@ -547,19 +571,28 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	}
 	@Override
 	@Export
-	public void setEnabled(boolean enabled)
-	{
-		//if(!VkDesignerUtil.isDesignerMode)
-			richTextArea.setEnabled(enabled);
-		//else if(!enabled)
-			//Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");
-		isEnabled  = enabled;
+	public void setEnabled(boolean enabled){
+		this.enabled = enabled;
+		/*if(VkDesignerUtil.isDesignerMode)
+			makeEnable(enabled);*/
+		if(VkDesignerUtil.isDesignerMode && !enabled)
+			Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");
+	}
+	private void makeEnable(final boolean enabled) {
+		richTextArea.setEnabled(enabled);
+		new Timer(){
+			@Override
+			public void run() {
+				if(enabled != richTextArea.isEnabled())
+					setEnabled(enabled);
+			}
+		}.schedule(1000);
 	}
 	@Override
 	@Export
 	public boolean isEnabled()
 	{
-		return isEnabled;
+		return enabled;
 	}
 	@Export
 	public void setFocus(boolean focused)
@@ -589,5 +622,15 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkA
 	public void removeStyleName(String className)
 	{
 		super.removeStyleName(className);
+	}
+	@Override
+	@Export
+	public String getHTML() {
+		return richTextArea.getHTML();
+	}
+	@Override
+	@Export
+	public void setHTML(String html) {
+		richTextArea.setHTML(html);
 	}
 }

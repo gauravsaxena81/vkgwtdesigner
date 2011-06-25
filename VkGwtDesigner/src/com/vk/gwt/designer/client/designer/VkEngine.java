@@ -182,6 +182,9 @@ public class VkEngine implements IEngine{
 	public interface IEventRegister{
 		public void registerEvent(String js);
 	}
+	private static final String ADD_CLASS = "Add Classname";
+	private static final String REMOVE_CLASS = "Remove Classname";
+	private static final String TOOL_TIP = "Tool Tip";
 	
 	@SuppressWarnings("unchecked")
 	public Widget getWidget(String widgetName)
@@ -267,8 +270,9 @@ public class VkEngine implements IEngine{
 	@SuppressWarnings("unchecked")
 	public List<String> getAttributesList(Widget invokingWidget) {
 		List<String> optionList = new ArrayList<String>();
-		optionList.add("Class Name");
-		optionList.add("Tool Tip");
+		optionList.add(ADD_CLASS);
+		optionList.add(REMOVE_CLASS);
+		optionList.add(TOOL_TIP);
 		if(invokingWidget instanceof HasVkText)
 			optionList.add(HasVkText.NAME);
 		if(invokingWidget instanceof HasVkAccessKey)
@@ -487,9 +491,11 @@ public class VkEngine implements IEngine{
 	
 	@SuppressWarnings("unchecked")
 	public void applyAttribute(String attributeName, Widget invokingWidget) {
-		if(attributeName.equals("Class Name"))
+		if(attributeName.equals(ADD_CLASS))
 			showAddClassNameDialog(invokingWidget);
-		if(attributeName.equals("Tool Tip"))
+		if(attributeName.equals(REMOVE_CLASS))
+			showRemoveClassNameDialog(invokingWidget);
+		if(attributeName.equals(TOOL_TIP))
 			showAddTitleDialog(invokingWidget);
 		else if(attributeName.equals(HasVkText.NAME))
 			showAddTextDialog((HasVkText) invokingWidget);
@@ -803,15 +809,29 @@ public class VkEngine implements IEngine{
 			}
 		});
 	}
+	private void showRemoveClassNameDialog(final Widget invokingWidget) {
+		final ListBox listBox = new ListBox(false);
+		String[] styleNames = invokingWidget.getStyleName().replaceAll("vk-selectedWidget","").split("\\s+");
+		for(int i = 0, len = styleNames.length; i < len; i++)
+			if(styleNames[i].trim().length() > 0)
+				listBox.addItem(styleNames[i], styleNames[i]);
+		listBox.setWidth("200px");
+		showAddListDialog("Please choose true to make widget enabled", listBox, new IEventRegister() {
+			@Override
+			public void registerEvent(String text) {
+				invokingWidget.removeStyleName(text);
+			}
+		});
+	}
 	private void showAddClassNameDialog(final Widget invokingWidget)
 	{
 		TextBox addTextTa = new TextBox();
-		addTextTa.setWidth("200px");
+		addTextTa.setWidth("300px");
 		showAddTextAttributeDialog("Please add class name below", addTextTa,new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
 				if(text.indexOf(" ") == -1)
-					invokingWidget.addStyleName(text);
+					invokingWidget.addStyleName(text.trim());
 				else
 					Window.alert("Class names should not contain white space");
 			}
@@ -821,7 +841,7 @@ public class VkEngine implements IEngine{
 	{
 		TextBox addTextTa = new TextBox();
 		addTextTa.setValue(invokingWidget.getTitle());
-		addTextTa.setWidth("200px");
+		addTextTa.setWidth("300px");
 		showAddTextAttributeDialog("Please add title below", addTextTa,new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
@@ -831,7 +851,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddTextDialog(final HasVkText invokingWidget) {
 		TextBox addTextTb = new TextBox();
-		addTextTb.setWidth("200px");
+		addTextTb.setWidth("300px");
 		addTextTb.setText(invokingWidget.getText());
 		showAddTextAttributeDialog("Please add text below", addTextTb, new IEventRegister() {
 			@Override
@@ -842,7 +862,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddHTMLDialog(final HasVkHtml invokingWidget) {
 		TextArea addTextTa = new TextArea();
-		addTextTa.setPixelSize(200, 50);
+		addTextTa.setSize("300px", "100px");
 		addTextTa.setText(invokingWidget.getHTML());
 		showAddTextAttributeDialog("Please add html below", addTextTa, new IEventRegister() {
 			@Override
@@ -853,7 +873,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddAccessKeyDialog(final HasVkAccessKey invokingWidget) {
 		final TextBox addTextTb = new TextBox();
-		addTextTb.setWidth("100px");
+		addTextTb.setWidth("300px");
 		addTextTb.setMaxLength(1);
 		if(invokingWidget.getAccessKey() > 0)
 			addTextTb.setText(Character.toString(invokingWidget.getAccessKey()));
@@ -868,7 +888,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddTabIndexDialog(final HasVkTabIndex invokingWidget) {
 		final TextBox addTextTb = new TextBox();
-		addTextTb.setWidth("100px");
+		addTextTb.setWidth("300px");
 		addTextTb.setText(Integer.toString(invokingWidget.getTabIndex()));
 		showAddTextAttributeDialog("Please add tabindex below", addTextTb, new IEventRegister() {
 			@Override
@@ -887,7 +907,7 @@ public class VkEngine implements IEngine{
 		final ListBox listBox = new ListBox(false);
 		listBox.addItem("True", "true");
 		listBox.addItem("False", "false");
-		listBox.setWidth("100px");
+		listBox.setWidth("200px");
 		if(invokingWidget.isEnabled())
 			listBox.setSelectedIndex(0);
 		else
@@ -903,7 +923,8 @@ public class VkEngine implements IEngine{
 		final ListBox listBox = new ListBox(false);
 		listBox.addItem("True", "true");
 		listBox.addItem("False", "false");
-		listBox.setWidth("100px");
+		listBox.setWidth("200px");
+		listBox.setSelectedIndex(invokingWidget.getWordWrap() ? 0 : 1);
 		showAddListDialog("Please choose true to make text wrap", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
@@ -916,7 +937,7 @@ public class VkEngine implements IEngine{
 		listBox.addItem("Right To Left", "RTL");
 		listBox.addItem("Left To Right", "LTR");
 		listBox.addItem("Default", "DEFAULT");
-		listBox.setWidth("100px");
+		listBox.setWidth("200px");
 		String directionString = invokingWidget.getDirectionString();
 		if(directionString.equals("RTL"))
 			listBox.setSelectedIndex(0);
@@ -933,7 +954,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddMaxLengthDialog(final HasVkMaxLength invokingWidget) {
 		final TextBox addTextTb = new TextBox();
-		addTextTb.setWidth("100px");
+		addTextTb.setWidth("300px");
 		addTextTb.setText(Integer.toString(invokingWidget.getMaxLength()));
 		showAddTextAttributeDialog("Please add maxlength below (-1 to remove)", addTextTb, new IEventRegister() {
 			@Override
@@ -957,7 +978,7 @@ public class VkEngine implements IEngine{
 		listBox.addItem("Left", "left");
 		listBox.addItem("Center", "center");
 		listBox.addItem("Right", "right");
-		listBox.setWidth("100px");
+		listBox.setWidth("200px");
 		showAddListDialog("Please choose widget's horizontal alignment", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
@@ -973,7 +994,7 @@ public class VkEngine implements IEngine{
 			listBox.setSelectedIndex(0);
 		else
 			listBox.setSelectedIndex(1);
-		listBox.setWidth("100px");
+		listBox.setWidth("200px");
 		showAddListDialog("Please choose true make widget animated", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
@@ -986,7 +1007,7 @@ public class VkEngine implements IEngine{
 		listBox.addItem("Top", "top");
 		listBox.addItem("Middle", "middle");
 		listBox.addItem("Bottom", "bottom");
-		listBox.setWidth("100px");
+		listBox.setWidth("200px");
 		showAddListDialog("Please choose widget's vertical alignment", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
@@ -1002,7 +1023,7 @@ public class VkEngine implements IEngine{
 			methodLb.setSelectedIndex(0);
 		else
 			methodLb.setSelectedIndex(1);
-		methodLb.setWidth("100px");
+		methodLb.setWidth("200px");
 		showAddListDialog("Please choose form method", methodLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String method) {
@@ -1042,7 +1063,7 @@ public class VkEngine implements IEngine{
 			scrollLb.setSelectedIndex(0);
 		else
 			scrollLb.setSelectedIndex(1);
-		scrollLb.setWidth("100px");
+		scrollLb.setWidth("200px");
 		showAddListDialog("Please choose form method", scrollLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String method) {
@@ -1069,7 +1090,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddNumberedWidgetDialog(final HasVkSwitchNumberedWidget invokingWidget) {
 		final TextBox actionTb = new TextBox();
-		actionTb.setWidth("100px");
+		actionTb.setWidth("300px");
 		actionTb.setText(Integer.toString(invokingWidget.getCurrentlyShowingWidget()));
 		showAddTextAttributeDialog("Please provide widget number to show below", actionTb, new IEventRegister() {
 			@Override
@@ -1108,7 +1129,7 @@ public class VkEngine implements IEngine{
 	}
 	private void showAddCaptionHtmlDialog(final HasVkCaptionHtml invokingWidget) {
 		final TextArea actionTb = new TextArea();
-		actionTb.setSize("200px","50px");
+		actionTb.setSize("300px","100px");
 		actionTb.setText(invokingWidget.getCaptionHtml());
 		showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
 			@Override
@@ -1125,7 +1146,7 @@ public class VkEngine implements IEngine{
 			scrollLb.setSelectedIndex(0);
 		else
 			scrollLb.setSelectedIndex(1);
-		scrollLb.setWidth("100px");
+		scrollLb.setWidth("200px");
 		showAddListDialog("Please choose Auto Hide Setting", scrollLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String method) {
@@ -1141,7 +1162,7 @@ public class VkEngine implements IEngine{
 			scrollLb.setSelectedIndex(0);
 		else
 			scrollLb.setSelectedIndex(1);
-		scrollLb.setWidth("100px");
+		scrollLb.setWidth("200px");
 		showAddListDialog("Please choose form method", scrollLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String method) {
@@ -1168,7 +1189,7 @@ public class VkEngine implements IEngine{
 			scrollLb.setSelectedIndex(0);
 		else
 			scrollLb.setSelectedIndex(1);
-		scrollLb.setWidth("100px");
+		scrollLb.setWidth("200px");
 		showAddListDialog("Please choose form method", scrollLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String value) {
@@ -1217,7 +1238,7 @@ public class VkEngine implements IEngine{
 			scrollLb.setSelectedIndex(0);
 		else
 			scrollLb.setSelectedIndex(1);
-		scrollLb.setWidth("100px");
+		scrollLb.setWidth("200px");
 		showAddListDialog("Please choose form method", scrollLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String value) {
@@ -1233,7 +1254,7 @@ public class VkEngine implements IEngine{
 			scrollLb.setSelectedIndex(0);
 		else
 			scrollLb.setSelectedIndex(1);
-		scrollLb.setWidth("100px");
+		scrollLb.setWidth("200px");
 		showAddListDialog("Please choose auto open option", scrollLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String value) {
@@ -1249,7 +1270,7 @@ public class VkEngine implements IEngine{
 			scrollLb.setSelectedIndex(0);
 		else
 			scrollLb.setSelectedIndex(1);
-		scrollLb.setWidth("100px");
+		scrollLb.setWidth("200px");
 		showAddListDialog("Please choose if initially dialog is showing", scrollLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String value) {
@@ -1271,7 +1292,7 @@ public class VkEngine implements IEngine{
 	private void showAddTabHeaderHtmlDialog(final HasVkTabHeaderHtml invokingWidget) {
 		final TextArea actionTb = new TextArea();
 		actionTb.setText(((HasVkTabHeaderText) invokingWidget).getTabText());
-		actionTb.setSize("100px","50px");
+		actionTb.setSize("300px","100px");
 		actionTb.setText(invokingWidget.getTabHTML());
 		showAddTextAttributeDialog("Please provide html for tab header", actionTb, new IEventRegister() {
 			@Override
@@ -1296,6 +1317,7 @@ public class VkEngine implements IEngine{
 		final ListBox listBox = new ListBox();
 		listBox.addItem("Drop Down","true");
 		listBox.addItem("List","false");
+		listBox.setWidth("200px");
 		showAddListDialog("Pick a render mode", listBox, new IEventRegister() {
 				@Override
 				public void registerEvent(String value) {

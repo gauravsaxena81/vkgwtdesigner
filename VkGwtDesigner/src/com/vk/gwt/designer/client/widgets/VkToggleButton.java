@@ -25,6 +25,7 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
@@ -84,6 +85,7 @@ HasVkFocusHandler, HasVkBlurHandler{
 	private char accessKey;
 	private String imageUpSrc;
 	private String imageDownSrc;
+	private boolean isEnabled = true;
 	
 
 	@Override
@@ -386,13 +388,17 @@ HasVkFocusHandler, HasVkBlurHandler{
 	@Export
 	public void setButtonEnabled(boolean enabled)
 	{
-		super.setEnabled(enabled);
+		if(!VkDesignerUtil.isDesignerMode)
+			super.setEnabled(enabled);
+		else if(!enabled)
+			Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");
+		isEnabled = enabled;
 	}
 	@Override
 	@Export
 	public boolean isEnabled()
 	{
-		return super.isEnabled();
+		return isEnabled;
 	}
 	@Override
 	@Export
