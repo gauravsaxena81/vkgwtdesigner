@@ -89,6 +89,14 @@ public class VkTextArea extends TextArea implements IVkWidget, HasVkText, HasVkA
 	private String changeJs = "";
 	private char accessKey;
 	private boolean isEnabled = true;
+	
+	public VkTextArea(){
+		super.addKeyDownHandler(new KeyDownHandler(){
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				event.stopPropagation();
+			}});
+	}
 
 	@Override
 	public void addClickHandler(final String js) {

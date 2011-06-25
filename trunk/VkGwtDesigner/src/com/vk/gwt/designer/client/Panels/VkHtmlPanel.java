@@ -39,7 +39,7 @@ public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IPanel {
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		
 		final TextBox addTextTa = new TextBox();
-		addTextTa.setWidth("100px");
+		addTextTa.setSize("300px", "100px");
 		Timer t = new Timer(){
 			@Override
 			public void run() {

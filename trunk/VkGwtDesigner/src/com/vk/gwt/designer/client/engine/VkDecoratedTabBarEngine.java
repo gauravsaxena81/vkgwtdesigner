@@ -51,7 +51,7 @@ public class VkDecoratedTabBarEngine extends VkAbstractWidgetEngine<VkDecoratedT
 		if(attributeName.equals(ADD_TAB))
 		{
 			final TextArea ta = new TextArea();
-			ta.setSize("100px", "50px");
+			ta.setSize("300px", "100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide HTML for tab name", ta
 				, new IEventRegister() {
 				@Override
@@ -68,7 +68,7 @@ public class VkDecoratedTabBarEngine extends VkAbstractWidgetEngine<VkDecoratedT
 			{
 				final TextArea ta = new TextArea();
 				ta.setText(widget.getTabHTML(widget.getSelectedTab()));
-				ta.setSize("100px", "50px");
+				ta.setSize("300px", "100px");
 				VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide HTML for tab name", ta
 					, new IEventRegister() {
 					@Override
@@ -94,7 +94,9 @@ public class VkDecoratedTabBarEngine extends VkAbstractWidgetEngine<VkDecoratedT
 		}
 		else if(attributeName.equals(MAKE_ENABLE))
 		{
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Add Tab number to enable", new TextBox()
+			TextBox textBox = new TextBox();
+			textBox.setWidth("300px");
+			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Add Tab number to enable", textBox
 			, new IEventRegister() {
 				@Override
 				public void registerEvent(String text) {

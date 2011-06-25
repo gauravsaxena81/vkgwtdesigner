@@ -4,16 +4,13 @@ import java.util.List;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONString;
-import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TabBar;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkBeforeSelectionHandler;
-import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
@@ -26,8 +23,8 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 	private final String ADD_TAB = "Add a Tab";
 	private final String REMOVE_TAB = "Remove Current Tab";
 	private final String EDIT_TAB = "Edit Current Tab";
-	private final String ADD_ENABLED = "Set Current Tab Enabled";
-	private final String MAKE_ENABLE = "Enable a Tab";
+	private final String DISABLE_TAB = "Disable a Tab";
+	private final String ENABLE_TAB = "Enable a Tab";
 
 	@Override
 	public VkTabBar getWidget() {
@@ -39,80 +36,80 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 	public List<String> getAttributesList(Widget invokingWidget)
 	{
 		List<String> optionList = VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
-		optionList.add(ADD_TAB);
-		optionList.add(EDIT_TAB);
-		optionList.add(REMOVE_TAB);
-		optionList.add(ADD_ENABLED);
-		optionList.add(MAKE_ENABLE);
+		optionList.add(3, ADD_TAB);
+		optionList.add(4, EDIT_TAB);
+		optionList.add(5, REMOVE_TAB);
+		optionList.add(6, DISABLE_TAB);
+		optionList.add(7, ENABLE_TAB);
 		return optionList;
 	}
 	@Override
 	public void applyAttribute(String attributeName, Widget invokingWidget) {
-		final VkTabBar widget = (VkTabBar)invokingWidget;
+		final VkTabBar tabbar = (VkTabBar)invokingWidget;
 		if(attributeName.equals(ADD_TAB))
 		{
 			final TextArea ta = new TextArea();
-			ta.setSize("100px", "50px");
+			ta.setSize("300px", "100px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide HTML for tab name", ta
 				, new IEventRegister() {
 				@Override
 				public void registerEvent(String js) {
-					widget.addTab(ta.getText(), true);
+					tabbar.addTab(ta.getText(), true);
 				}
 			});
 		}
 		else if (attributeName.equals(EDIT_TAB))
 		{
-			if(widget.getSelectedTab() < 0)
+			if(tabbar.getSelectedTab() < 0)
 				Window.alert("Select a tab before this operation");
 			else
 			{
 				final TextArea ta = new TextArea();
-				ta.setText(widget.getTabHTML(widget.getSelectedTab()));
-				ta.setSize("100px", "50px");
+				ta.setText(tabbar.getTabHTML(tabbar.getSelectedTab()));
+				ta.setSize("300px", "100px");
 				VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide HTML for tab name", ta
 					, new IEventRegister() {
 					@Override
 					public void registerEvent(String js) {
-						widget.setTabHTML(widget.getSelectedTab(), ta.getText());
+						tabbar.setTabHTML(tabbar.getSelectedTab(), ta.getText());
 					}
 				});
 			}
 		}
 		else if(attributeName.equals(REMOVE_TAB))
 		{
-			if(widget.getSelectedTab() < 0)
+			if(tabbar.getSelectedTab() < 0)
 				Window.alert("Select a tab before this operation");
 			else
-				widget.removeTab(widget.getSelectedTab());
+				tabbar.removeTab(tabbar.getSelectedTab());
 		}
-		else if(attributeName.equals(ADD_ENABLED))
-		{
-			if(widget.getSelectedTab() < 0)
-				Window.alert("Please Select a tab before this operation");
-			else
-				attributeName = HasVkEnabled.NAME;
-		}
-		else if(attributeName.equals(MAKE_ENABLE))
-		{
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Add Tab number to enable", new TextBox()
-			, new IEventRegister() {
-				@Override
-				public void registerEvent(String text) {
-					try{
-						int index = Integer.parseInt(text);
-						if(index >= widget.getTabCount())
-							Window.alert("tab number should be less than maximum number of tabs");
-						else
-							widget.setTabEnabled(Integer.parseInt(text), true);
-					}catch(NumberFormatException e)
-					{
-						Window.alert("Tab number cannot be non-numeric");
-					}
-				}
-			});
-		}
+		else if(attributeName.equals(DISABLE_TAB))
+			enableTab(tabbar, false);
+		else if(attributeName.equals(ENABLE_TAB))
+			enableTab(tabbar, true);
 		VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+	}
+	private void enableTab(final VkTabBar tabbar, final boolean enable) {
+		if(tabbar.getTabCount() == 0)
+			Window.alert("No tabs were found");
+		else{
+			ListBox listBox = new ListBox();
+			listBox.setWidth("200px");
+			for(int i = 0, len = tabbar.getTabCount(); i < len; i++)
+				if(tabbar.isTabEnabled(i) != enable)
+					listBox.addItem(Integer.toString(i), Integer.toString(i));
+			if(listBox.getItemCount() > 0){
+				VkDesignerUtil.getEngine().showAddListDialog("Add Tab number to enable", listBox
+				, new IEventRegister() {
+					@Override
+					public void registerEvent(String text) {
+						tabbar.setTabEnabled(Integer.parseInt(text), enable);
+					}
+				});
+			} else {
+				Window.alert("All tabs are already " + (enable ? "enabled" : "disabled"));
+			}
+		}
 	}
 	@Override
 	public String serialize(IVkWidget widget)
@@ -122,12 +119,15 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		TabBar tabBar =  (TabBar)widget;
-		buffer.append(",tabHtml:[");
+		buffer.append(",tabs:[");
 		for(int i = 0; i < tabBar.getTabCount(); i++)
-			buffer.append("'").append(tabBar.getTabHTML(i)).append("',");
+		{
+			buffer.append("{html:").append("'").append(tabBar.getTabHTML(i)).append("',");
+			buffer.append("enabled:").append(tabBar.isTabEnabled(i)).append("},");
+		}
 		if(buffer.charAt(buffer.length() - 1) == ',')
 			buffer.deleteCharAt(buffer.length() - 1);
-		buffer.append("]");
+		buffer.append("]").append(",selectedTab:").append(tabBar.getSelectedTab());
 		buffer.append(",children:[").append("]}");
 		return buffer.toString();
 	}
@@ -149,29 +149,17 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 	@Override
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		TabBar tabBar = (TabBar)parent;
-		JSONArray tabHtmlArray = jsonObj.get("tabHtml").isArray();
-		for(int i = 0; i < tabHtmlArray.size(); i++)
-			tabBar.addTab(tabHtmlArray.get(i).isString().stringValue(), true);
-	}
-	@Override
-	protected void addAttributes(JSONObject childObj, Widget widget) {
-		JSONString attributeStringObj;
-		JSONValue attributeJsObj = childObj.get("style");
-		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
-			DOM.setElementAttribute(widget.getElement(), "style", attributeStringObj.stringValue());
-		attributeJsObj = childObj.get("title");
-		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
-			DOM.setElementAttribute(widget.getElement(), "title", attributeStringObj.stringValue()); 
-		attributeJsObj = childObj.get("className");
-		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
-			DOM.setElementAttribute(widget.getElement(), "className", attributeStringObj.stringValue());
-		
-		attributeJsObj = childObj.get(HasVkBeforeSelectionHandler.NAME);
-		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
-			((HasVkBeforeSelectionHandler)widget).addBeforeSelectionHandler(attributeStringObj.stringValue());
-		attributeJsObj = childObj.get(HasVkSelectionHandler.NAME);
-		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
-			((HasVkSelectionHandler)widget).addSelectionHandler(attributeStringObj.stringValue());
+		JSONArray tabsArray = jsonObj.get("tabs").isArray();
+		addAttributes(jsonObj, parent);
+		for(int i = 0; i < tabsArray.size(); i++)
+		{
+			JSONObject tab = tabsArray.get(i).isObject();
+			tabBar.addTab(tab.get("html").isString().stringValue(), true);
+			tabBar.setTabEnabled(tabBar.getTabCount() - 1, tab.get("enabled").isBoolean().booleanValue());
+		}
+		int selectedTab = (int) jsonObj.get("selectedTab").isNumber().doubleValue();
+		if(selectedTab > -1)
+			tabBar.selectTab(selectedTab);
 	}
 	@Override
 	public void copyAttributes(Widget widgetSource, Widget widgetTarget){

@@ -64,15 +64,14 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 		textHp.setCellWidth(textHp.getWidget(0), "50%");
 		final TextBox textTextBox = new TextBox();
 		textHp.add(textTextBox);
-		textTextBox.setWidth("200px");
-		Timer t = new Timer(){
+		textTextBox.setWidth("300px");
+		new Timer(){
 			@Override
 			public void run() {
 				VkDesignerUtil.centerDialog(dialog);
 				textTextBox.setFocus(true);
 			}
-		};
-		t.schedule(100);
+		}.schedule(100);
 		HorizontalPanel valueHp = new HorizontalPanel();
 		valueHp.setWidth("100%");
 		dialog.add(valueHp);
@@ -81,7 +80,7 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 		valueHp.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
 		valueHp.setCellWidth(valueHp.getWidget(0), "50%");
 		final TextBox valueTextBox = new TextBox();
-		valueTextBox.setWidth("200px");
+		valueTextBox.setWidth("300px");
 		valueHp.add(valueTextBox);
 		
 		HorizontalPanel indexHp = new HorizontalPanel();
@@ -92,7 +91,7 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 		indexHp.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
 		indexHp.setCellWidth(indexHp.getWidget(0), "50%");
 		final TextBox indexTextBox = new TextBox();
-		indexTextBox.setWidth("200px");
+		indexTextBox.setWidth("300px");
 		indexHp.add(indexTextBox);
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);

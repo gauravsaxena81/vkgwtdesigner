@@ -106,6 +106,14 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 	private List<String> suggestions = new ArrayList<String>();
 	private boolean isEnabled = true;
 	
+	public VkSuggestBox(){
+		super.addKeyDownHandler(new KeyDownHandler(){
+			@Override
+			public void onKeyDown(KeyDownEvent event) {
+				event.stopPropagation();
+			}});
+	}
+	
 	@Override
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)
@@ -436,7 +444,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 			super.getTextBox().setEnabled(enabled);
 		else if(!enabled)
 			Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");
-		isEnabled = enabled;
+		isEnabled  = enabled;
 	}
 	@Override
 	@Export

@@ -180,7 +180,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		rowHp.setCellWidth(rowHp.getWidget(0), "50%");
 		final TextBox rowsTextBox = new TextBox();
 		rowHp.add(rowsTextBox);
-		rowsTextBox.setWidth("50px");
+		rowsTextBox.setWidth("300px");
 		Timer t = new Timer(){
 			@Override
 			public void run() {
@@ -197,7 +197,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		colHp.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
 		colHp.setCellWidth(colHp.getWidget(0), "50%");
 		final TextBox columnsTextBox = new TextBox();
-		columnsTextBox.setWidth("50px");
+		columnsTextBox.setWidth("300px");
 		colHp.add(columnsTextBox);
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);

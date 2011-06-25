@@ -33,7 +33,7 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 		if(attributeName.equals(ADD_SUGGESTION))
 		{
 			final TextBox tb = new TextBox();
-			tb.setWidth("100px");
+			tb.setWidth("300px");
 			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please edit the suggestion", tb
 				, new IEventRegister() {
 					@Override
@@ -47,6 +47,7 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 		else if(attributeName.equals(REMOVE_SUGGESTION))
 		{
 			final ListBox listBox = new ListBox();
+			listBox.setWidth("200px");
 			int i = 0;
 			for (Iterator<String> iterator = widget.getSuggestions().iterator(); iterator.hasNext();)
 				listBox.addItem(iterator.next(),Integer.toString(i++));
@@ -65,6 +66,7 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 		else if(attributeName.equals(EDIT_SUGGESTION))
 		{
 			final ListBox listBox = new ListBox();
+			listBox.setWidth("200px");
 			int i = 0;
 			for (Iterator<String> iterator = widget.getSuggestions().iterator(); iterator.hasNext();)
 				listBox.addItem(iterator.next(),Integer.toString(i++));
@@ -74,7 +76,7 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 					public void registerEvent(String js) {
 						final TextBox tb = new TextBox();
 						tb.setText(widget.getSuggestions().get(listBox.getSelectedIndex()));
-						tb.setWidth("100px");
+						tb.setWidth("300px");
 						VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please edit the suggestion", tb
 							, new IEventRegister() {
 								@Override
@@ -126,6 +128,7 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 		MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)suggestBox.getSuggestOracle();
 		JSONArray suggestionArray = jsonObj.get("suggestions").isArray();
 		suggestBox.getSuggestions().clear();
+		addAttributes(jsonObj, parent);
 		for(int i = 0; i < suggestionArray.size(); i++)
 		{
 			String suggestion = suggestionArray.get(i).isString().stringValue();

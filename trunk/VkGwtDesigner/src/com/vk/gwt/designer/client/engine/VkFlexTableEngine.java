@@ -252,7 +252,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 	}
 	private void addCellPadding(final VkFlexTable table) {
 		TextBox tb = new TextBox();
-		tb.setWidth("100px");
+		tb.setWidth("300px");
 		VkDesignerUtil.getEngine().showAddTextAttributeDialog("Add Cell Spacing", tb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
@@ -268,7 +268,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 	}
 	private void addCellSpacing(final VkFlexTable table) {
 		TextBox tb = new TextBox();
-		tb.setWidth("100px");
+		tb.setWidth("300px");
 		VkDesignerUtil.getEngine().showAddTextAttributeDialog("Add Cell Spacing", tb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {

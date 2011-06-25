@@ -175,15 +175,14 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 		rowHp.setCellWidth(rowHp.getWidget(0), "50%");
 		final TextBox rowsTextBox = new TextBox();
 		rowHp.add(rowsTextBox);
-		rowsTextBox.setWidth("50px");
-		Timer t = new Timer(){
+		rowsTextBox.setWidth("300px");
+		new Timer(){
 			@Override
 			public void run() {
 				VkDesignerUtil.centerDialog(dialog);
 				rowsTextBox.setFocus(true);
 			}
-		};
-		t.schedule(100);
+		}.schedule(100);
 		HorizontalPanel colHp = new HorizontalPanel();
 		colHp.setWidth("100%");
 		dialog.add(colHp);
@@ -192,7 +191,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 		colHp.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
 		colHp.setCellWidth(colHp.getWidget(0), "50%");
 		final TextBox columnsTextBox = new TextBox();
-		columnsTextBox.setWidth("50px");
+		columnsTextBox.setWidth("300px");
 		colHp.add(columnsTextBox);
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);

@@ -25,6 +25,7 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Widget;
@@ -85,6 +86,7 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkEnabled,
 	private String imageDownHoveringSrc;
 	private char accessKey;
 	private boolean allowHoldDown = false;
+	private boolean isEnabled = true;
 	
 	public VkPushButton()
 	{
@@ -424,23 +426,16 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkEnabled,
 	@Export
 	public void setVkPushButtonEabled(boolean enabled)
 	{
-		super.setEnabled(enabled);
+		if(!VkDesignerUtil.isDesignerMode)
+			super.setEnabled(enabled);
+		else if(!enabled)
+			Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");
+		isEnabled = enabled;
 	}
 	@Export
 	public boolean isVkPushButtonEnabled()
 	{
-		return super.isEnabled();
-	}
-	@Export
-	public void setButtonEnabled(boolean enabled)
-	{
-		super.setEnabled(enabled);
-	}
-	@Override
-	@Export
-	public boolean isEnabled()
-	{
-		return super.isEnabled();
+		return isEnabled;
 	}
 	@Override
 	@Export

@@ -166,14 +166,14 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 		origDialog.setText("Cell Alignment Dialog");
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		final TextBox widgetIndexTb = new TextBox();
-		Timer t = new Timer(){
+		widgetIndexTb.setWidth("300px");
+		new Timer(){
 			@Override
 			public void run() {
 				VkDesignerUtil.centerDialog(dialog);
 				widgetIndexTb.setFocus(true);
 			}
-		};
-		t.schedule(100);
+		}.schedule(100);
 		dialog.add(new Label("Please add Widget number below:"));
 		dialog.add(widgetIndexTb);
 		widgetIndexTb.addChangeHandler(new ChangeHandler() {

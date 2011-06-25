@@ -370,6 +370,7 @@ public class RichTextToolbar extends Composite {
 
   private ListBox createColorList(String caption) {
     ListBox lb = new ListBox();
+    lb.setWidth("200px");
     lb.addChangeHandler(handler);
     lb.setVisibleItemCount(1);
 
