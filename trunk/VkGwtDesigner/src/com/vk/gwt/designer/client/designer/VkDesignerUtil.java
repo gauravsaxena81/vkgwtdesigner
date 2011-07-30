@@ -70,10 +70,8 @@ import com.vk.gwt.designer.client.engine.VkHiddenEngine;
 import com.vk.gwt.designer.client.engine.VkHorizontalPanelEngine;
 import com.vk.gwt.designer.client.engine.VkHorizontalSplitPanelEngine;
 import com.vk.gwt.designer.client.engine.VkHtmlPanelEngine;
-import com.vk.gwt.designer.client.engine.VkHyperlinkEngine;
 import com.vk.gwt.designer.client.engine.VkImageEngine;
 import com.vk.gwt.designer.client.engine.VkInlineHTMLEngine;
-import com.vk.gwt.designer.client.engine.VkInlineHyperlinkEngine;
 import com.vk.gwt.designer.client.engine.VkInlineLabelEngine;
 import com.vk.gwt.designer.client.engine.VkLabelEngine;
 import com.vk.gwt.designer.client.engine.VkListBoxEngine;
@@ -110,10 +108,8 @@ import com.vk.gwt.designer.client.widgets.VkFrame;
 import com.vk.gwt.designer.client.widgets.VkGrid;
 import com.vk.gwt.designer.client.widgets.VkHTML;
 import com.vk.gwt.designer.client.widgets.VkHidden;
-import com.vk.gwt.designer.client.widgets.VkHyperlink;
 import com.vk.gwt.designer.client.widgets.VkImage;
 import com.vk.gwt.designer.client.widgets.VkInlineHTML;
-import com.vk.gwt.designer.client.widgets.VkInlineHyperlink;
 import com.vk.gwt.designer.client.widgets.VkInlineLabel;
 import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkListBox;
@@ -318,7 +314,6 @@ public class VkDesignerUtil {
 		widget.getElement().setId(++widgetCount + "");
 	}
 
-	@SuppressWarnings("unused")//being used in native function
 	static void makeMovable(final Widget invokingWidget) {
 		final HTML draggingWidget = new HTML("&nbsp;");
 		getDrawingPanel().add(draggingWidget);
@@ -446,7 +441,6 @@ public class VkDesignerUtil {
 		engineMap.put(VkGrid.NAME, new VkGridEngine());
 		engineMap.put(VkHTML.NAME, new VkHTMLEngine());
 		engineMap.put(VkHidden.NAME, new VkHiddenEngine());
-		engineMap.put(VkHyperlink.NAME, new VkHyperlinkEngine());
 		engineMap.put(VkImage.NAME, new VkImageEngine());
 		engineMap.put(VkListBox.NAME, new VkListBoxEngine());
 		engineMap.put(VkMenuBarHorizontal.NAME, new VkMenuBarHorizontalEngine());
@@ -467,7 +461,6 @@ public class VkDesignerUtil {
 		engineMap.put(VkDecoratedTabBar.NAME, new VkDecoratedTabBarEngine());
 		engineMap.put(VkInlineLabel.NAME, new VkInlineLabelEngine());
 		engineMap.put(VkInlineHTML.NAME, new VkInlineHTMLEngine());
-		engineMap.put(VkInlineHyperlink.NAME, new VkInlineHyperlinkEngine());
 		engineMap.put(VkDateBox.NAME, new VkDateBoxEngine());
 		
 		engineMap.put(VkAbsolutePanel.NAME, new VkAbsolutePanelEngine());
@@ -527,7 +520,7 @@ public class VkDesignerUtil {
 	 * @param event
 	 * @param instantiateEventObject
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static void executeEvent(String js, DomEvent event, boolean instantiateEventObject) {
 		EventTarget currentEventTarget = event.getNativeEvent().getCurrentEventTarget();
 		Element currentEventTargetElement = currentEventTarget != null && Element.is(currentEventTarget)? (Element) Element.as(currentEventTarget) : null;
@@ -560,8 +553,7 @@ public class VkDesignerUtil {
 			$wnd.vkEvent[key] = eventProperties.@java.util.Map::get(Ljava/lang/Object;)(key);
 		}
 	}-*/;
-	@SuppressWarnings("unchecked")
-	private native static void prepareLocalEvent(DomEvent event, boolean instantiateEventObject, boolean alt
+	private native static void prepareLocalEvent(@SuppressWarnings("rawtypes") DomEvent event, boolean instantiateEventObject, boolean alt
 	, int buttonNum, int clientx, int clienty, boolean ctrl, Element currentEvtTarget, Element actualEvtTarget
 	, int keyCode, int charCode, boolean meta, int mouseWheelVel, Element relativeEvtTarget, int screenx, int screeny
 	, boolean shift) /*-{
@@ -622,5 +614,31 @@ public class VkDesignerUtil {
 	}
 	public native static void setLoadString(String str) /*-{
 		$wnd.loadStr = str;
+	}-*/;
+	/**
+	 * @param w
+	 * @param prop css style property name e.g. border-top-width
+	 * @return
+	 */
+	public static native int getPixelValue(Widget w, String prop)/*-{
+		var ret;
+		if(document.all){//IE
+			var element = w.@com.google.gwt.user.client.ui.Widget::getElement()();
+			var propertyArray = prop.split('-');
+			var property = propertyArray[0];
+			for(var i = 1, len = propertyArray.length(); i < len; i++)
+				property += propertyArray[i].substr(0, 1).toUpperCase() + propertyArray[i].substr(1);
+			var temp = element.style.left;
+			element.style.left = element.style[property];
+			ret = element.style.pixelLeft;
+			element.style.left = temp;
+		}
+		else
+			ret = $doc.defaultView.getComputedStyle(w.@com.google.gwt.user.client.ui.Widget::getElement()(), null).getPropertyValue(prop);
+		try{
+			return parseInt(ret);
+		} catch(e){
+			return -1;
+		}
 	}-*/;
 }

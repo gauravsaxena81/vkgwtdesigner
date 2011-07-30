@@ -113,6 +113,17 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	private String pattern = "";
 	private boolean isEnabled = true;
 	
+	public VkDateBox()
+	{
+		if(VkDesignerUtil.isDesignerMode){
+			super.getTextBox().addKeyDownHandler(new KeyDownHandler(){
+				@Override
+				public void onKeyDown(KeyDownEvent event) {
+					event.stopPropagation();
+				}});
+		}
+	}
+	
 	@Override
 	public void addClickHandler(final String js) {
 		if(clickHandlerRegistration != null)
@@ -458,10 +469,16 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	@Override
 	public void clone(Widget targetWidget) {
 		((VkDateBox)targetWidget).pattern = pattern;
+		((VkDateBox)targetWidget).setText(getText());
 	}
 	@Override
 	public boolean showMenu() {
 		return true;
+	}
+	@Override
+	public void removeFromParent(){
+		super.hideDatePicker();
+		super.removeFromParent();
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

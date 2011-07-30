@@ -42,12 +42,14 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 		if(dp.getHeader() == null)
 		{
 			dp.setHeader(w);
+			w.setWidth(VkDesignerUtil.getPixelValue(dp, "width") + "px");
 			if(VkDesignerUtil.isDesignerMode)
 				Window.alert("Widget added as header of Disclosure Panel");
 		}
 		else if(dp.getContent() == null)
 		{
 			dp.add(w);
+			w.setWidth(dp.getOffsetWidth() + "px");
 			DOM.setStyleAttribute(w.getElement(), "margin", "0px");
 			if(VkDesignerUtil.isDesignerMode)
 				Window.alert("Widget added as content of Disclosure Panel");
@@ -127,6 +129,15 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 	@Override
 	public boolean showMenu() {
 		return true;
+	}
+	@Override
+	public void setWidth(String width){
+		dp.setWidth(width);
+		int widthValue = VkDesignerUtil.getPixelValue(dp, "width");
+		if(dp.getHeader() != null)
+			dp.getHeader().setWidth(widthValue + "px");
+		if(dp.getContent() != null)
+			dp.getContent().setWidth(widthValue + "px");
 	}
 	/**************************Export attribute Methods********************************/
 	@Export

@@ -83,7 +83,7 @@ public class VkTabBar extends TabBar implements IVkWidget, HasVkBeforeSelectionH
 		else
 		{
 			if(VkDesignerUtil.isDesignerMode)
-				Window.alert("No Tab has been selected");
+				Window.alert("Please select a tab before this operation");
 			throw new IllegalStateException("No Tab has been selected");
 		}
 	}
@@ -91,7 +91,7 @@ public class VkTabBar extends TabBar implements IVkWidget, HasVkBeforeSelectionH
 	public void setTabText(String text) {
 		if(getSelectedTab() > -1)
 			setTabText(getSelectedTab(), text);
-		else
+		else if(VkDesignerUtil.isDesignerMode)
 			Window.alert("Please select a tab before this operation");
 	}
 	@Override
@@ -100,7 +100,8 @@ public class VkTabBar extends TabBar implements IVkWidget, HasVkBeforeSelectionH
 			return getTabHTML(getSelectedTab());
 		else
 		{
-			Window.alert("No Tab has been selected");
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("Please select a tab before this operation");
 			throw new IllegalStateException("No Tab has been selected");
 		}
 	}
@@ -108,7 +109,7 @@ public class VkTabBar extends TabBar implements IVkWidget, HasVkBeforeSelectionH
 	public void setTabHTML(String html) {
 		if(getSelectedTab() > -1)
 			setTabHTML(getSelectedTab(), html);
-		else
+		else if(VkDesignerUtil.isDesignerMode)
 			Window.alert("Please select a tab before this operation");
 	}
 	@Override

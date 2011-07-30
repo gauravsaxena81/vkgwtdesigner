@@ -120,10 +120,8 @@ import com.vk.gwt.designer.client.api.widgets.HasVkFrame;
 import com.vk.gwt.designer.client.api.widgets.HasVkGrid;
 import com.vk.gwt.designer.client.api.widgets.HasVkHTMLWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkHidden;
-import com.vk.gwt.designer.client.api.widgets.HasVkHyperlink;
 import com.vk.gwt.designer.client.api.widgets.HasVkImage;
 import com.vk.gwt.designer.client.api.widgets.HasVkInlineHTML;
-import com.vk.gwt.designer.client.api.widgets.HasVkInlineHyperlink;
 import com.vk.gwt.designer.client.api.widgets.HasVkInlineLabel;
 import com.vk.gwt.designer.client.api.widgets.HasVkLabel;
 import com.vk.gwt.designer.client.api.widgets.HasVkListBox;
@@ -153,10 +151,8 @@ import com.vk.gwt.designer.client.widgets.VkFrame;
 import com.vk.gwt.designer.client.widgets.VkGrid;
 import com.vk.gwt.designer.client.widgets.VkHTML;
 import com.vk.gwt.designer.client.widgets.VkHidden;
-import com.vk.gwt.designer.client.widgets.VkHyperlink;
 import com.vk.gwt.designer.client.widgets.VkImage;
 import com.vk.gwt.designer.client.widgets.VkInlineHTML;
-import com.vk.gwt.designer.client.widgets.VkInlineHyperlink;
 import com.vk.gwt.designer.client.widgets.VkInlineLabel;
 import com.vk.gwt.designer.client.widgets.VkLabel;
 import com.vk.gwt.designer.client.widgets.VkListBox;
@@ -186,17 +182,15 @@ public class VkEngine implements IEngine{
 	private static final String REMOVE_CLASS = "Remove Classname";
 	private static final String TOOL_TIP = "Tool Tip";
 	
-	@SuppressWarnings("unchecked")
 	public Widget getWidget(String widgetName)
 	{
-		IWidgetEngine widgetEngine = VkDesignerUtil.getEngineMap().get(widgetName);
+		IWidgetEngine<? extends Widget> widgetEngine = VkDesignerUtil.getEngineMap().get(widgetName);
 		Widget widget= widgetEngine.getWidget();
 		if(widget != null)
 			prepareWidget(widget, widgetEngine);
 		return widget;
 	}
-	@SuppressWarnings("unchecked")
-	public void prepareWidget(Widget widget, IWidgetEngine widgetEngine) {
+	public void prepareWidget(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) {
 		VkDesignerUtil.assignId(widget);
 		if(VkDesignerUtil.isDesignerMode || VkDesignerUtil.isLoadRunning)
 			VkDesignerUtil.initDesignerEvents(widget, widgetEngine);
@@ -205,8 +199,6 @@ public class VkEngine implements IEngine{
 		addRemoveJsFunction(widget);
 		jsBridgable.createBridge(widget);
 	}
-	//being used in native function
-	@SuppressWarnings("unused")
 	private void addWidget(IPanel invokingWidget, String widgetName)
 	{
 		Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName);
@@ -267,7 +259,6 @@ public class VkEngine implements IEngine{
 		}
 		return operationsList;
 	}
-	@SuppressWarnings("unchecked")
 	public List<String> getAttributesList(Widget invokingWidget) {
 		List<String> optionList = new ArrayList<String>();
 		optionList.add(ADD_CLASS);
@@ -414,8 +405,6 @@ public class VkEngine implements IEngine{
 			optionList.add(VkHTML.NAME);
 		if(invokingWidget instanceof HasVkHidden)
 			optionList.add(VkHidden.NAME);
-		if(invokingWidget instanceof HasVkHyperlink)
-			optionList.add(VkHyperlink.NAME);
 		if(invokingWidget instanceof HasVkImage)
 			optionList.add(VkImage.NAME);
 		if(invokingWidget instanceof HasVkListBox)
@@ -454,8 +443,6 @@ public class VkEngine implements IEngine{
 			optionList.add(VkInlineLabel.NAME);
 		if(invokingWidget instanceof HasVkInlineHTML)
 			optionList.add(VkInlineHTML.NAME);
-		if(invokingWidget instanceof HasVkInlineHyperlink)
-			optionList.add(VkInlineHyperlink.NAME);
 		if(invokingWidget instanceof HasVkDateBox)
 			optionList.add(VkDateBox.NAME);
 		return optionList;
@@ -489,7 +476,6 @@ public class VkEngine implements IEngine{
 		return optionList;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void applyAttribute(String attributeName, Widget invokingWidget) {
 		if(attributeName.equals(ADD_CLASS))
 			showAddClassNameDialog(invokingWidget);
@@ -562,7 +548,7 @@ public class VkEngine implements IEngine{
 		else if(attributeName.equals(HasVkTabHeaderHtml.NAME))
 			showAddTabHeaderHtmlDialog((HasVkTabHeaderHtml) invokingWidget);
 		else if(attributeName.equals(HasVkValue.NAME))
-			showAddValueDialog((HasVkValue) invokingWidget);
+			showAddValueDialog((HasVkValue<?>) invokingWidget);
 		else if(attributeName.equals(HasVkListBoxRenderMode.NAME))
 			showChoseListboxRenderModeDialog((HasVkListBoxRenderMode) invokingWidget);
 		
@@ -1089,19 +1075,14 @@ public class VkEngine implements IEngine{
 		});
 	}
 	private void showAddNumberedWidgetDialog(final HasVkSwitchNumberedWidget invokingWidget) {
-		final TextBox actionTb = new TextBox();
-		actionTb.setWidth("300px");
-		actionTb.setText(Integer.toString(invokingWidget.getCurrentlyShowingWidget()));
-		showAddTextAttributeDialog("Please provide widget number to show below", actionTb, new IEventRegister() {
+		final ListBox scrollLb = new ListBox();
+		scrollLb.setWidth("200px");
+		for(int i = 0, len = invokingWidget.getWidgetCount(); i < len; i++)
+			scrollLb.addItem(Integer.toString(i), Integer.toString(i));
+		showAddListDialog("Please select widget number to show below", scrollLb, new IEventRegister() {
 			@Override
 			public void registerEvent(String number) {
-				try{
-					invokingWidget.showWidget(Integer.parseInt(number));
-				}
-				catch(NumberFormatException e)
-				{
-					Window.alert("Widget number cannot be non-numeric");
-				}
+				invokingWidget.showWidget(Integer.parseInt(number));
 			}
 		});
 	}
@@ -1301,8 +1282,7 @@ public class VkEngine implements IEngine{
 			}
 		});
 	}
-	@SuppressWarnings("unchecked")
-	private void showAddValueDialog(final HasVkValue invokingWidget) {
+	private void showAddValueDialog(final HasVkValue<?> invokingWidget) {
 		final TextBox actionTb = new TextBox();
 		actionTb.setText(invokingWidget.getValue().toString());
 		actionTb.setWidth("300px");

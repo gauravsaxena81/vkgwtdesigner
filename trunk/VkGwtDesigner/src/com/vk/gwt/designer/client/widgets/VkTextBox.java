@@ -29,7 +29,6 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.HasDirection;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -94,11 +93,13 @@ public class VkTextBox extends TextBox implements IVkWidget, HasVkText, HasVkAll
 	private boolean isEnabled = true;
 	
 	public VkTextBox(){
-		super.addKeyDownHandler(new KeyDownHandler(){
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				event.stopPropagation();
-			}});
+		if(VkDesignerUtil.isDesignerMode){
+			super.addKeyDownHandler(new KeyDownHandler(){
+				@Override
+				public void onKeyDown(KeyDownEvent event) {
+					event.stopPropagation();
+				}});
+		}
 	}
 	
 	@Override

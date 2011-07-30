@@ -91,11 +91,13 @@ public class VkTextArea extends TextArea implements IVkWidget, HasVkText, HasVkA
 	private boolean isEnabled = true;
 	
 	public VkTextArea(){
-		super.addKeyDownHandler(new KeyDownHandler(){
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				event.stopPropagation();
-			}});
+		if(VkDesignerUtil.isDesignerMode){
+			super.addKeyDownHandler(new KeyDownHandler(){
+				@Override
+				public void onKeyDown(KeyDownEvent event) {
+					event.stopPropagation();
+				}});
+		}
 	}
 
 	@Override

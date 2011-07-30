@@ -1,19 +1,17 @@
 package com.vk.gwt.designer.client.engine;
 
+import java.util.Iterator;
 import java.util.List;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.json.client.JSONBoolean;
+import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.Panels.VkDisclosurePanel;
+import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
+import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 
 public class VkDisclosurePanelEngine extends VkAbstractWidgetEngine<VkDisclosurePanel>{
@@ -24,60 +22,40 @@ public class VkDisclosurePanelEngine extends VkAbstractWidgetEngine<VkDisclosure
 		return widget;
 	}
 	@Override
-	public void applyAttribute(String attributeName, Widget invokingWidget) {
-		if(attributeName.equals("Set Open"))
-		{
-			ListBox listBox = new ListBox(false);
-			listBox.addItem("True", "true");
-			listBox.addItem("False", "false");
-			listBox.setWidth("100px");
-			showSetOpenDialog(listBox, (VkDisclosurePanel) invokingWidget);
-		}
-		else
-			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
-	}
-	@Override
 	public List<String> getAttributesList(Widget invokingWidget)
 	{
 		List<String> optionList = VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
-		optionList.add("Set Open");
 		return optionList;
 	}
-	private void showSetOpenDialog(final ListBox listBox, final VkDisclosurePanel invokingWidget) {
-		final DialogBox origDialog = new DialogBox();
-		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
-		final VerticalPanel dialog = new VerticalPanel();
-		origDialog.add(dialog);
-		origDialog.setText("Please add Text below:");
-		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-		Timer t = new Timer(){
-			@Override
-			public void run() {
-				VkDesignerUtil.centerDialog(dialog);
-				listBox.setFocus(true);
+	@Override
+	public String serialize(IVkWidget widget)
+	{
+		StringBuffer buffer = new StringBuffer("{");
+		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
+		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		serializeAttributes(buffer, (Widget) widget);
+		buffer.append(",open:").append(((VkDisclosurePanel)widget).isOpen());
+		buffer.append(",children:[");
+		if(widget instanceof IPanel)
+		{
+			Iterator<Widget> widgetList = ((IPanel)widget).iterator();
+			while(widgetList.hasNext())
+			{
+				Widget child = widgetList.next();
+				if(child instanceof IVkWidget)
+					buffer.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
 			}
-		};
-		t.schedule(100);
-		dialog.add(listBox);
-		HorizontalPanel buttonsPanel = new HorizontalPanel();
-		dialog.add(buttonsPanel);
-		Button saveButton = new Button("Save");
-		buttonsPanel.add(saveButton);
-		saveButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				invokingWidget.setOpen(Boolean.valueOf(listBox.getValue(listBox.getSelectedIndex())));
-				origDialog.hide();
-			}
-		});
-		Button cancelButton = new Button("Cancel");
-		buttonsPanel.add(cancelButton);
-		cancelButton.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				origDialog.hide();
-			}
-		});
-		origDialog.center();
+		}
+		if(buffer.charAt(buffer.length() - 1) == ',')
+			buffer.deleteCharAt(buffer.length() - 1);
+		buffer.append("]}");
+		return buffer.toString();
+	}
+	public void buildWidget(JSONObject jsonObj, Widget parent) {
+		super.buildWidget(jsonObj, parent);
+		JSONValue attributeJsObj = jsonObj.get("open");
+		JSONBoolean attributeBooleanObj;
+		if(attributeJsObj != null && (attributeBooleanObj = attributeJsObj.isBoolean()) != null)
+			((VkDisclosurePanel)parent).setOpen(attributeBooleanObj.booleanValue());
 	}
 }

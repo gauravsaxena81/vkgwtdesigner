@@ -55,6 +55,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 	private String clickJs = "";
 	
 	public VkInlineLabel() {
+		super.setDirectionEstimator(true);
 		DOM.setStyleAttribute(getElement(), "border", "solid 1px gray");
 	}
 	

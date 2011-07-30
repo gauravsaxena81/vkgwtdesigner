@@ -308,11 +308,11 @@ public class VkAnchor extends Anchor implements IVkWidget, HasVkAllKeyHandlers, 
 	public void setDirection(String direction)
 	{
 		if(direction.equals(HasDirection.Direction.LTR.toString()))
-			setDirection(HasDirection.Direction.LTR);
+			super.setText(super.getText(), HasDirection.Direction.LTR);
 		else if(direction.equals(HasDirection.Direction.RTL.toString()))
-			setDirection(HasDirection.Direction.RTL);
+			super.setText(super.getText(), HasDirection.Direction.RTL);
 		else if(direction.equals(HasDirection.Direction.DEFAULT.toString()))
-			setDirection(HasDirection.Direction.DEFAULT);
+			super.setText(super.getText(), HasDirection.Direction.DEFAULT);
 		else 
 			Window.alert("direction can only take one of the following values: " + HasDirection.Direction.LTR.toString() + "," 
 				+ HasDirection.Direction.RTL.toString() + "," +	HasDirection.Direction.DEFAULT.toString());
@@ -352,7 +352,8 @@ public class VkAnchor extends Anchor implements IVkWidget, HasVkAllKeyHandlers, 
 	@Override
 	@Export
 	public void setUrl(String url) {
-		super.setHref(url);
+		if(url != null && !url.trim().isEmpty())
+			super.setHref(url);
 	}
 	@Override
 	@Export
