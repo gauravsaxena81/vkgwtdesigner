@@ -207,7 +207,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		buffer.append("]}");
 		return buffer.toString();
 	}
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void serializeAttributes(StringBuffer buffer, Widget widgetSource)
 	{
 		if(!widgetSource.getStyleName().isEmpty())
@@ -250,6 +250,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			buffer.append(",'" ).append(HasVkImageUrl.NAME).append("':").append("'").append(((HasVkImageUrl)widgetSource).getImageUrl().replace("'", "\\'").replace("\"", "\\\"")).append("'");
 		if(widgetSource instanceof HasVkScrollBarShowing)
 			buffer.append(",'" ).append(HasVkScrollBarShowing.NAME).append("':").append(((HasVkScrollBarShowing)widgetSource).isAlwaysShowScrollBars());
+		if(widgetSource instanceof HasVkSwitchNumberedWidget)
+			buffer.append(",'" ).append(HasVkSwitchNumberedWidget.NAME).append("':").append(((HasVkSwitchNumberedWidget)widgetSource).getCurrentlyShowingWidget());
 		if(widgetSource instanceof HasVkName && !((HasVkName)widgetSource).getName().isEmpty())
 			buffer.append(",'" ).append(HasVkName.NAME).append("':").append("'").append(((HasVkName)widgetSource).getName().replace("'", "\\'").replace("\"", "\\\"")).append("'");
 		if(widgetSource instanceof HasVkValue && ((HasVkValue)widgetSource).getValue() != null && !((HasVkValue)widgetSource).getValue().toString().isEmpty())
@@ -373,7 +375,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			//addAttributes(childObj, widget);
 		}
 	}
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	protected void addAttributes(JSONObject childObj, Widget widget) {
 		JSONString attributeStringObj;
 		JSONNumber attributeNumberObj;
@@ -443,8 +445,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		if(attributeJsObj != null && (attributeBooleanObj = attributeJsObj.isBoolean()) != null)
 			((HasVkScrollBarShowing)widget).setAlwaysShowScrollBars(attributeBooleanObj.booleanValue());
 		attributeJsObj = childObj.get(HasVkSwitchNumberedWidget.NAME);
-		/*if(attributeJsObj != null && (attributeNumberObj = attributeJsObj.isNumber()) != null)
-			((HasVkSwitchNumberedWidget)widget).showWidget((int)attributeNumberObj.doubleValue());*/
+		if(attributeJsObj != null && (attributeNumberObj = attributeJsObj.isNumber()) != null)
+			((HasVkSwitchNumberedWidget)widget).showWidget((int)attributeNumberObj.doubleValue());
 		attributeJsObj = childObj.get(HasVkName.NAME);
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			((HasVkName)widget).setName(attributeStringObj.stringValue());

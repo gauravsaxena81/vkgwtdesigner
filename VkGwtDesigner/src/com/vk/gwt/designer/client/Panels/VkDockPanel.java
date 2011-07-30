@@ -1,5 +1,7 @@
 package com.vk.gwt.designer.client.Panels;
 
+import java.util.Iterator;
+
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,7 +16,6 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
@@ -22,6 +23,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
+import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 
 public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAlignment, HasVkVerticalAlignment,HasVkWidgets {
@@ -158,6 +160,24 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 	private interface IAlignment{
 		public void doAlignment(int widgetIndex, String align);
 	}
+	private String getDirectionString(DockLayoutConstant widgetDirection) {
+		if(widgetDirection.equals(DockPanel.CENTER))
+			return "Center";
+		else if(widgetDirection.equals(DockPanel.EAST))
+			return "East";
+		else if(widgetDirection.equals(DockPanel.LINE_END))
+			return "Line-End";
+		else if(widgetDirection.equals(DockPanel.LINE_START))
+			return "Line-Start";
+		else if(widgetDirection.equals(DockPanel.NORTH))
+			return "North";
+		else if(widgetDirection.equals(DockPanel.SOUTH))
+			return "South";
+		else if(widgetDirection.equals(DockPanel.WEST))
+			return "West";
+		else
+			return "";
+	}
 	public void showSetCellAlignmentDialog(final ListBox listBox, final IAlignment iAlignment) {
 		final DialogBox origDialog = new DialogBox();
 		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
@@ -165,21 +185,21 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 		origDialog.add(dialog);
 		origDialog.setText("Cell Alignment Dialog");
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-		final TextBox widgetIndexTb = new TextBox();
-		widgetIndexTb.setWidth("300px");
-		new Timer(){
-			@Override
-			public void run() {
-				VkDesignerUtil.centerDialog(dialog);
-				widgetIndexTb.setFocus(true);
-			}
-		}.schedule(100);
-		dialog.add(new Label("Please add Widget number below:"));
-		dialog.add(widgetIndexTb);
-		widgetIndexTb.addChangeHandler(new ChangeHandler() {
+		
+		dialog.add(new Label("Please choose the Widget :"));
+		final ListBox widgetIndexLb = new ListBox();
+		int index = 0;
+		for (Iterator<Widget> iterator = iterator(); iterator.hasNext();) {
+			Widget next = iterator.next();
+			widgetIndexLb.addItem(((IVkWidget)next).getWidgetName() + "-" + getDirectionString(getWidgetDirection(next)), Integer.toString(index++));
+		}
+		
+		widgetIndexLb.setWidth("300px");
+		dialog.add(widgetIndexLb);
+		widgetIndexLb.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent event) {
-				iAlignment.doAlignment(Integer.parseInt(widgetIndexTb.getText()), listBox.getValue(listBox.getSelectedIndex()));
+				iAlignment.doAlignment(Integer.parseInt(widgetIndexLb.getValue(widgetIndexLb.getSelectedIndex())), listBox.getValue(listBox.getSelectedIndex()));
 			}
 		});
 		dialog.add(new Label("Please choose Alignment"));
@@ -187,7 +207,7 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 		listBox.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent event) {
-				iAlignment.doAlignment(Integer.parseInt(widgetIndexTb.getText()), listBox.getValue(listBox.getSelectedIndex()));
+				iAlignment.doAlignment(Integer.parseInt(widgetIndexLb.getValue(widgetIndexLb.getSelectedIndex())), listBox.getValue(listBox.getSelectedIndex()));
 			}
 		});
 		HorizontalPanel buttonsPanel = new HorizontalPanel();

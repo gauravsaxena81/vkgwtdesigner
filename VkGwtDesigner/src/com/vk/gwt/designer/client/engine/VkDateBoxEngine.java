@@ -97,8 +97,10 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 				, new IEventRegister() {
 					@Override
 					public void registerEvent(String pattern) {
+						String prevDate = widget.getText();
 						widget.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(pattern)));
 						widget.setPattern(pattern);
+						widget.setValue(prevDate);
 					}
 				});
 		}
@@ -108,9 +110,8 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget)
 	{
-		List<String> list = new ArrayList<String>();
-		list.add(SET_FORMAT);
-		list.addAll(VkDesignerUtil.getEngine().getAttributesList(invokingWidget));
+		List<String> list = VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
+		list.add(3, SET_FORMAT);
 		return list;
 	}
 	@Override
@@ -128,7 +129,10 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		VkDateBox dateBox = (VkDateBox)parent;
 		dateBox.setPattern(jsonObj.get("dateFormat").isString().stringValue());
-		dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(dateBox.getPattern())));
+		String pattern = dateBox.getPattern();
+		if(!pattern.isEmpty())
+			dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(pattern)));
+		addAttributes(jsonObj, parent);
 	}
 	@Override
 	public void copyAttributes(Widget widgetSource, Widget widgetTarget){

@@ -1,6 +1,5 @@
 package com.vk.gwt.designer.client.engine;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.json.client.JSONArray;

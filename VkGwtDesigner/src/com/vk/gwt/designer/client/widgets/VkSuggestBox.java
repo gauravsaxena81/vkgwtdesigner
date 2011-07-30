@@ -107,11 +107,13 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 	private boolean isEnabled = true;
 	
 	public VkSuggestBox(){
-		super.addKeyDownHandler(new KeyDownHandler(){
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				event.stopPropagation();
-			}});
+		if(VkDesignerUtil.isDesignerMode){
+			super.addKeyDownHandler(new KeyDownHandler(){
+				@Override
+				public void onKeyDown(KeyDownEvent event) {
+					event.stopPropagation();
+				}});
+		}
 	}
 	
 	@Override

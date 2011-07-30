@@ -93,11 +93,13 @@ public class VkPasswordTextBox extends PasswordTextBox implements IVkWidget, Has
 	private boolean isEnabled = true;
 
 	public VkPasswordTextBox() {
-		super.addKeyDownHandler(new KeyDownHandler(){
-			@Override
-			public void onKeyDown(KeyDownEvent event) {
-				event.stopPropagation();
-			}});
+		if(VkDesignerUtil.isDesignerMode){
+			super.addKeyDownHandler(new KeyDownHandler(){
+				@Override
+				public void onKeyDown(KeyDownEvent event) {
+					event.stopPropagation();
+				}});
+		}
 	}
 	@Override
 	public void addClickHandler(final String js) {

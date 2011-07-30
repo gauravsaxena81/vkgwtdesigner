@@ -333,6 +333,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 				@SuppressWarnings("unchecked")
 				@Override
 				public void onSelection(SelectionEvent<TreeItem> event) {
+					@SuppressWarnings("rawtypes")
 					Map eventproperties = new HashMap();
 					TreeItem treeItem = event.getSelectedItem();
 					setUpTreeEvent(eventproperties, treeItem);
@@ -353,6 +354,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 				@SuppressWarnings("unchecked")
 				@Override
 				public void onClose(CloseEvent<TreeItem> event) {
+					@SuppressWarnings("rawtypes")
 					Map eventproperties = new HashMap();
 					TreeItem treeItem = event.getTarget();
 					setUpTreeEvent(eventproperties, treeItem);
@@ -373,6 +375,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 				@SuppressWarnings("unchecked")
 				@Override
 				public void onOpen(OpenEvent<TreeItem> event) {
+					@SuppressWarnings("rawtypes")
 					Map eventproperties = new HashMap();
 					TreeItem treeItem = event.getTarget();
 					setUpTreeEvent(eventproperties, treeItem);
@@ -382,7 +385,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 		}
 	}
 	@SuppressWarnings("unchecked")
-	private void setUpTreeEvent(Map eventproperties, TreeItem treeItem) {
+	private void setUpTreeEvent(@SuppressWarnings("rawtypes") Map eventproperties, TreeItem treeItem) {
 		eventproperties.put("state", Boolean.toString(treeItem.getState()));
 		eventproperties.put("tree", treeItem.getTree().getElement());
 		eventproperties.put("treeItem", treeItem.getElement());

@@ -4,4 +4,5 @@ public interface HasVkSwitchNumberedWidget {
 	public static final String NAME = "Show Widget";
 	public void showWidget(int index);
 	public int getCurrentlyShowingWidget();
+	public int getWidgetCount();
 }

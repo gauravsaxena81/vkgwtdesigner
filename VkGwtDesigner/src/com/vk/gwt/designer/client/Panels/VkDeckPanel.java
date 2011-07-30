@@ -15,6 +15,11 @@ public class VkDeckPanel extends DeckPanel implements IPanel, HasVkWidgets, HasV
 		return getVisibleWidget();
 	}
 	@Override
+	public void add(Widget w){
+		super.add(w);
+		super.showWidget(super.getWidgetCount() - 1);
+	}
+	@Override
 	public String getWidgetName() {
 		return NAME;
 	}

@@ -138,6 +138,8 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 			buffer.append(",className:'" + widgetSource.getStyleName() + "'");
 		if(!widgetSource.getTitle().isEmpty())
 			buffer.append(",title:'" + widgetSource.getTitle() + "'");
+		if(!widgetSource.getElement().getId().isEmpty())
+			buffer.append(",id:'" + widgetSource.getElement().getId() + "'");
 		
 		if(widgetSource instanceof HasVkBeforeSelectionHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkBeforeSelectionHandler.NAME).isEmpty())
 			buffer.append(",'" ).append(HasVkBeforeSelectionHandler.NAME).append("':").append("'")

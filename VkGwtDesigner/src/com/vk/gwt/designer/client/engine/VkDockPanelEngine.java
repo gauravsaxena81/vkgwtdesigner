@@ -159,7 +159,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 			dockPanel.setCellHorizontalAlignment(dockPanel.getWidgetCount() - 1, childObj.get("horizontalAlignment").isString().stringValue());
 			dockPanel.setCellVerticalAlignment(dockPanel.getWidgetCount() - 1, childObj.get("verticalAlignment").isString().stringValue());
 			//addAttributes(childWidgetObj, widget);
-			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
+			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
 		}
 	}
 	private DockLayoutConstant getDirectionConstant(int value) {
@@ -175,7 +175,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 			return DockPanel.NORTH;
 		else if(value == 5)
 			return DockPanel.SOUTH;
-		else if(value == 5)
+		else if(value == 6)
 			return DockPanel.WEST;
 		else
 		{
