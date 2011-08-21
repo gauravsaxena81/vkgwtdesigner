@@ -55,4 +55,12 @@ class VkMainDrawingPanel extends AbsolutePanel implements IPanel, HasVkLoadHandl
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return false;
+	}
+	@Override
+	public boolean isResizable() {
+		return false;
+	}
 }

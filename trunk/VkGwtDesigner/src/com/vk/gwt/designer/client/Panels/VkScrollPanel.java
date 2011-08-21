@@ -4,6 +4,7 @@ import com.google.gwt.event.dom.client.ScrollEvent;
 import com.google.gwt.event.dom.client.ScrollHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -18,6 +19,19 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IPanel, 
 	public static final String NAME = "Scroll Panel";
 	private HandlerRegistration scrollHandlerRegistration;
 	private String scrollJs = "";
+	public VkScrollPanel(){
+		sinkEvents(Event.ONMOUSEDOWN);
+	}
+	@Override
+	  public void onBrowserEvent(Event event) {
+	    switch (DOM.eventGetType(event)) {
+	    	case Event.ONMOUSEDOWN:
+	    		if(event.getButton() == 0 || event.getButton() == 1)
+	    			event.stopPropagation();
+	    	break;
+	    }
+	    super.onBrowserEvent(event);
+	}
 	@Override
 	public void add(Widget widget)
 	{
@@ -62,6 +76,14 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IPanel, 
 	public void clone(Widget targetWidget) {}
 	@Override
 	public boolean showMenu() {
+		return true;
+	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
 		return true;
 	}
 	/**************************Export attribute Methods********************************/

@@ -29,9 +29,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	public static final String NAME = "Flex Table";
 	private HandlerRegistration clickHandlerRegistration;
 	private String clickJs = "";
-	@SuppressWarnings("unused")//used in native function
 	private boolean startSelection = false;
-	@SuppressWarnings("unused")//used in native function
 	private boolean firstSelection = false;
 	private boolean isSelectionEnabled;
 	private VkFlexTableColumnFormatter columnFormatter;
@@ -97,6 +95,14 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		public boolean showMenu() {
 			return !isSelectionEnabled;
 		}
+		@Override
+		public boolean isMovable() {
+			return false;
+		}
+		@Override
+		public boolean isResizable() {
+			return true;
+		}
 	};
 	
 	class VkFlexTableAbsolutePanelEngine extends VkAbsolutePanelEngine{
@@ -124,6 +130,8 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 			showAddTextAttributeDialog();
 		super.setHeight("100px");
 		super.setWidth("100px");
+		this.columnFormatter = new VkFlexTableColumnFormatter();
+		setColumnFormatter(columnFormatter);
 		DOM.setStyleAttribute(getElement(), "tableLayout", "fixed");
 	}
 	@Override
@@ -131,9 +139,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	{
 		setCellPadding(0);
 		setCellSpacing(0);
-		DOM.setElementAttribute(getElement(), "cellspacing", "0");
-		this.columnFormatter = new VkFlexTableColumnFormatter();
-		setColumnFormatter(columnFormatter);
+		DOM.setElementAttribute(getElement(), "cellspacing", "0");	
 	}
 	@Override
 	public void setWidth(String width)
@@ -209,8 +215,6 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 				try{
 					int rowCount = Integer.parseInt(rowsTextBox.getText().trim());
 					VkFlexTable.this.initialColumnCount = Integer.parseInt(columnsTextBox.getText().trim());
-					/*for(int i = 0; i < initialColumnCount; i++)
-						columnFormatter.setWidth(i, "80px");*/
 					for(int i = 0; i < rowCount; i++)
 						for(int j = 0; j < initialColumnCount; j++)
 							makeCell(i, j , j);
@@ -284,7 +288,6 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 			}
 		}
 	}-*/;
-	@SuppressWarnings("unused")//used in native function
 	private void clearSelectedCells()
 	{
 		int rowCount = getRowCount();
@@ -296,7 +299,6 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 					getFlexCellFormatter().removeStyleName(i, j, "vkflextable-cell-selected");
 		}
 	}
-	@SuppressWarnings("unused")//used in native function
 	private void clearAllStyles()
 	{
 		int rowCount = getRowCount();
@@ -307,7 +309,6 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 				getFlexCellFormatter().setStyleName(i, j, "");
 		}
 	}
-	@SuppressWarnings("unused")//used in native function
 	private void selectAll()
 	{
 		int maxCol = -1;
@@ -490,6 +491,14 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	{
 		super.addCell(row);
 		makeCell(row, getCellCount(row) - 1, initialColumnCount - 1);
+	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

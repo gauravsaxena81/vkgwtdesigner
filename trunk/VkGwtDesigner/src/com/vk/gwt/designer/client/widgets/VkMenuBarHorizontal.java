@@ -156,6 +156,14 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 	public HashMap<Integer, Widget> getWidgets() {
 		return widgets;
 	}	
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

@@ -419,6 +419,14 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Export
 	public void createLink(String link)

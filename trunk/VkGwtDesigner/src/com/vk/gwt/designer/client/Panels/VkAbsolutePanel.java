@@ -33,6 +33,14 @@ public class VkAbsolutePanel extends AbsolutePanel implements IPanel,HasVkWidget
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

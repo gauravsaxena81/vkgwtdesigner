@@ -187,38 +187,26 @@ public class VkDesignerUtil {
 						ev.cancelBubble = true;
 					else
 						ev.stopPropagation();
-					if(element.id != 'drawingPanel' && (ev.button == 1 || ev.button == 0) 
-						&& widget.@com.google.gwt.user.client.ui.Widget::getElement()().style.position == 'absolute')
-						@com.vk.gwt.designer.client.designer.VkDesignerUtil::makeMovable(Lcom/google/gwt/user/client/ui/Widget;)(widget);
+					//if(element.id != 'drawingPanel' && (ev.button == 1 || ev.button == 0) 
+					//	&& widget.@com.google.gwt.user.client.ui.Widget::getElement()().style.position == 'absolute')
+					//	@com.vk.gwt.designer.client.designer.VkDesignerUtil::makeMovable(Lcom/google/gwt/user/client/ui/Widget;)(widget);
 				}
 			}
-			element.oncontextmenu = function(ev){
-				if(typeof ev == 'undefined')
-					ev = $wnd.event;
-				if(element.id != '' && element.id != 'drawingPanel')
-				{
-					var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
-					var resizeCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getResizeCommand()();
-					resizeCommand.@com.google.gwt.user.client.Command::execute()();
-					//if(isChild(!!ev.target ? ev.target : ev.srcElement, element))
-					//{
-					//	menu = menu.@com.vk.gwt.designer.client.designer.VkMenu::getElement()();
-					//	menu.style.display = "block";
-					//	menu.style.left = ev.clientX + "px"
-					//	menu.style.top = ev.clientY 
-					//		- @com.vk.gwt.designer.client.designer.VkDesignerUtil::drawingPanel.@com.vk.gwt.designer.client.Panels.VkAbsolutePanel::getElement()().offsetTop 
-					//		+ $wnd.document.body.scrollTop + "px";
-					//	menu.focus();
-					//}
-					//var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
-					//menu.@com.vk.gwt.designer.client.designer.VkMenu::prepareMenu(Lcom/google/gwt/user/client/ui/Widget;Lcom/vk/gwt/designer/client/api/engine/IWidgetEngine;)(widget, widgetEngine);
-				}
-				if(typeof ev.stopPropagation == 'undefined' || ev.stopPropagation == null)
-					ev.cancelBubble = true;
-				else
-					ev.stopPropagation();
-				return false;
-			};
+//			element.oncontextmenu = function(ev){
+//				if(typeof ev == 'undefined')
+//					ev = $wnd.event;
+//				if(element.id != '' && element.id != 'drawingPanel')
+//				{
+//					var menu = @com.vk.gwt.designer.client.designer.VkDesignerUtil::getMenu()();
+//					var resizeCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getResizeCommand()();
+//					resizeCommand.@com.google.gwt.user.client.Command::execute()();
+//				}
+//				if(typeof ev.stopPropagation == 'undefined' || ev.stopPropagation == null)
+//					ev.cancelBubble = true;
+//				else
+//					ev.stopPropagation();
+//				return false;
+//			};
 			$wnd.document.onkeydown = function(ev){
 				if(typeof ev == 'undefined')
 					ev = $wnd.event;
@@ -275,6 +263,9 @@ public class VkDesignerUtil {
 			};
 		}
 	}-*/;
+	public static void setMovable(){
+		
+	}
 	public static void showMoveIcon(Widget widget)
 	{
 		moveImagePanel.showRelativeTo(widget);
@@ -395,7 +386,7 @@ public class VkDesignerUtil {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
 					vkMenu.prepareMenu((IVkWidget) popUpAssociateWidget);
-					if(event.getNativeButton() == NativeEvent.BUTTON_LEFT)
+					if(event.getNativeButton() == NativeEvent.BUTTON_LEFT && ((IVkWidget)popUpAssociateWidget).isMovable())
 					{
 						makeMovable(popUpAssociateWidget);
 						moveImagePanel.hide();
@@ -424,8 +415,7 @@ public class VkDesignerUtil {
 			return false;
 		}
 	}-*/;
-	static void hideMoveIcon()
-	{
+	static void hideMoveIcon() {
 		moveImagePanel.hide();
 	}
 	private static void setUpEngineMap() {

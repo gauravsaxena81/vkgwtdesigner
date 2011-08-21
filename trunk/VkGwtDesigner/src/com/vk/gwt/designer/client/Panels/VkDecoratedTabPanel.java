@@ -3,11 +3,13 @@ package com.vk.gwt.designer.client.Panels;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DecoratedTabPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -16,19 +18,20 @@ import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkBeforeSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderText;
 import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 
-public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidgets, IPanel, HasVkAnimation, HasVkTabHeaderText, HasVkTabHeaderHtml
-, HasVkEnabled, HasVkBeforeSelectionHandler, HasVkSelectionHandler{
+public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidgets, IPanel, HasVkAnimation, HasVkTabHeaderText, HasVkTabHeaderHtml, HasVkEnabled, HasVkSwitchNumberedWidget
+, HasVkBeforeSelectionHandler, HasVkSelectionHandler{
 	public static final String NAME = "Decorated Tab Panel";
 	private HandlerRegistration beforeSelectionHandler;
 	private HandlerRegistration selectionHandler;
-	private String selectionJs = "";
 	private String beforeSelectionJs = "";
+	private String selectionJs = "";
 	@Override
 	public void add(Widget widget)
 	{
@@ -96,7 +99,20 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			throw new IllegalStateException("No Tab has been selected");
 		}
 	}
-	
+	@Override
+	public void addBeforeSelectionHandler(String js) {
+		if(beforeSelectionHandler != null)
+			beforeSelectionHandler.removeHandler();
+		beforeSelectionJs = js;
+		beforeSelectionHandler = super.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+			@Override
+			public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+				Map<String, String> eventproperties = new HashMap<String, String>();
+				eventproperties.put("item", event.getItem().toString());
+				VkDesignerUtil.executeEvent(beforeSelectionJs, eventproperties);
+			}
+		});
+	}
 	@Override
 	public String getPriorJs(String eventName) {
 		if(eventName.equals(HasVkSelectionHandler.NAME))
@@ -105,24 +121,6 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			return beforeSelectionJs;
 		else
 			return "";
-	}
-	@Override
-	public void addBeforeSelectionHandler(String js) {
-		if(beforeSelectionHandler != null)
-			beforeSelectionHandler.removeHandler();
-		beforeSelectionHandler = null;
-		beforeSelectionJs = js.trim();
-		if(!beforeSelectionJs.isEmpty())
-		{
-			beforeSelectionHandler = super.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
-				@Override
-				public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
-					Map<String, String> eventproperties = new HashMap<String, String>();
-					eventproperties.put("item", event.getItem().toString());
-					VkDesignerUtil.executeEvent(beforeSelectionJs, eventproperties);
-				}
-			});
-		}
 	}
 	@Override
 	public void addSelectionHandler(String js) {
@@ -144,19 +142,47 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 	}
 	@Override
 	public void setEnabled(boolean enabled) {
-		if(getSelectedTab() > -1)
+		int selectedIndex = getSelectedTab();
+		if(selectedIndex > -1)
 			setTabEnabled(getSelectedTab(), enabled);
-		else if(VkDesignerUtil.isDesignerMode)
-			Window.alert("No Tab has been selected");
+		else
+		{
+			if(VkDesignerUtil.isDesignerMode)
+				Window.alert("No Tab has been selected");
+			throw new IllegalStateException("No Tab has been selected");
+		}
 	}
 	@Override
 	public String getWidgetName() {
 		return NAME;
 	}
 	@Override
-	public void clone(Widget targetWidget) {}
+	public void clone(Widget targetWidget) {
+		int widgetCount = this.getWidgetCount();
+		for(int i = 0 ; i < widgetCount; i++)
+		{
+			((VkDecoratedTabPanel)targetWidget).setTabHeaderHtml(i, this.getTabHeaderHtml(i));
+			((VkDecoratedTabPanel)targetWidget).setTabEnabled(i, this.getTabEnabled(i));
+		}
+	}
 	@Override
 	public boolean showMenu() {
+		return true;
+	}
+	@Override
+	public void showWidget(int index) {
+		selectTab(index);		
+	}
+	@Override
+	public int getCurrentlyShowingWidget() {
+		return getSelectedTab();
+	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
 		return true;
 	}
 	/**************************Export attribute Methods********************************/
@@ -182,8 +208,18 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 		super.getTabBar().setTabText(index, text);
 	}
 	@Export
+	public String getTabHeaderText(int index) {
+		Element div = DOM.createDiv();
+		div.setInnerHTML(getTabHeaderHtml(index));
+		return div.getInnerText();
+	}
+	@Export
 	public void setTabHeaderHtml(int index, String html) {
 		super.getTabBar().setTabHTML(index, html);
+	}
+	@Export
+	public String getTabHeaderHtml(int index) {
+		return super.getTabBar().getTabHTML(index);
 	}
 	@Export
 	public void setTabEnabled(int index, boolean enabled) {
@@ -220,12 +256,5 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 	public void removeStyleName(String className)
 	{
 		super.removeStyleName(className);
-	}
-	@Export
-	public String getTabHeaderHtml(int index) {
-		return super.getTabBar().getTabHTML(index);
-	}
-	public String getTabHeaderText(int index) {
-		return super.getTabBar().getTabHTML(index);
 	}
 }

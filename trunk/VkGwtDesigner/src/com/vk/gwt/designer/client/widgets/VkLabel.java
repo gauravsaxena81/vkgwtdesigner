@@ -220,6 +220,14 @@ public class VkLabel extends Label implements IVkWidget, HasVkText, HasVkAllMous
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

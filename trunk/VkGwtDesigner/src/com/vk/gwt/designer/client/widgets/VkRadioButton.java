@@ -349,6 +349,14 @@ public class VkRadioButton extends RadioButton implements IVkWidget, HasVkText, 
 				super.onBrowserEvent(event);
 		}
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

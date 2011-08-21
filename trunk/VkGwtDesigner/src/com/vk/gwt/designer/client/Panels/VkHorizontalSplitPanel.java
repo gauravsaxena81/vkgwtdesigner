@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalSplitPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -16,13 +18,31 @@ import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 
-public class VkHorizontalSplitPanel extends SimplePanel implements IPanel, HasVkWidgets, HasVkImageUrl{
+public class VkHorizontalSplitPanel extends Composite implements IPanel, HasVkWidgets, HasVkImageUrl{
 	public static final String NAME = "Horizontal Split Panel";
 	private HorizontalSplitPanel horizontalSplitPanel;
+	//TODO if mousedown event of VkDesignerUtil is not being used then there is no need for this complex structure of widgets
 	public VkHorizontalSplitPanel()
 	{
+		/*SimplePanel spParent = new SimplePanel();
+		SimplePanel sp = new SimplePanel(){
+			@Override
+			  public void onBrowserEvent(Event event) {
+			    switch (DOM.eventGetType(event)) {
+			    	case Event.ONMOUSEDOWN:
+			    		if(event.getButton() == 0 || event.getButton() == 1)
+			    			event.stopPropagation();
+			    	break;
+			    }
+			    super.onBrowserEvent(event);
+			}
+		};
+		spParent.setWidget(sp);
+		sp.sinkEvents(Event.ONMOUSEDOWN);*/
 		horizontalSplitPanel = new HorizontalSplitPanel();
-		setWidget(horizontalSplitPanel);
+		initWidget(horizontalSplitPanel);
+		
+		//sp.add(horizontalSplitPanel);
 	}
 	@Override
 	public void add(Widget widget)
@@ -50,9 +70,9 @@ public class VkHorizontalSplitPanel extends SimplePanel implements IPanel, HasVk
 			list.add(horizontalSplitPanel.getStartOfLineWidget());
 		if(horizontalSplitPanel.getEndOfLineWidget() != null)
 			list.add(horizontalSplitPanel.getEndOfLineWidget());
-		if(list.size() == 0)
+		/*if(list.size() == 0)
 			return super.iterator();//when widget is initialized, panel housekeeping needs the iterator of VerticalPanel
-		else
+		else*/
 			return list.iterator();//used by the serializer
 	}
 	@Override
@@ -70,12 +90,26 @@ public class VkHorizontalSplitPanel extends SimplePanel implements IPanel, HasVk
 		return NAME;
 	}
 	@Override
-	public void clone(Widget targetWidget) {}
+	public void clone(Widget targetWidget) {
+		((VkHorizontalSplitPanel)targetWidget).horizontalSplitPanel.setSplitPosition(splitterPosition() + "px");
+	}
 	@Override
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
+	@Export
+	public int splitterPosition(){
+		return horizontalSplitPanel.getElement().getFirstChildElement().getFirstChildElement().getOffsetWidth();
+	}
 	@Export
 	public void setSplitPosition(String pos) {
 		horizontalSplitPanel.setSplitPosition(pos);

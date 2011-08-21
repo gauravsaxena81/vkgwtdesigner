@@ -12,8 +12,8 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.DockPanel.DockLayoutConstant;
+import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.Panels.VkDockPanel;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAlternateText;
@@ -183,6 +183,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 			throw new IllegalArgumentException("JSON String is not well-formed. Application cannot be built.");
 		}
 	}
+	//TODO reduce the number of tests
 	protected void addAttributes(JSONObject childObj, Widget widget) {
 		JSONString attributeStringObj;
 		JSONNumber attributeNumberObj;

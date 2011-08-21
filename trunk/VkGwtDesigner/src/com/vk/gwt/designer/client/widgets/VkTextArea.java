@@ -374,6 +374,14 @@ public class VkTextArea extends TextArea implements IVkWidget, HasVkText, HasVkA
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

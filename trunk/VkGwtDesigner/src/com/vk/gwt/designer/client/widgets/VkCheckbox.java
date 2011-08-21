@@ -386,6 +386,14 @@ public class VkCheckbox extends CheckBox implements IVkWidget, HasVkAllKeyHandle
 				super.onBrowserEvent(event);
 		}
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

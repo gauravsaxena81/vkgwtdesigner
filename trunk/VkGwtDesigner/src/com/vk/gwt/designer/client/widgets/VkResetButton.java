@@ -335,6 +335,14 @@ public class VkResetButton extends ResetButton implements HasVkText, HasVkAllMou
 		public boolean showMenu() {
 			return true;
 		}
+		@Override
+		public boolean isMovable() {
+			return true;
+		}
+		@Override
+		public boolean isResizable() {
+			return true;
+		}
 		/**************************Export attribute Methods********************************/
 		@Override
 		@Export

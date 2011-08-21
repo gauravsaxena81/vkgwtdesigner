@@ -422,6 +422,14 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkEnabled,
 	public boolean isDown(){
 		return super.isDown();
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Export
 	public void setVkPushButtonEabled(boolean enabled)
