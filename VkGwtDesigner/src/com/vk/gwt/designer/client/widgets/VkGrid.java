@@ -29,9 +29,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	public static final String NAME = "Grid";
 	private HandlerRegistration clickHandlerRegistration;
 	private String clickJs = "";
-	@SuppressWarnings("unused")//used in native function
 	private boolean startSelection = false;
-	@SuppressWarnings("unused")//used in native function
 	private boolean firstSelection = false;
 	private boolean isSelectionEnabled;
 	private VkFlexTableColumnFormatter columnFormatter;
@@ -277,7 +275,6 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 			}
 		}
 	}-*/;
-	@SuppressWarnings("unused")//used in native function
 	private void clearSelectedCells()
 	{
 		int rowCount = getRowCount();
@@ -289,7 +286,6 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 					getCellFormatter().removeStyleName(i, j, "vkflextable-cell-selected");
 		}
 	}
-	@SuppressWarnings("unused")//used in native function
 	private void clearAllStyles()
 	{
 		int rowCount = getRowCount();
@@ -300,7 +296,6 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 				getCellFormatter().setStyleName(i, j, "");
 		}
 	}
-	@SuppressWarnings("unused")//used in native function
 	private void selectAll()
 	{
 		int maxCol = -1;
@@ -447,6 +442,14 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	public void clone(Widget targetWidget) {}
 	@Override
 	public boolean showMenu() {
+		return true;
+	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
 		return true;
 	}
 	/**************************Export attribute Methods********************************/

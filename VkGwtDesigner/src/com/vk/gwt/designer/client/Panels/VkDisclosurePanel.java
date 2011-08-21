@@ -12,8 +12,8 @@ import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
@@ -23,7 +23,7 @@ import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 
-public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWidgets, HasVkAnimation, HasVkCloseHandler, HasVkOpenHandler{
+public class VkDisclosurePanel extends Composite implements IPanel, HasVkWidgets, HasVkAnimation, HasVkCloseHandler, HasVkOpenHandler{
 	public static final String NAME = "Disclosure Panel";
 	private DisclosurePanel dp;
 	private HandlerRegistration closeHandlerRegistration;
@@ -33,7 +33,7 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 	
 	public VkDisclosurePanel(){
 		dp = new DisclosurePanel();
-		VkDisclosurePanel.super.add(dp);
+		initWidget(dp);
 		setPixelSize(100, 100);
 	}
 	
@@ -49,7 +49,7 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 		else if(dp.getContent() == null)
 		{
 			dp.add(w);
-			w.setWidth(dp.getOffsetWidth() + "px");
+			w.setWidth(VkDesignerUtil.getPixelValue(dp, "width") + "px");
 			DOM.setStyleAttribute(w.getElement(), "margin", "0px");
 			if(VkDesignerUtil.isDesignerMode)
 				Window.alert("Widget added as content of Disclosure Panel");
@@ -65,10 +65,7 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 			list.add(dp.getHeader());
 		if(dp.getContent() != null)
 			list.add(dp.getContent());
-		if(list.size() == 0)
-			return super.iterator();//when widget is initialized, panel housekeeping needs the iterator of VerticalPanel
-		else
-			return list.iterator();//used by the serializer
+		return list.iterator();
 	}
 	@Override
 	public void addCloseHandler(String js) {
@@ -125,7 +122,9 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 		return NAME;
 	}
 	@Override
-	public void clone(Widget targetWidget) {}
+	public void clone(Widget targetWidget) {
+		((VkDisclosurePanel)targetWidget).setOpen(isOpen());
+	}
 	@Override
 	public boolean showMenu() {
 		return true;
@@ -138,6 +137,14 @@ public class VkDisclosurePanel extends VerticalPanel implements IPanel, HasVkWid
 			dp.getHeader().setWidth(widthValue + "px");
 		if(dp.getContent() != null)
 			dp.getContent().setWidth(widthValue + "px");
+	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
 	}
 	/**************************Export attribute Methods********************************/
 	@Export

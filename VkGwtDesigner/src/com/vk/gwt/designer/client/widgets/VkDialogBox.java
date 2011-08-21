@@ -113,6 +113,14 @@ public class VkDialogBox extends DialogBox implements IPanel, HasVkCloseHandler,
 	public void setInitiallyShowing(boolean showing) {
 		this.isInitiallyShowing = showing;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

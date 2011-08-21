@@ -965,6 +965,14 @@ public class VkEngine implements IEngine{
 		listBox.addItem("Center", "center");
 		listBox.addItem("Right", "right");
 		listBox.setWidth("200px");
+		if(invokingWidget.getHorizontalAlignmentString() != null) {
+			if(invokingWidget.getHorizontalAlignmentString().equals("left"))
+				listBox.setSelectedIndex(0);
+			else if(invokingWidget.getHorizontalAlignmentString().equals("center"))
+				listBox.setSelectedIndex(1);
+			else
+				listBox.setSelectedIndex(2);
+		}
 		showAddListDialog("Please choose widget's horizontal alignment", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
@@ -994,6 +1002,14 @@ public class VkEngine implements IEngine{
 		listBox.addItem("Middle", "middle");
 		listBox.addItem("Bottom", "bottom");
 		listBox.setWidth("200px");
+		if(invokingWidget.getVerticalAlignmentString() != null) {
+			if(invokingWidget.getVerticalAlignmentString().equals("top"))
+				listBox.setSelectedIndex(0);
+			else if(invokingWidget.getVerticalAlignmentString().equals("middel"))
+				listBox.setSelectedIndex(1);
+			else
+				listBox.setSelectedIndex(2);
+		}
 		showAddListDialog("Please choose widget's vertical alignment", listBox, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {

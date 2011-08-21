@@ -7,7 +7,7 @@ import java.util.List;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.VerticalSplitPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
@@ -16,13 +16,13 @@ import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 
-public class VkVerticalSplitPanel extends SimplePanel implements IPanel, HasVkWidgets, HasVkImageUrl {
+public class VkVerticalSplitPanel extends Composite implements IPanel, HasVkWidgets, HasVkImageUrl {
 	public static final String NAME = "Vertical Split Panel";
 	private VerticalSplitPanel verticalSplitPanel;
 	public VkVerticalSplitPanel()
 	{
 		verticalSplitPanel = new VerticalSplitPanel();
-		setWidget(verticalSplitPanel);
+		initWidget(verticalSplitPanel);
 	}
 	@Override
 	public void setHeight(String height)
@@ -56,10 +56,7 @@ public class VkVerticalSplitPanel extends SimplePanel implements IPanel, HasVkWi
 			list.add(verticalSplitPanel.getTopWidget());
 		if(verticalSplitPanel.getBottomWidget() != null)
 			list.add(verticalSplitPanel.getBottomWidget());
-		if(list.size() == 0)
-			return super.iterator();//when widget is initialized, panel housekeeping needs the iterator of VerticalPanel
-		else
-			return list.iterator();//used by the serializer
+		return list.iterator();//used by the serializer
 	}
 	@Override
 	public void setImageUrl(String url) {
@@ -76,12 +73,26 @@ public class VkVerticalSplitPanel extends SimplePanel implements IPanel, HasVkWi
 		return NAME;
 	}
 	@Override
-	public void clone(Widget targetWidget) {}
+	public void clone(Widget targetWidget) {
+		((VkVerticalSplitPanel)targetWidget).verticalSplitPanel.setSplitPosition(splitterPosition() + "px");
+	}
 	@Override
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
+	@Export
+	public int splitterPosition(){
+		return verticalSplitPanel.getElement().getFirstChildElement().getFirstChildElement().getOffsetHeight();
+	}
 	@Export
 	public void setSplitPosition(String pos) {
 		verticalSplitPanel.setSplitPosition(pos);

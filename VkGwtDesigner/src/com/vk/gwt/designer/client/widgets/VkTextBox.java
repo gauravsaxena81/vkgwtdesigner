@@ -375,6 +375,14 @@ public class VkTextBox extends TextBox implements IVkWidget, HasVkText, HasVkAll
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

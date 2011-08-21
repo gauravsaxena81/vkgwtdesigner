@@ -70,9 +70,21 @@ public class VkStackPanel extends StackPanel implements HasVkWidgets, IPanel, Ha
 		return NAME;
 	}
 	@Override
-	public void clone(Widget targetWidget) {}
+	public void clone(Widget targetWidget) {
+		int widgetCount = this.getWidgetCount();
+		for(int i = 0 ; i < widgetCount; i++)
+			((VkStackPanel)targetWidget).setHeaderHtml(i, this.getHTML(i));
+	}
 	@Override
 	public boolean showMenu() {
+		return true;
+	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
 		return true;
 	}
 	/**************************Export attribute Methods********************************/

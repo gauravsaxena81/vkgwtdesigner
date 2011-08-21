@@ -98,18 +98,25 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 	}
 	@Override
 	public Widget deepClone(Widget sourceWidget, Widget targetWidget) {
+		boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
+		//TODO: applying attribute is best done after all the children are added, because some widgets apply attributes to their widget holders e.g. stackpanel
+		VkDesignerUtil.isDesignerMode = false;
+		((IVkWidget)sourceWidget).clone(targetWidget);
+		VkDesignerUtil.getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
+		VkDesignerUtil.isDesignerMode = isVkDesignerMode;
 		if(sourceWidget instanceof IPanel && targetWidget instanceof IPanel)
 		{
 			Iterator<Widget> widgets = ((IPanel)sourceWidget).iterator();
 			while(widgets.hasNext())
 			{
 				Widget currentWidget = widgets.next();
+				Widget newWidget = VkDesignerUtil.getEngine().getWidget(((IVkWidget)currentWidget).getWidgetName());
+				VkDesignerUtil.isDesignerMode = false;
 				if(currentWidget instanceof IVkWidget)
-					((IPanel)targetWidget).add(deepClone(currentWidget, VkDesignerUtil.getEngine().getWidget(((IVkWidget)currentWidget).getWidgetName())));
+					VkDesignerUtil.getEngine().addWidget(VkDesignerUtil.getEngineMap().get(((IVkWidget)currentWidget).getWidgetName()).deepClone(currentWidget, newWidget), (IPanel)targetWidget);
+				VkDesignerUtil.isDesignerMode = isVkDesignerMode;
 			}
 		}
-		((IVkWidget)sourceWidget).clone(targetWidget);
-		VkDesignerUtil.getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
 		return targetWidget;
 	}
 	public void copyAttributes(Widget widgetSource, Widget widgetTarget)
@@ -131,7 +138,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			((HasVkWordWrap)widgetTarget).setWordWrap(((HasVkWordWrap)widgetSource).getWordWrap());
 		if(widgetSource instanceof HasVkDirection)
 			((HasVkDirection)widgetTarget).setDirection(((HasVkDirection)widgetSource).getDirectionString());
-		if(widgetSource instanceof HasVkMaxLength)
+		if(widgetSource instanceof HasVkMaxLength && ((HasVkMaxLength)widgetSource).getMaxLength() > 0)
 			((HasVkMaxLength)widgetTarget).setMaxLength(((HasVkMaxLength)widgetSource).getMaxLength());
 		if(widgetSource instanceof HasVkHorizontalAlignment)
 			((HasVkHorizontalAlignment)widgetTarget).setHorizontalAlignment(((HasVkHorizontalAlignment)widgetSource).getHorizontalAlignmentString());

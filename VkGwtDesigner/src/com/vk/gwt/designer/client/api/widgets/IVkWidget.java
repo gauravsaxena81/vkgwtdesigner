@@ -6,4 +6,6 @@ public interface IVkWidget {
 	public String getWidgetName();
 	public void clone(Widget targetWidget);
 	public boolean showMenu();
+	public boolean isMovable();
+	public boolean isResizable();
 }

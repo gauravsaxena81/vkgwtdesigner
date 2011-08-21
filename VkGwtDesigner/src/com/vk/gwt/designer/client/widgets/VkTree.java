@@ -447,6 +447,14 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

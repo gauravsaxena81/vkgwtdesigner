@@ -212,7 +212,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		addItem("Quick Preview", new Command() {
 			@Override
 			public void execute() {
-				VkDesignerUtil.setLoadString(widgetEngine.serialize((IVkWidget) VkDesignerUtil.getDrawingPanel()));
+				VkDesignerUtil.setLoadString(VkDesignerUtil.getEngineMap().get(VkDesignerUtil.getDrawingPanel().getWidgetName()).serialize((IVkWidget) VkDesignerUtil.getDrawingPanel()));
 				String href = Window.Location.getHref();
 				if(Window.Location.getParameterMap().size() == 0)
 					href += "?isDesignerMode=false";
@@ -1220,11 +1220,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					else
 					{
 						boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
-						VkDesignerUtil.isDesignerMode = false;
+						VkDesignerUtil.isDesignerMode = false;//imp because some widgets like VkFlextable pop up dialogs in constructors
 						widget = VkDesignerUtil.getEngine().getWidget((tempCopyWidget).getWidgetName());
-						VkDesignerUtil.getEngineMap().get(tempCopyWidget.getWidgetName()).deepClone((Widget)copyWidget, widget);
 						VkDesignerUtil.isDesignerMode = isVkDesignerMode;
 						VkDesignerUtil.initDesignerEvents(widget, widgetEngine);//since this was not called during get Widget as then isDesignerMode = false 
+						VkDesignerUtil.getEngineMap().get(tempCopyWidget.getWidgetName()).deepClone((Widget)copyWidget, widget);
+						
 					}
 					applyCommand(new Command(){
 						@Override
@@ -1232,12 +1233,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 							final Command redoCommand = this;
 							if(tempCopyWidget != null)
 							{					
-								if(tempInvokingWidget instanceof Panel)
+								if(tempInvokingWidget instanceof IPanel)
 								{
 									final int top = widget.getElement().getOffsetTop();
 									final int left = widget.getElement().getOffsetLeft();
 									widget.removeFromParent();
-									VkDesignerUtil.getEngine().addWidget(widget , ((IPanel)tempInvokingWidget));
+									VkDesignerUtil.getEngine().addWidget(widget , ((IPanel)tempInvokingWidget), 8, 4);
 									undoStack.push(new Command(){
 										@Override
 										public void execute() {

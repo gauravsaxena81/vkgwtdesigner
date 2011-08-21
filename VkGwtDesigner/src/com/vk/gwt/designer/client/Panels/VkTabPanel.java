@@ -8,6 +8,8 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -15,6 +17,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkBeforeSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderText;
 import com.vk.gwt.designer.client.api.engine.IPanel;
@@ -22,7 +25,7 @@ import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
-public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkAnimation, HasVkTabHeaderText, HasVkTabHeaderHtml, HasVkEnabled
+public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkAnimation, HasVkTabHeaderText, HasVkTabHeaderHtml, HasVkEnabled, HasVkSwitchNumberedWidget
 , HasVkBeforeSelectionHandler,HasVkSelectionHandler{
 	public static final String NAME = "Tab Panel";
 	private HandlerRegistration beforeSelectionHandler;
@@ -51,7 +54,7 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkA
 	public String getTabHTML() {
 		int selectedIndex = getSelectedTab();
 		if(selectedIndex > -1)
-			return super.getTabBar().getTabHTML(getSelectedTab());
+			return getTabHeaderHtml(selectedIndex);
 		else
 		{
 			if(VkDesignerUtil.isDesignerMode)
@@ -123,7 +126,10 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkA
 	public void addSelectionHandler(String js) {
 		if(selectionHandler != null)
 			selectionHandler.removeHandler();
-		selectionJs = js;
+		selectionHandler = null;
+		selectionJs = js.trim();
+		if(!selectionJs.isEmpty())
+		{
 		selectionHandler = super.addSelectionHandler(new SelectionHandler<Integer>() {
 			@Override
 			public void onSelection(SelectionEvent<Integer> event) {
@@ -132,6 +138,7 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkA
 				VkDesignerUtil.executeEvent(selectionJs, eventproperties);
 			}
 		});
+	}
 	}
 	@Override
 	public void setEnabled(boolean enabled) {
@@ -150,9 +157,32 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkA
 		return NAME;
 	}
 	@Override
-	public void clone(Widget targetWidget) {}
+	public void clone(Widget targetWidget) {
+		int widgetCount = this.getWidgetCount();
+		for(int i = 0 ; i < widgetCount; i++)
+		{
+			((VkTabPanel)targetWidget).setTabHeaderHtml(i, this.getTabHeaderHtml(i));
+			((VkTabPanel)targetWidget).setEnabled(this.getTabEnabled(i));
+		}
+	}
 	@Override
 	public boolean showMenu() {
+		return true;
+	}
+	@Override
+	public void showWidget(int index) {
+		selectTab(index);		
+	}
+	@Override
+	public int getCurrentlyShowingWidget() {
+		return getSelectedTab();
+	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
 		return true;
 	}
 	/**************************Export attribute Methods********************************/
@@ -179,7 +209,9 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IPanel, HasVkA
 	}
 	@Export
 	public String getTabHeaderText(int index) {
-		return getTabHeaderHtml(index);
+		Element div = DOM.createDiv();
+		div.setInnerHTML(getTabHeaderHtml(index));
+		return div.getInnerText();
 	}
 	@Export
 	public void setTabHeaderHtml(int index, String html) {

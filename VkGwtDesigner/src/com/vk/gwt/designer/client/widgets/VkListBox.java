@@ -373,6 +373,14 @@ public class VkListBox extends ListBox implements IVkWidget, HasVkAllKeyHandlers
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

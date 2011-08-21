@@ -480,6 +480,14 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 		super.hideDatePicker();
 		super.removeFromParent();
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

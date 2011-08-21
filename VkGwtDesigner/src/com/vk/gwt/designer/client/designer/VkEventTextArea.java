@@ -100,7 +100,6 @@ public class VkEventTextArea extends Composite {
 		var coords = this.@com.vk.gwt.designer.client.designer.VkEventTextArea::editor.cursorCoords(true);
 		this.@com.vk.gwt.designer.client.designer.VkEventTextArea::showAutoComplete(Ljava/lang/String;Lcom/google/gwt/dom/client/Element;III)(functions, elem, phrase.length, coords.x, coords.y);
 	}-*/;
-	@SuppressWarnings("unused")//called from native function
 	private void showAutoComplete(String optionString, final com.google.gwt.dom.client.Element element, final int phraseLength, int x, int y)
 	{
 		final String[] options = optionString.split(",");

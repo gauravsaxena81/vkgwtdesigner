@@ -29,6 +29,14 @@ public class VkDeckPanel extends DeckPanel implements IPanel, HasVkWidgets, HasV
 	public boolean showMenu() {
 		return true;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

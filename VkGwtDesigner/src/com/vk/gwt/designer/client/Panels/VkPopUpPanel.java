@@ -82,6 +82,14 @@ HasVkModal, HasVkInitiallyShowing{
 	public boolean isInitiallyShowing() {
 		return isShowing;
 	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
+		return true;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export

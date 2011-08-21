@@ -178,7 +178,7 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 		else
 			return "";
 	}
-	public void showSetCellAlignmentDialog(final ListBox listBox, final IAlignment iAlignment) {
+	private void showSetCellAlignmentDialog(final ListBox listBox, final IAlignment iAlignment) {
 		final DialogBox origDialog = new DialogBox();
 		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
@@ -196,20 +196,8 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 		
 		widgetIndexLb.setWidth("300px");
 		dialog.add(widgetIndexLb);
-		widgetIndexLb.addChangeHandler(new ChangeHandler() {
-			@Override
-			public void onChange(ChangeEvent event) {
-				iAlignment.doAlignment(Integer.parseInt(widgetIndexLb.getValue(widgetIndexLb.getSelectedIndex())), listBox.getValue(listBox.getSelectedIndex()));
-			}
-		});
 		dialog.add(new Label("Please choose Alignment"));
 		dialog.add(listBox);
-		listBox.addChangeHandler(new ChangeHandler() {
-			@Override
-			public void onChange(ChangeEvent event) {
-				iAlignment.doAlignment(Integer.parseInt(widgetIndexLb.getValue(widgetIndexLb.getSelectedIndex())), listBox.getValue(listBox.getSelectedIndex()));
-			}
-		});
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);
 		Button saveButton = new Button("OK");
@@ -217,6 +205,7 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 		saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
+				iAlignment.doAlignment(Integer.parseInt(widgetIndexLb.getValue(widgetIndexLb.getSelectedIndex())), listBox.getValue(listBox.getSelectedIndex()));
 				origDialog.hide();
 			}
 		});
@@ -267,6 +256,14 @@ public class VkDockPanel extends DockPanel implements IPanel, HasVkHorizontalAli
 	public void clone(Widget targetWidget) {}
 	@Override
 	public boolean showMenu() {
+		return true;
+	}
+	@Override
+	public boolean isMovable() {
+		return true;
+	}
+	@Override
+	public boolean isResizable() {
 		return true;
 	}
 	/**************************Export attribute Methods********************************/
