@@ -278,8 +278,8 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 			else
 				e.stopPropagation();
 		}
-		element.onmouseover = function(){
-			if(t.@com.vk.gwt.designer.client.widgets.VkFlexTable::startSelection)
+		element.onmousemove = function(){//it used to be mouseover but due to mouseover being hijacked by move icon, it is not called
+			if(t.@com.vk.gwt.designer.client.widgets.VkFlexTable::startSelection && element.className.indexOf('vkflextable-cell-selected') == -1)
 			{
 				t.@com.vk.gwt.designer.client.widgets.VkFlexTable::clearSelectedCells()();
 				if(element.className.indexOf('first') == -1)
