@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TabBar;
@@ -116,7 +115,7 @@ public class VkDecoratedTabBarEngine extends VkAbstractWidgetEngine<VkDecoratedT
 	{
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
-		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		buffer.append(",style:'").append(VkDesignerUtil.getCssText((Widget) widget)).append("'");
 		TabBar tabBar =  (VkDecoratedTabBar)widget;
 		serializeAttributes(buffer, tabBar);
 		buffer.append(",tabs:[");

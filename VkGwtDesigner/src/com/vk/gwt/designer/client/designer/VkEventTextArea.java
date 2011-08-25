@@ -175,8 +175,13 @@ public class VkEventTextArea extends Composite {
 			 mode:  "javascript",
 			 onKeyEvent: function(editor, keyEvent){
 				var keyCode = keyEvent.keyCode;
-				if((keyEvent.ctrlKey && keyCode == 32))
+				if((keyEvent.ctrlKey && keyCode == 32)) {
 					vkEventTextArea.@com.vk.gwt.designer.client.designer.VkEventTextArea::showSuggestions(I)(keyCode);
+					if(keyEvent.preventDefault)
+						keyEvent.preventDefault();
+					else
+						keyEvent.returnValue = true
+				}
 			}
 		 });
 	}-*/;

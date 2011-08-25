@@ -5,7 +5,6 @@ import java.util.Iterator;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.Panels.VkHorizontalSplitPanel;
 import com.vk.gwt.designer.client.api.engine.IPanel;
@@ -25,7 +24,7 @@ public class VkHorizontalSplitPanelEngine extends VkAbstractWidgetEngine<VkHoriz
 	{
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
-		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		buffer.append(",style:'").append(VkDesignerUtil.getCssText((Widget) widget)).append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		buffer.append(",splitter:").append(((VkHorizontalSplitPanel)widget).splitterPosition());
 		buffer.append(",children:[");

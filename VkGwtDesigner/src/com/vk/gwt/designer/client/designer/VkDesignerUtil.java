@@ -162,17 +162,19 @@ public class VkDesignerUtil {
 				element.addEventListener("mousedown", mouseDownHandler, false);
 				element.addEventListener("mouseover", mouseOverHandler, false);
 			}
-			else if(element.attachEvent)
+			else if(element.attachEvent) {
 				element.attachEvent("onmousedown", mouseDownHandler);
+				element.attachEvent("onmouseover", mouseOverHandler);
+			}
 			function mouseOverHandler(ev)
 			{
 				if(element.id != 'drawingPanel')
 				{
 					ev = ev || $wnd.event;
-					if(ev.cancelBubble)
-						ev.cancelBubble = true;
-					else
+					if(ev.stopPropagation)
 						ev.stopPropagation();
+					else
+						ev.cancelBubble = true;
 					@com.vk.gwt.designer.client.designer.VkDesignerUtil::showMoveIcon(Lcom/google/gwt/user/client/ui/Widget;)(widget);
 				}
 			}
@@ -316,16 +318,14 @@ public class VkDesignerUtil {
 			- drawingPanel.getElement().getOffsetTop() - RootPanel.getBodyElement().getScrollTop() + "px");
 		DOM.setStyleAttribute(draggingWidget.getElement(), "left", invokingWidget.getElement().getAbsoluteLeft() + "px");
 		DOM.setCapture(draggingWidget.getElement());
+		setCapture(draggingWidget);
 		draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
 			@Override
 			public void onMouseMove(MouseMoveEvent event) {
-				int top = event.getClientY() - VkDesignerUtil.getDrawingPanel().getElement().getOffsetTop()
-					+ RootPanel.getBodyElement().getScrollTop();
+				int top = event.getClientY() - VkDesignerUtil.getDrawingPanel().getElement().getOffsetTop()	+ RootPanel.getBodyElement().getScrollTop();
 				int left = event.getClientX() - VkDesignerUtil.getDrawingPanel().getElement().getOffsetLeft();
-				if(top % SNAP_TO_FIT_TOP == 0)
-					DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
-				if(left % SNAP_TO_FIT_LEFT == 0)
-					DOM.setStyleAttribute(draggingWidget.getElement(), "left", left + "px");
+				DOM.setStyleAttribute(draggingWidget.getElement(), "top", (top / SNAP_TO_FIT_TOP) * SNAP_TO_FIT_TOP + "px");
+				DOM.setStyleAttribute(draggingWidget.getElement(), "left", (left / SNAP_TO_FIT_LEFT) * SNAP_TO_FIT_LEFT + "px");
 				event.preventDefault();
 			}
 		});
@@ -369,6 +369,16 @@ public class VkDesignerUtil {
 			}
 		});
 	}
+	public static native void setCapture(HTML draggingWidget) /*-{
+		var elem = draggingWidget.@com.google.gwt.user.client.ui.Widget::getElement()();
+		if(elem.setCapture)
+			elem.setCapture(true);
+	}-*/;
+	public static native void releaseCapture(HTML draggingWidget) /*-{
+		var elem = draggingWidget.@com.google.gwt.user.client.ui.Widget::getElement()();
+		if(elem.setCapture)
+			elem.setCapture(false);
+	}-*/;
 	private static void init()
 	{
 		setUpEngineMap();
@@ -630,5 +640,9 @@ public class VkDesignerUtil {
 		} catch(e){
 			return -1;
 		}
+	}-*/;
+	public native static String getCssText(Widget widget) /*-{
+		var elem = widget.@com.google.gwt.user.client.ui.Widget::getElement()();
+		return elem.style.cssText;
 	}-*/;
 }

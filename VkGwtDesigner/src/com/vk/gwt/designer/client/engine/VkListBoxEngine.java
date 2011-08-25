@@ -128,7 +128,7 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 	{
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
-		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		buffer.append(",style:'").append(VkDesignerUtil.getCssText((Widget) widget)).append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		buffer.append(",listItems:[");
 		VkListBox listBox = (VkListBox) widget;

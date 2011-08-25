@@ -13,6 +13,8 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasBlurHandlers;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
 import com.google.gwt.event.dom.client.MouseMoveHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -218,7 +220,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					href += "?isDesignerMode=false";
 				else
 					href += "&isDesignerMode=false";
-				Window.open(href, "Preview", null);
+				Window.open(href, "_blank", Window.Navigator.getUserAgent().indexOf("IE") > -1 ? "fullscreen=1" : null);
 				//hideMenu();
 			}
 		});
@@ -1102,6 +1104,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			@Override
 			public void execute() {
 				final HTML draggingWidget = new HTML("&nbsp;");
+				draggingWidget.addMouseDownHandler(new MouseDownHandler() {
+					@Override
+					public void onMouseDown(MouseDownEvent event) {
+						event.stopPropagation();
+					}
+				});
 				DOM.setStyleAttribute(draggingWidget.getElement(), "background", "blue");
 				DOM.setStyleAttribute(draggingWidget.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 				draggingWidget.getElement().getStyle().setOpacity(0.2);
@@ -1117,6 +1125,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
 				DOM.setStyleAttribute(draggingWidget.getElement(), "left", left + "px");
 				DOM.setCapture(draggingWidget.getElement());
+				VkDesignerUtil.setCapture(draggingWidget);
 				if(invokingWidget instanceof Frame)
 					invokingWidget.setVisible(false);
 				draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
@@ -1136,6 +1145,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						if(invokingWidget instanceof VkFrame)
 							invokingWidget.setVisible(true);
 						DOM.releaseCapture(draggingWidget.getElement());
+						VkDesignerUtil.releaseCapture(draggingWidget);
 						final int initialHeight = invokingWidget.getOffsetHeight();
 						final int initialWidth = invokingWidget.getOffsetWidth();
 						final Widget widget = invokingWidget;

@@ -308,7 +308,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 	{
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
-		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style"))
+		buffer.append(",style:'").append(VkDesignerUtil.getCssText((Widget) widget))
 			.append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		VkFlexTable flexTable =  (VkFlexTable)widget;

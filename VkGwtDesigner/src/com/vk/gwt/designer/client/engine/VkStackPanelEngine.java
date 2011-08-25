@@ -28,7 +28,7 @@ public class VkStackPanelEngine extends VkAbstractWidgetEngine<VkStackPanel> {
 	{
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
-		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		buffer.append(",style:'").append(VkDesignerUtil.getCssText((Widget) widget)).append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		buffer.append(",children:[");
 		if(widget instanceof IPanel)

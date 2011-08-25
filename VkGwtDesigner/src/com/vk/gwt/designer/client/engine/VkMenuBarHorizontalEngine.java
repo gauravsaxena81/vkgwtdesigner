@@ -267,7 +267,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 	{
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
-		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		buffer.append(",style:'").append(VkDesignerUtil.getCssText((Widget) widget)).append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		VkMenuBarHorizontal menuBar =  (VkMenuBarHorizontal)widget;
 		buffer.append(",items:[");
