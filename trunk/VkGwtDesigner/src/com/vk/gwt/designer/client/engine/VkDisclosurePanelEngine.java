@@ -6,7 +6,6 @@ import java.util.List;
 import com.google.gwt.json.client.JSONBoolean;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.Panels.VkDisclosurePanel;
 import com.vk.gwt.designer.client.api.engine.IPanel;
@@ -32,7 +31,7 @@ public class VkDisclosurePanelEngine extends VkAbstractWidgetEngine<VkDisclosure
 	{
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
-		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		buffer.append(",style:'").append(VkDesignerUtil.getCssText((Widget) widget)).append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		buffer.append(",open:").append(((VkDisclosurePanel)widget).isOpen());
 		buffer.append(",children:[");

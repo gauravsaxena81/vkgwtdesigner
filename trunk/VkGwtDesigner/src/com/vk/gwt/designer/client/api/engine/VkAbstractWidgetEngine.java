@@ -196,7 +196,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 	{
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
-		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		buffer.append(",style:'").append(VkDesignerUtil.getCssText((Widget) widget)).append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		buffer.append(",children:[");
 		if(widget instanceof IPanel)
@@ -214,6 +214,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		buffer.append("]}");
 		return buffer.toString();
 	}
+	
 	@SuppressWarnings("rawtypes")
 	protected void serializeAttributes(StringBuffer buffer, Widget widgetSource)
 	{

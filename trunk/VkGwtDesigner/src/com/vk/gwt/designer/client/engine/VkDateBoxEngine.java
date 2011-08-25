@@ -7,7 +7,6 @@ import java.util.List;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.gwtstructs.gwt.client.widgets.autocompleterTextbox.CustomSuggestionAutoCompleterTextBox;
@@ -119,7 +118,7 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 	{
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
-		buffer.append(",style:'").append(DOM.getElementAttribute(((Widget)widget).getElement(), "style")).append("'");
+		buffer.append(",style:'").append(VkDesignerUtil.getCssText((Widget) widget)).append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		buffer.append(",dateFormat:'").append(((VkDateBox)widget).getPattern()).append("'");
 		buffer.append(",children:[").append("]}");

@@ -5,7 +5,7 @@
 
 .CodeMirror-scroll {
   overflow: auto;
-  height: 300px;
+  height: 200px;
 }
 
 .CodeMirror-gutter {
@@ -22,6 +22,7 @@
 }
 .CodeMirror-lines {
   padding: .4em;
+  text-align: left;
 }
 
 .CodeMirror pre {
