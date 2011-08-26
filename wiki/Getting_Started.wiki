@@ -16,7 +16,7 @@ RootPanel.get().add(VkDesignerUtil.getDrawingPanel());//Mandatory
 
 ====3. Dependencies====
 
-*Do remember to include [http://code.google.com/p/gwt-structs/downloads/detail?name=JsBridge-0.0.2.jar&can=2&q= JsBridge] and [http://code.google.com/p/gwt-structs/downloads/detail?name=autocompleter_1.0.2.jar&can=2&q= Combobox] in your classpath
+*Do remember to include [http://code.google.com/p/gwt-structs/downloads/list JsBridge] and [http://code.google.com/p/gwt-structs/downloads/list Autocompleter] in your classpath
 
 For Event handling UI, it requires codemirror library be placed in war. Check out from the following location [http://code.google.com/p/vkgwtdesigner/source/browse/#svn%2Ftrunk%2FVkGwtDesigner%2Fwar%2Fcodemirror%253Fstate%253Dclosed codemirror]
 
