@@ -24,12 +24,14 @@ For Event handling UI, it requires codemirror library be placed in war. Check ou
 
 NB: Currently, the uploaded version only works with *Mozilla FF* predictably.
 
-1. Right click for options for each widget
+1. Click on the widget to change the menu attributes at the top of the page
 
 2. To add javascript for event handlers,
 
     a. click on a widget, to popoulate its id in the textarea e.g. (&4) 
 
     b. Treat this id as element and invoke javascript functions or attributes e.g. (&4).innerHTML = new Date(); 
+
+    c. Start typing and press Ctrl + space for the event handler text area to show options. Click on any option for it to be populated in the textarea.
 
 3. Style dialog applies styles as and when it changes to give a WYSIWYG feel. 
