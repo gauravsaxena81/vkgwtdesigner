@@ -1149,27 +1149,10 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 						final int initialHeight = invokingWidget.getOffsetHeight();
 						final int initialWidth = invokingWidget.getOffsetWidth();
 						final Widget widget = invokingWidget;
-						String borderTopWidth = DOM.getStyleAttribute(widget.getElement(), "borderTopWidth");
-						String borderBottomWidth = DOM.getStyleAttribute(widget.getElement(), "borderBottomWidth");
-						String borderLeftWidth = DOM.getStyleAttribute(widget.getElement(), "borderLeftWidth");
-						String borderRightWidth = DOM.getStyleAttribute(widget.getElement(), "borderRightWidth");
-						String padding = DOM.getStyleAttribute(widget.getElement(), "padding");
-						String margin = DOM.getStyleAttribute(widget.getElement(), "margin");
-						DOM.setStyleAttribute(widget.getElement(), "borderWidth", "0px");
-						DOM.setStyleAttribute(widget.getElement(), "padding", "0px");
-						DOM.setStyleAttribute(widget.getElement(), "margin", "0px");
 						//This is necessary because offsetWidth contains all the decorations but when width is set, the figure is assumed to be independent 
 						//of decorations
-						final int finalWidth = draggingWidget.getOffsetWidth() - initialWidth 
-							+ widget.getOffsetWidth();
-						final int finalHeight = draggingWidget.getOffsetHeight() - initialHeight 
-							+ widget.getOffsetHeight();
-						DOM.setStyleAttribute(widget.getElement(), "borderTopWidth", borderTopWidth);
-						DOM.setStyleAttribute(widget.getElement(), "borderBottomWidth", borderBottomWidth);
-						DOM.setStyleAttribute(widget.getElement(), "borderLeftWidth", borderLeftWidth);
-						DOM.setStyleAttribute(widget.getElement(), "borderRightWidth", borderRightWidth);
-						DOM.setStyleAttribute(widget.getElement(), "padding", padding);
-						DOM.setStyleAttribute(widget.getElement(), "margin", margin);
+						final int finalWidth = draggingWidget.getOffsetWidth();
+						final int finalHeight = draggingWidget.getOffsetHeight();
 						draggingWidget.removeFromParent();
 						applyCommand(new Command(){
 							final Command redoCommand = this;

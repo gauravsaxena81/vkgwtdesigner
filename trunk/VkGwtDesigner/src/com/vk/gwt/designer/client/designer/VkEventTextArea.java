@@ -180,7 +180,7 @@ public class VkEventTextArea extends Composite {
 					if(keyEvent.preventDefault)
 						keyEvent.preventDefault();
 					else
-						keyEvent.returnValue = true
+						keyEvent.returnValue = false;
 				}
 			}
 		 });
