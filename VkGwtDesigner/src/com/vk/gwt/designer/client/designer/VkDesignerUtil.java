@@ -16,7 +16,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -382,14 +381,10 @@ public class VkDesignerUtil {
 	private static void init()
 	{
 		setUpEngineMap();
-		drawingPanel = new VkMainDrawingPanel();
-		if(isDesignerMode)
-			VkDesignerUtil.initDesignerEvents(drawingPanel, getEngineMap().get(VkMainDrawingPanel.NAME));
-		drawingPanel.getElement().setId("drawingPanel");
-		drawingPanel.setPixelSize(Window.getClientWidth() - 10, Window.getClientHeight() - 10);
-		DOM.setStyleAttribute(drawingPanel.getElement(), "border", "solid 1px gray");
+		drawingPanel = (VkMainDrawingPanel) getEngineMap().get(VkMainDrawingPanel.NAME).getWidget();
 		if(isDesignerMode)
 		{
+			VkDesignerUtil.initDesignerEvents(drawingPanel, getEngineMap().get(VkMainDrawingPanel.NAME));
 			vkMenu.prepareMenu(drawingPanel);
 			HTML moveImage = new HTML("<img src='images/cursor_move.png' height=16 width=16>");
 			moveImage.addMouseDownHandler(new MouseDownHandler(){

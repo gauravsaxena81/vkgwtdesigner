@@ -1,5 +1,5 @@
 .vk-selectedWidget{}
-.vkflextable-cell-selected{border: solid 1px red;}
+.vkflextable-cell-selected div{background: #EAECF5}/*flextable selection*/ 
 .vkgwtdesigner-vertical-menu {background: #EEEEEE; cursor: default; border: solid 1px gray}
 .vkgwtdesigner-vertical-menu table { border-collapse: collapse;}
 .vkgwtdesigner-vertical-menu .gwt-MenuItem { padding: 1px 8px; font: 11px arial, helvetica, sans-serif;}
@@ -17,3 +17,9 @@
 .vkgwtdesigner-toolbar .gwt-MenuItemSeparator .menuSeparatorInner { height: 1px; padding: 0px; border: 0px; border-top: 1px solid #777777; background: #ddddee; overflow: hidden;}
 .vkgwtdesigner-toolbar .subMenuIcon { padding-right: 4px;}
 .vkgwtdesigner-toolbar .subMenuIcon-selected { background: #E0EDFE;}
+.eventcode-autocomplete:link{background: white; color: black; text-decoration: none;}
+.eventcode-autocomplete:hover{background: gray; color: white; text-decoration: none;}
+.autocompleter-suggestionPanel{border: solid 1px black; background: white}
+.autocomplete-option{}
+.autocomplete-option-highlight{background: #9999FF; color: white}
+.autocomplete-option-unhighlight{background: #white; color: black}

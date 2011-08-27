@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkInitiallyShowing;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
