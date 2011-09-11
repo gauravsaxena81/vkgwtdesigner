@@ -67,9 +67,7 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 				else
 				{
 					popupPanel.showRelativeTo(menuItem);
-					DOM.setStyleAttribute(popupPanel.getElement(), "top"
-						, popupPanel.getElement().getOffsetTop() + VkMenuBarHorizontal.this.getOffsetHeight() 
-							- menuItem.getOffsetHeight() + "");
+					DOM.setStyleAttribute(popupPanel.getElement(), "top", popupPanel.getElement().getOffsetTop() + VkMenuBarHorizontal.this.getOffsetHeight() - menuItem.getOffsetHeight() + "");
 					popupPanel.show();
 				}
 			}});

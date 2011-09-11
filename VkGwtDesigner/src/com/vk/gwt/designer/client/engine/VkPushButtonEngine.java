@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkPushButton;
 
 public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
@@ -53,7 +53,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 				tb.setText(widget.getImageUpSrc());
 			else
 				tb.setText("");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up image url", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up image url", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String src) {
@@ -70,7 +70,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 				tb.setText(widget.getImageUpHoveringSrc());
 			else
 				tb.setText("");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up hover image url", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up hover image url", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String src) {
@@ -87,7 +87,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 				tb.setText(widget.getImageUpDisabledSrc());
 			else
 				tb.setText("");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up disabled image url", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up disabled image url", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String src) {
@@ -104,7 +104,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 				tb.setText(widget.getImageDownSrc());
 			else
 				tb.setText("");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down image url", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down image url", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String src) {
@@ -121,7 +121,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 				tb.setText(widget.getImageDownHoveringSrc());
 			else
 				tb.setText("");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down hover image url", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down hover image url", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String src) {
@@ -138,7 +138,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 				tb.setText(widget.getImageDownDisabledSrc());
 			else
 				tb.setText("");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down disabled image url", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down disabled image url", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String src) {
@@ -152,7 +152,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextArea ta = new TextArea();
 			ta.setText(widget.getUpFace().getHTML());
 			ta.setSize("300px", "100px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up html", ta
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up html", ta
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String html) {
@@ -166,7 +166,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextArea ta = new TextArea();
 			ta.setText(widget.getUpHoveringFace().getHTML());
 			ta.setSize("300px", "100px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up hover html", ta
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up hover html", ta
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String html) {
@@ -180,7 +180,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextArea ta = new TextArea();
 			ta.setText(widget.getUpDisabledFace().getHTML());
 			ta.setSize("300px", "100px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up disabled html", ta
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up disabled html", ta
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String html) {
@@ -194,7 +194,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextArea ta = new TextArea();
 			ta.setText(widget.getDownFace().getHTML());
 			ta.setSize("300px", "100px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down html", ta
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down html", ta
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String html) {
@@ -208,7 +208,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextArea ta = new TextArea();
 			ta.setText(widget.getDownHoveringFace().getHTML());
 			ta.setSize("300px", "100px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down hover html", ta
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down hover html", ta
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String html) {
@@ -222,7 +222,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextArea ta = new TextArea();
 			ta.setText(widget.getDownDisabledFace().getHTML());
 			ta.setSize("300px", "100px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down disabled html", ta
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down disabled html", ta
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String html) {
@@ -236,7 +236,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextBox tb = new TextBox();
 			tb.setText(widget.getUpFace().getText());
 			tb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up text", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up text", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String text) {
@@ -250,7 +250,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextBox tb = new TextBox();
 			tb.setText(widget.getUpHoveringFace().getText());
 			tb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up hover text", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up hover text", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String text) {
@@ -264,7 +264,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextBox tb = new TextBox();
 			tb.setText(widget.getUpDisabledFace().getText());
 			tb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up disabled text", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up disabled text", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String text) {
@@ -278,7 +278,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextBox tb = new TextBox();
 			tb.setText(widget.getDownFace().getText());
 			tb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down text", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down text", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String text) {
@@ -292,7 +292,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextBox tb = new TextBox();
 			tb.setText(widget.getDownHoveringFace().getText());
 			tb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down hover text", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down hover text", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String text) {
@@ -306,7 +306,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			TextBox tb = new TextBox();
 			tb.setText(widget.getDownDisabledFace().getText());
 			tb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down disabled text", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down disabled text", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String text) {
@@ -322,7 +322,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			listBox.addItem("True","0");
 			listBox.addItem("False","1");
 			listBox.setSelectedIndex(widget.isAllowHoldDown() ? 0 : 1);
-			VkDesignerUtil.getEngine().showAddListDialog("Please provide option for holding button down on click", listBox, new IEventRegister(){
+			VkDesignerUtil.showAddListDialog("Please provide option for holding button down on click", listBox, new IEventRegister(){
 				@Override
 				public void registerEvent(String js) {
 					if(listBox.getSelectedIndex() == 0)

@@ -28,8 +28,8 @@ import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.designer.VkEventTextArea;
-import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkMenuBarHorizontal;
 import com.vk.gwt.designer.client.widgets.VkMenuBarVertical;
 
@@ -52,8 +52,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			addSeparator(menuBar);
 		else if(attributeName.equals(ADD_ITEM))
 			showAddItemAttributeDialog(menuBar);
-		else if(attributeName.equals(REMOVE_ITEM))
-		{
+		else if(attributeName.equals(REMOVE_ITEM))	{
 			final ListBox listBox = new ListBox();
 			listBox.setWidth("200px");
 			int itemCount = menuBar.getItemCount();
@@ -64,15 +63,13 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			}
 			for(int i = 0; i < itemCount; i++)
 				listBox.addItem(menuBar.getMenuItem(i).getText(), Integer.toString(i));
-			VkDesignerUtil.getEngine().showAddListDialog("Choose the item to edit", listBox, new IEventRegister() {
+			VkDesignerUtil.showAddListDialog("Choose the item to edit", listBox, new IEventRegister() {
 				@Override
 				public void registerEvent(String number) {
 					menuBar.removeItem(menuBar.getMenuItem(listBox.getSelectedIndex()));
 				}
 			});
-		}
-		else if(attributeName.equals(EDIT_ITEM))
-		{
+		} else if(attributeName.equals(EDIT_ITEM)) {
 			final ListBox listBox = new ListBox();
 			listBox.setWidth("200px");
 			int itemCount = menuBar.getItemCount();
@@ -83,24 +80,22 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			}
 			for(int i = 0; i < itemCount; i++)
 				listBox.addItem(menuBar.getMenuItem(i).getText(), Integer.toString(i));
-			VkDesignerUtil.getEngine().showAddListDialog("Choose the item to edit", listBox, new IEventRegister() {
+			VkDesignerUtil.showAddListDialog("Choose the item to edit", listBox, new IEventRegister() {
 				@Override
 				public void registerEvent(String number) {
 					int index = listBox.getSelectedIndex();
 					showEditItemAttributeDialog(menuBar, index);
 				}
 			});
-		}
-		else if(attributeName.equals(ADD_MENU))
-		{
+		} else if(attributeName.equals(ADD_MENU)) {
 			final TextBox nameTb = new TextBox();
 			nameTb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide name of sub-menu", nameTb, new IEventRegister() {
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide name of sub-menu", nameTb, new IEventRegister() {
 				
 				@Override
 				public void registerEvent(String js) {
 					final VkMenuBarVertical widget = (VkMenuBarVertical)VkDesignerUtil.getEngine().getWidget(VkMenuBarVertical.NAME);
-					menuBar.addItem(new MenuItem(nameTb.getText(), widget));
+					menuBar.addItem(nameTb.getText(), widget);
 				}
 			});
 		}
@@ -111,8 +106,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		menuBar.getSeperatorIndices().add(menuBar.getSeparatorIndex(menuBar.addSeparator()));
 	}
 	@Override
-	public List<String> getAttributesList(Widget invokingWidget)
-	{
+	public List<String> getAttributesList(Widget invokingWidget) {
 		List<String> list = new ArrayList<String>();
 		list.add(ADD_SEPERATOR);
 		list.add(ADD_ITEM);
@@ -149,8 +143,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			}
 		}.schedule(100);
 		final VkEventTextArea jsTextArea = new VkEventTextArea();
-		if(menuBar.getCommandJs().containsKey(index))
-		{
+		if(menuBar.getCommandJs().containsKey(index)) {
 			HorizontalPanel jsHp = new HorizontalPanel();
 			jsHp.setWidth("100%");
 			dialog.add(jsHp);
@@ -193,6 +186,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			}
 		});
 		origDialog.center();
+		origDialog.setPopupPosition(origDialog.getPopupLeft() + 1, origDialog.getPopupTop());
 	}
 	private void showAddItemAttributeDialog(final VkMenuBarHorizontal menuBar) {
 		final DialogBox origDialog = new DialogBox();
@@ -230,7 +224,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		jsHp.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
 		jsHp.setCellWidth(jsHp.getWidget(0), "35%");
 		final VkEventTextArea jsTextArea = new VkEventTextArea();
-		jsTextArea.setSize("250px","80px");
+		jsTextArea.setSize("300px","100px");
 		jsHp.add(jsTextArea);
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);
@@ -253,6 +247,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			}
 		});
 		origDialog.center();
+		origDialog.setPopupPosition(origDialog.getPopupLeft() + 1, origDialog.getPopupTop());
 	}
 	private void addMenuItem(VkMenuBarHorizontal menuBar, String name, final String js) {
 		menuBar.addItem(new MenuItem(name, new Command() {

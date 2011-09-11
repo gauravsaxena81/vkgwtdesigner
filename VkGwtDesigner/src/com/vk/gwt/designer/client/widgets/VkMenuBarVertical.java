@@ -1,11 +1,17 @@
 package com.vk.gwt.designer.client.widgets;
 
+import com.google.gwt.user.client.ui.MenuBar;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkMenuBarVertical extends VkMenuBarHorizontal{
 	public static final String NAME = "Menu Bar Vertical";
 	private int left;
 	private int top;
+	
+	public VkMenuBarVertical()
+	{
+		super(true);
+	}
 	public int getLeft() {
 		return left;
 	}
@@ -18,13 +24,20 @@ public class VkMenuBarVertical extends VkMenuBarHorizontal{
 	public void setTop(int top) {
 		this.top = top;
 	}
-	public VkMenuBarVertical()
-	{
-		super(true);
-	}
 	@Override
 	public String getWidgetName() {
 		return NAME;
+	}
+	@Override
+	public boolean isResizable() {
+		return true; 	
+	}
+	@Override
+	public boolean isMovable() {
+		if(getParent() instanceof MenuBar)
+			return false;
+		else
+			return true;
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

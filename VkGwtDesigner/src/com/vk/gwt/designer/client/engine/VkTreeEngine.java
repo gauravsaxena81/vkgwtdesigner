@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkTree;
 
 public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
@@ -33,7 +33,7 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 		{
 			TextBox textBox = new TextBox();
 			textBox.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide item HTML", textBox, new IEventRegister() {
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide item HTML", textBox, new IEventRegister() {
 				@Override
 				public void registerEvent(String html) {
 					if(widget.getSelectedItem() == null)
@@ -48,7 +48,7 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 			TextBox textBox = new TextBox();
 			textBox.setWidth("300px");
 			textBox.setText(widget.getSelectedItem().getText());
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please edit item HTML", textBox, new IEventRegister() {
+			VkDesignerUtil.showAddTextAttributeDialog("Please edit item HTML", textBox, new IEventRegister() {
 				@Override
 				public void registerEvent(String html) {
 					if(widget.getSelectedItem() != null)

@@ -21,15 +21,13 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class VkEventTextArea extends Composite {
 	private FocusPanel fp = new FocusPanel();
 	private TextArea ta = new TextArea();
 	private JavaScriptObject editor;
 	private PopupPanel autoCompletePanel = new PopupPanel();
-	public VkEventTextArea()
-	{
+	public VkEventTextArea() {
 		initWidget(fp);
 		fp.setSize("100%", "100%");
 		DOM.setStyleAttribute(fp.getElement(), "border", "solid 1px gray");
@@ -43,16 +41,23 @@ public class VkEventTextArea extends Composite {
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
 				String id = getRealElementId(Element.as(event.getNativeEvent().getEventTarget()));
-				if(!id.isEmpty())
+				if(!id.isEmpty()) {
 					addElementId(id);
-				else
-					DOM.releaseCapture(getElement());
+					DOM.setCapture(VkEventTextArea.this.getElement());//Using VkDesignerUtil.setCapture / releaseCapture causes IE 9  to have 2 captures and pop up doesn't move
+				} else
+					DOM.releaseCapture(VkEventTextArea.this.getElement());
+				new Timer(){
+					@Override
+					public void run() {
+						focus();
+					}}.schedule(1);
 			}
 		});
 		fp.addMouseOutHandler(new MouseOutHandler() {
 			@Override
 			public void onMouseOut(MouseOutEvent event) {
-				DOM.setCapture(getElement());
+				if(DOM.getCaptureElement() == null)
+					DOM.setCapture(VkEventTextArea.this.getElement());
 			}
 		});
 		fp.addBlurHandler(new BlurHandler() {
@@ -67,18 +72,15 @@ public class VkEventTextArea extends Composite {
 				event.stopPropagation();
 			}});
 	}
-	private void showSuggestions(int keyCode)
-	{
+	private void showSuggestions(int keyCode) {
 		String sentence = getText();
 		int startIndex = sentence.length() - 1;
 		String elementId = "";
 		while(startIndex >= 0 && sentence.charAt(startIndex--) != '.');
-		if(startIndex != 0 && startIndex < sentence.length() - 2)
-		{
+		if(startIndex != 0 && startIndex < sentence.length() - 2) {
 			String phrase = startIndex == sentence.length() - 1 ? "" : sentence.substring(startIndex + 2);//after the dot is found
 			startIndex++;//startIndex points at dot now
-			if(startIndex > 0 && sentence.charAt(--startIndex) == ')')
-			{
+			if(startIndex > 0 && sentence.charAt(--startIndex) == ')') {
 				char nextChar;
 				while(startIndex > 0 && Character.isDigit(nextChar = sentence.charAt(--startIndex)))
 					elementId += nextChar;
@@ -100,14 +102,12 @@ public class VkEventTextArea extends Composite {
 		var coords = this.@com.vk.gwt.designer.client.designer.VkEventTextArea::editor.cursorCoords(true);
 		this.@com.vk.gwt.designer.client.designer.VkEventTextArea::showAutoComplete(Ljava/lang/String;Lcom/google/gwt/dom/client/Element;III)(functions, elem, phrase.length, coords.x, coords.y);
 	}-*/;
-	private void showAutoComplete(String optionString, final com.google.gwt.dom.client.Element element, final int phraseLength, int x, int y)
-	{
+	private void showAutoComplete(String optionString, final com.google.gwt.dom.client.Element element, final int phraseLength, int x, int y) {
 		final String[] options = optionString.split(",");
 		ScrollPanel scrollPanel = (ScrollPanel)autoCompletePanel.getWidget();
 		VerticalPanel optionHolderPanel = (VerticalPanel)scrollPanel.getWidget();
 		optionHolderPanel.clear();
-		for (int i = 0, len = options.length; i < len; i++)
-		{
+		for (int i = 0, len = options.length; i < len; i++)	{
 			final Anchor option = getOption(options[i]);
 			final int optionsNum = i;
 			optionHolderPanel.add(option);
@@ -139,21 +139,15 @@ public class VkEventTextArea extends Composite {
 		return optionLabel;
 	}
 	@Override
-	protected void initWidget(Widget widget)
-	{
-		super.initWidget(widget);
-	}
-	@Override
-	public void onLoad()
-	{
+	public void onLoad() {
 		editor = initCodeMirror(ta.getElement());
+		DOM.setCapture(getElement());
 		new Timer(){
 			@Override
 			public void run() {
 				try{
 					focus();
-				}catch(Exception e)
-				{
+				}catch(Exception e)	{
 					schedule(200);
 				}
 			}
@@ -168,8 +162,6 @@ public class VkEventTextArea extends Composite {
 	}-*/;
 	private native JavaScriptObject initCodeMirror(Element textarea)/*-{
 		var vkEventTextArea = this;
-		//var autoCompletePanel = vkEventTextArea.@com.vk.gwt.designer.client.designer.VkEventTextArea::autoCompletePanel;
-		 //|| autoCompletePanel.@com.google.gwt.user.client.ui.PopupPanel::isShowing()
 		return $wnd.CodeMirror.fromTextArea(textarea, {		 
 			 matchBrackets: true,
 			 mode:  "javascript",
@@ -197,9 +189,7 @@ public class VkEventTextArea extends Composite {
 						populateJs(editor, text.replaceAll(";", ";\n").replaceAll("\\{","{\n").replaceAll("\\}","}\n").trim());
 					else
 						schedule(200);
-				}
-				catch(Exception e)
-				{
+				} catch(Exception e) {
 					schedule(200);//editor is not initialized properly
 				}
 			}
@@ -212,8 +202,7 @@ public class VkEventTextArea extends Composite {
 	private native void setText(JavaScriptObject editor, String text, int lineNum, int charNum) /*-{
 		editor.replaceRange(text, {line: lineNum, ch: charNum});
 	}-*/;
-	private String getRealElementId(com.google.gwt.dom.client.Element element) 
-	{
+	private String getRealElementId(com.google.gwt.dom.client.Element element) {
 		com.google.gwt.dom.client.Element currentElement = element;
 		while(currentElement != null && currentElement.getId().isEmpty())
 			currentElement = currentElement.getParentElement();

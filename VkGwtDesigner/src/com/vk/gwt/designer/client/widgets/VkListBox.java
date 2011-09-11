@@ -6,6 +6,8 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -37,6 +39,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkChangeHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkDoubleClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkKeyDownHandler;
@@ -59,6 +62,7 @@ public class VkListBox extends ListBox implements IVkWidget, HasVkAllKeyHandlers
 , HasVkChangeHandler, HasVkAccessKey, HasVkTabIndex, HasVkEnabled, HasVkName, HasVkListBoxMultiple, HasVkListBoxRenderMode{
 	public static final String NAME = "Listbox";
 	private HandlerRegistration clickHandlerRegistration;
+	private HandlerRegistration doubleClickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
 	private HandlerRegistration mouseUpHandlerRegistration;
 	private HandlerRegistration mouseMoveHandlerRegistration;
@@ -84,6 +88,7 @@ public class VkListBox extends ListBox implements IVkWidget, HasVkAllKeyHandlers
 	private String blurJs = "";
 	private String clickJs = "";
 	private String changeJs = "";
+	private String doubleClickJs = "";
 	private char accessKey;
 	private boolean isEnabled = true;
 	
@@ -101,6 +106,22 @@ public class VkListBox extends ListBox implements IVkWidget, HasVkAllKeyHandlers
 				@Override
 				public void onClick(ClickEvent event) {
 					VkDesignerUtil.executeEvent(clickJs, event, true);
+				}
+			});
+		}
+	}
+	@Override
+	public void addDoubleClickHandler(final String js) {
+		if(doubleClickHandlerRegistration != null)
+			doubleClickHandlerRegistration.removeHandler();
+		doubleClickHandlerRegistration = null;
+		doubleClickJs  = js.trim();
+		if(!doubleClickJs.isEmpty())
+		{
+			doubleClickHandlerRegistration = addDoubleClickHandler(new DoubleClickHandler() {
+				@Override
+				public void onDoubleClick(DoubleClickEvent event) {
+					VkDesignerUtil.executeEvent(doubleClickJs, event, true);
 				}
 			});
 		}
@@ -301,6 +322,8 @@ public class VkListBox extends ListBox implements IVkWidget, HasVkAllKeyHandlers
 	public String getPriorJs(String eventName) {
 		if(eventName.equals(HasVkClickHandler.NAME))
 			return clickJs;
+		else if(eventName.equals(HasVkDoubleClickHandler.NAME))
+			return doubleClickJs;
 		else if(eventName.equals(HasVkMouseDownHandler.NAME))
 			return mouseDownJs;
 		else if(eventName.equals(HasVkMouseUpHandler.NAME))

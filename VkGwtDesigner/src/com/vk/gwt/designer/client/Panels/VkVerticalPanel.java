@@ -30,12 +30,15 @@ public class VkVerticalPanel extends VerticalPanel implements IPanel, HasVkWidge
 	protected void add(Widget child, Element container) {
 		// So that TD resizes with the widget inside
 		if (getWidgetCount() > 0)
-			DOM.setElementAttribute((Element) getWidget(getWidgetCount() - 1)
-					.getElement().getParentElement(), "height", "1px");
+			DOM.setElementAttribute((Element) getWidget(getWidgetCount() - 1).getElement().getParentElement(), "height", "1px");
 		super.add(child, container);
 		DOM.setElementAttribute(container, "height", "*");
 	}
-
+	@Override
+	public void insert(Widget w, int beforeIndex) {
+		super.insert(w, beforeIndex);
+		DOM.setElementAttribute((Element)getWidget(beforeIndex).getElement().getParentElement(), "height", "1px");
+	}
 	public void setHorizontalAlignment(String horizontalAlignment) {
 		if (VkDesignerUtil.isDesignerMode) {
 			final ListBox listBox = new ListBox(false);

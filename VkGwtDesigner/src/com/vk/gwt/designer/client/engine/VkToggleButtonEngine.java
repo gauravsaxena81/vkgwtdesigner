@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkToggleButton;
 
 public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton> {
@@ -35,7 +35,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			TextBox tb = new TextBox();
 			tb.setValue(widget.getImageUpSrc());
 			tb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up image url", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up image url", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String src) {
@@ -49,7 +49,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			TextBox tb = new TextBox();
 			tb.setValue(widget.getImageDownSrc());
 			tb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down image url", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down image url", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String src) {
@@ -63,7 +63,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			TextArea ta = new TextArea();
 			ta.setValue(widget.getUpFace().getHTML());
 			ta.setSize("300px", "100px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up html", ta
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up html", ta
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String html) {
@@ -77,7 +77,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			TextArea ta = new TextArea();
 			ta.setValue(widget.getDownFace().getHTML());
 			ta.setSize("300px", "100px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down html", ta
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down html", ta
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String html) {
@@ -91,7 +91,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			TextBox tb = new TextBox();
 			tb.setValue(widget.getUpFace().getText());
 			tb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide up text", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide up text", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String text) {
@@ -105,7 +105,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			TextBox tb = new TextBox();
 			tb.setValue(widget.getDownFace().getText());
 			tb.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide down text", tb
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide down text", tb
 					, new IEventRegister() {
 						@Override
 						public void registerEvent(String text) {

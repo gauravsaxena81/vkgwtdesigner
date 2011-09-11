@@ -5,8 +5,15 @@ import java.util.List;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -31,7 +38,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	private String clickJs = "";
 	private boolean startSelection = false;
 	private boolean firstSelection = false;
-	private boolean isSelectionEnabled;
+	private boolean isSelectionEnabled = true;
 	private VkFlexTableColumnFormatter columnFormatter;
 	private int initialRowCount;
 	private int initialColumnCount;
@@ -51,11 +58,11 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 			super.setWidth("100%");
 			if(width.endsWith("px"))
 			{
-				double diff = Double.parseDouble(width.replaceAll("px", "")) - getOffsetWidth();
+				//double diff = Double.parseDouble(width.replaceAll("px", "")) - getOffsetWidth();
 				int currentCol = Integer.parseInt(DOM.getElementAttribute((com.google.gwt.user.client.Element) getElement().getParentElement(), "col"));
 				VkFlexTable.this.columnFormatter.setWidth(currentCol
-					, Double.parseDouble(DOM.getElementAttribute(VkFlexTable.this.columnFormatter.getElement(currentCol)
-						, "width").replaceAll("px", "")) + diff + "px");
+					, width/* Double.parseDouble(DOM.getElementAttribute(VkFlexTable.this.columnFormatter.getElement(currentCol)
+						, "width").replaceAll("px", "")) + diff + "px"*/);
 			}
 		}
 		public void setHeight(String height)
@@ -63,11 +70,11 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 			super.setHeight("100%");
 			if(height.endsWith("px"))
 			{
-				double diff = Double.parseDouble(height.replaceAll("px", "")) - getOffsetHeight();
+				//double diff = Double.parseDouble(height.replaceAll("px", "")) - getOffsetHeight();
 				int currentRow = getRow();
 				DOM.setElementAttribute(VkFlexTable.this.getRowFormatter().getElement(currentRow), "height"
-					, Double.parseDouble(DOM.getElementAttribute(VkFlexTable.this.getRowFormatter().getElement(currentRow)
-						, "height").replaceAll("px", "")) + diff + "px");
+					, height/* Double.parseDouble(DOM.getElementAttribute(VkFlexTable.this.getRowFormatter().getElement(currentRow)
+						, "height").replaceAll("px", "")) + diff + "px"*/);
 			}
 		}
 		public void onLoad()
@@ -93,7 +100,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		}
 		@Override
 		public boolean showMenu() {
-			return !isSelectionEnabled;
+			return true;
 		}
 		@Override
 		public boolean isMovable() {
@@ -133,6 +140,35 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		this.columnFormatter = new VkFlexTableColumnFormatter();
 		setColumnFormatter(columnFormatter);
 		DOM.setStyleAttribute(getElement(), "tableLayout", "fixed");
+		if(VkDesignerUtil.isDesignerMode) {
+			this.addDomHandler(new MouseDownHandler() {
+				@Override
+				public void onMouseDown(MouseDownEvent event) {
+					if(event.getNativeButton() == Event.BUTTON_LEFT && isSelectionEnabled){
+						startSelection = true;
+						firstSelection = true;
+						clearAllStyles();
+						Element td = getEventTargetCell(Event.as(event.getNativeEvent()));
+						if(td != null) {
+						    /*int row = TableRowElement.as(td.getParentElement()).getSectionRowIndex();
+						    int column = TableCellElement.as(td).getCellIndex();
+							VkFlexTable.this.getFlexCellFormatter().setStyleName(cell.getRowIndex(), cell.getCellIndex(), "vkflextable-cell-selected first");*/
+							td.setClassName("vkflextable-cell-selected first");
+						}
+					}
+				}
+			}, MouseDownEvent.getType());
+			this.addDomHandler(new MouseUpHandler() {
+				@Override
+				public void onMouseUp(MouseUpEvent event) {
+					if(event.getNativeButton() == Event.BUTTON_LEFT && isSelectionEnabled){
+						startSelection = false;
+						firstSelection = false;
+						VkDesignerUtil.clearSelection();
+					}
+				}
+			}, MouseUpEvent.getType());
+		}
 	}
 	@Override
 	public void onLoad()
@@ -146,14 +182,14 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	{
 		if(getRowCount() != 0)
 		{
-			double percentage = (double)Integer.parseInt(width.replace("px", "")) / (double)getOffsetWidth();
+			double percentage = (double)(Integer.parseInt(width.replace("px", "")) + VkDesignerUtil.getDecorationsWidth(this)) / (double)getOffsetWidth();
 			int columns = getCellCount(0);
 			int colCount = 0;
 			for(int i = 0; i < columns; i++)
 				colCount += getFlexCellFormatter().getColSpan(0, i);
 			for(int i = 0; i < colCount; i++)
-				columnFormatter.setWidth(i, percentage * Double.parseDouble(DOM.getElementAttribute(VkFlexTable.this.columnFormatter.getElement(i)
-						, "width").replaceAll("px", "")) + "px");
+				columnFormatter.setWidth(i
+				, percentage * Double.parseDouble(DOM.getElementAttribute(VkFlexTable.this.columnFormatter.getElement(i), "width").replaceAll("px", "")) + "px");
 		}
 	}
 	@Override
@@ -162,11 +198,10 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		int rows = getRowCount();
 		if(rows != 0)
 		{
-			double percentage = (double)Integer.parseInt(height.replace("px", "")) / (double)getOffsetHeight();
+			double percentage = (double)(Integer.parseInt(height.replace("px", "")) + VkDesignerUtil.getDecorationsHeight(this)) / (double)getOffsetHeight();
 			for(int i = 0; i < rows; i++)
 				DOM.setElementAttribute(getRowFormatter().getElement(i), "height"
-					, percentage * Double.parseDouble(DOM.getElementAttribute(getRowFormatter().getElement(i)
-							, "height").replaceAll("px", "")) + "px");
+				, percentage * Double.parseDouble(DOM.getElementAttribute(getRowFormatter().getElement(i), "height").replaceAll("px", "")) + "px");
 		}
 	}
 	private void showAddTextAttributeDialog() {
@@ -187,14 +222,13 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		final TextBox rowsTextBox = new TextBox();
 		rowHp.add(rowsTextBox);
 		rowsTextBox.setWidth("300px");
-		Timer t = new Timer(){
+		new Timer(){
 			@Override
 			public void run() {
 				VkDesignerUtil.centerDialog(dialog);
 				rowsTextBox.setFocus(true);
 			}
-		};
-		t.schedule(100);
+		}.schedule(100);
 		HorizontalPanel colHp = new HorizontalPanel();
 		colHp.setWidth("100%");
 		dialog.add(colHp);
@@ -238,69 +272,44 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	public void makeCell(final int row, final int col, int actualCol)
 	{
 		VkFlexTableAbsolutePanel l2 = new VkFlexTableAbsolutePanel();
+		if(VkDesignerUtil.isDesignerMode) {
+			l2.addDomHandler(new MouseOverHandler() {
+				@Override
+				public void onMouseOver(MouseOverEvent event) {
+					if(startSelection){
+						clearSelectedCells();
+						Element td = getEventTargetCell(Event.as(event.getNativeEvent()));
+						if(td != null) {
+							if(td.getClassName().indexOf("first") == -1)
+								td.setClassName("vkflextable-cell-selected");
+							selectAll();
+						}
+					}
+				}
+			}, MouseOverEvent.getType());
+		}
 		DOM.setStyleAttribute(l2.getElement(), "border", "solid 1px gray");
+		DOM.setStyleAttribute(l2.getElement(), "overflow", "");//otherwise mouse over is not called when mouse button is pressed 
 		VkDesignerUtil.getEngine().prepareWidget(l2, VkDesignerUtil.getEngineMap().get(VkAbsolutePanel.NAME));
 		boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
 		VkDesignerUtil.isDesignerMode = false;//important as call routes to inserRow here instead of super's
-		setWidget(row, col, l2);
+		super.setWidget(row, col, l2);
 		VkDesignerUtil.isDesignerMode = isVkDesignerMode;
 		DOM.setElementAttribute(getFlexCellFormatter().getElement(row, col), "col", Integer.toString(actualCol));
 		DOM.setElementAttribute(VkFlexTable.this.getRowFormatter().getElement(row), "height", "40px");
 		DOM.setStyleAttribute(VkFlexTable.this.getFlexCellFormatter().getElement(row, col), "position", "relative");
-		columnFormatter.setWidth(actualCol, "80px");
-		prepareForSelection(getFlexCellFormatter(), row, col);
+		columnFormatter.setWidth(actualCol, "80px");	
 	}
-	private native void prepareForSelection(FlexCellFormatter flexCellFormatter, int i, int j) /*-{
-		var element = flexCellFormatter.@com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter::getElement(II)(i, j);
-		var t = this;
-		t.@com.vk.gwt.designer.client.widgets.VkFlexTable::getElement()().onclick = function(e){
-			e = e || $wnd.event;
-			if(e.button == 0 && t.@com.vk.gwt.designer.client.widgets.VkFlexTable::isSelectionEnabled)
-			{
-				if(!t.@com.vk.gwt.designer.client.widgets.VkFlexTable::startSelection)
-				{
-					t.@com.vk.gwt.designer.client.widgets.VkFlexTable::startSelection = true;
-					t.@com.vk.gwt.designer.client.widgets.VkFlexTable::firstSelection = true;
-					t.@com.vk.gwt.designer.client.widgets.VkFlexTable::clearAllStyles()();
-					var source = e.srcElement || e.target;
-					while(source.tagName != 'TD')
-						source = source.parentNode;
-					source.className = 'vkflextable-cell-selected first';
-				}
-				else
-				{
-					t.@com.vk.gwt.designer.client.widgets.VkFlexTable::startSelection = false;
-					t.@com.vk.gwt.designer.client.widgets.VkFlexTable::firstSelection = false;
-				}
-			}
-			if(e.cancelBubble)
-				e.cancelBubble = true;
-			else
-				e.stopPropagation();
-		}
-		element.onmousemove = function(){//it used to be mouseover but due to mouseover being hijacked by move icon, it is not called
-			if(t.@com.vk.gwt.designer.client.widgets.VkFlexTable::startSelection)
-			{
-				t.@com.vk.gwt.designer.client.widgets.VkFlexTable::clearSelectedCells()();
-				if(element.className.indexOf('first') == -1)
-					element.className = 'vkflextable-cell-selected';
-				t.@com.vk.gwt.designer.client.widgets.VkFlexTable::selectAll()();
-			}
-		}
-	}-*/;
-	private void clearSelectedCells()
-	{
+	private void clearSelectedCells() {
 		int rowCount = getRowCount();
-		for(int i = 0; i < rowCount; i++)
-		{
+		for(int i = 0; i < rowCount; i++) {
 			int colCount = getCellCount(i);
 			for(int j = 0; j < colCount; j++)
 				if(getFlexCellFormatter().getStyleName(i, j).indexOf("first") == -1)
 					getFlexCellFormatter().removeStyleName(i, j, "vkflextable-cell-selected");
 		}
 	}
-	private void clearAllStyles()
-	{
+	private void clearAllStyles() {
 		int rowCount = getRowCount();
 		for(int i = 0; i < rowCount; i++)
 		{
@@ -500,6 +509,49 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	public boolean isResizable() {
 		return true;
 	}
+	@Override
+	public void insertCell(int beforeRow, int beforeColumn) {
+		super.insertCell(beforeRow, beforeColumn);
+		makeCell(beforeRow, beforeColumn, actualColumnNumber(beforeRow, beforeColumn));
+	}
+	@Override
+	public void setWidget(int row, int col, Widget widget){
+		if(row >= 0 && row < getRowCount() && col >=0 && col < getCellCount(row)){
+			super.setWidget(row, col, widget);
+			widget.addDomHandler(new MouseOverHandler() {
+				@Override
+				public void onMouseOver(MouseOverEvent event) {
+					if(startSelection){
+						clearSelectedCells();
+						Element td = getEventTargetCell(Event.as(event.getNativeEvent()));
+						if(td != null) {
+							if(td.getClassName().indexOf("first") == -1)
+								td.setClassName("vkflextable-cell-selected");
+							selectAll();
+						}
+					}
+				}
+			}, MouseOverEvent.getType());
+			DOM.setStyleAttribute(widget.getElement(), "border", "solid 1px gray");
+			DOM.setStyleAttribute(widget.getElement(), "overflow", "");
+		}
+	}
+	private int actualColumnNumber(int beforeRow, int beforeColumn) {
+		if(beforeColumn == 0)
+			return 0;
+		else if(beforeColumn > getInitialColumnCount())
+			return getInitialColumnCount();
+		int actualColumnNumber = Integer.parseInt(DOM.getElementAttribute((com.google.gwt.user.client.Element) getCellElement(beforeRow, beforeColumn - 1), "col"));
+		for(int i = 0; i < beforeRow; i++)
+			for(int j = 0, cols = getCellCount(i); j < cols; j++)
+				if(Integer.parseInt(DOM.getElementAttribute((com.google.gwt.user.client.Element) getCellElement(i, j), "col")) > actualColumnNumber)
+					if(i + Math.max(getRowSpan(i, j), 1) - 1 >= beforeRow)
+						actualColumnNumber += getColSpan(i, j);
+					else
+						break;
+		actualColumnNumber += Math.max(getColSpan(beforeRow, beforeColumn - 1), 1);
+		return actualColumnNumber;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
@@ -508,30 +560,28 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	}
 	@Override
 	@Export
-	 public int getRowCount() {
+	public int getRowCount() {
 		return super.getRowCount();
-	}
-	
-	@Override
-	@Export
-	public void insertCell(int beforeRow, int beforeColumn)
-	{
-		super.insertCell(beforeRow, beforeColumn);
-		/*int col = 0;
-		if(isCellPresent(beforeRow, beforeColumn - 1))
-			col = Integer.parseInt(DOM.getElementAttribute((com.google.gwt.user.client.Element) getCellElement(beforeRow, beforeColumn - 1)
-	    		, "col"));*/
-		makeCell(beforeRow, beforeColumn, initialColumnCount - 1);
-	}
+	}	
 	@Override
 	@Export
 	public int insertRow(int beforeRow) {
 	    int rowNum =  super.insertRow(beforeRow);
-	    if(VkDesignerUtil.isDesignerMode)
-	    {
-			int columnCount = initialColumnCount;
-		    for(int i = 0; i < columnCount; i++)
-		    	makeCell(rowNum, i, i);
+	    if(VkDesignerUtil.isDesignerMode) {
+	    	int lastActualColumnNumber = 0;
+		    for(int i = 0, colsAdded = 0; i < beforeRow; i++) {
+		    	for(int j = 0, cols = getCellCount(i); j < cols; j++) {
+		    		if( i + getRowSpan(i, j) - 1 >= beforeRow) {
+		    			setRowSpan(i, j, getRowSpan(i, j) + 1);
+		    			for(int actualCols = Integer.parseInt(DOM.getElementAttribute((com.google.gwt.user.client.Element) getCellElement(i, j), "col")); lastActualColumnNumber < actualCols; 
+		    			colsAdded++, lastActualColumnNumber++)
+		    				makeCell(beforeRow, colsAdded, lastActualColumnNumber);
+		    			lastActualColumnNumber = Integer.parseInt(DOM.getElementAttribute((com.google.gwt.user.client.Element) getCellElement(i, j), "col")) + getColSpan(i, j);
+		    		}
+		    	}
+		    }
+		    for(int i = getCellCount(rowNum); lastActualColumnNumber < initialColumnCount; i++, lastActualColumnNumber++)
+		    	makeCell(rowNum, i, lastActualColumnNumber);
 	    }
 	    initialRowCount++;
 	    return rowNum;

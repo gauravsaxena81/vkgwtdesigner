@@ -15,7 +15,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkDecoratedTabBar;
 import com.vk.gwt.designer.client.widgets.VkTabBar;
 
@@ -49,7 +49,7 @@ public class VkDecoratedTabBarEngine extends VkAbstractWidgetEngine<VkDecoratedT
 		{
 			final TextArea ta = new TextArea();
 			ta.setSize("300px", "100px");
-			VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide HTML for tab name", ta
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide HTML for tab name", ta
 				, new IEventRegister() {
 				@Override
 				public void registerEvent(String js) {
@@ -66,7 +66,7 @@ public class VkDecoratedTabBarEngine extends VkAbstractWidgetEngine<VkDecoratedT
 				final TextArea ta = new TextArea();
 				ta.setText(tabbar.getTabHTML(tabbar.getSelectedTab()));
 				ta.setSize("300px", "100px");
-				VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide HTML for tab name", ta
+				VkDesignerUtil.showAddTextAttributeDialog("Please provide HTML for tab name", ta
 					, new IEventRegister() {
 					@Override
 					public void registerEvent(String js) {
@@ -98,8 +98,7 @@ public class VkDecoratedTabBarEngine extends VkAbstractWidgetEngine<VkDecoratedT
 				if(tabbar.isTabEnabled(i) != enable)
 					listBox.addItem(Integer.toString(i), Integer.toString(i));
 			if(listBox.getItemCount() > 0){
-				VkDesignerUtil.getEngine().showAddListDialog("Add Tab number to enable", listBox
-				, new IEventRegister() {
+				VkDesignerUtil.showAddListDialog("Add Tab number to enable", listBox, new IEventRegister() {
 					@Override
 					public void registerEvent(String text) {
 						tabbar.setTabEnabled(Integer.parseInt(text), enable);

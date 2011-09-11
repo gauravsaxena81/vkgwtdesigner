@@ -26,6 +26,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkCaptionText;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkDirection;
+import com.vk.gwt.designer.client.api.attributes.HasVkDoubleClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
@@ -307,6 +308,8 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			buffer.append(",'" ).append(HasVkKeyUpHandler.NAME).append("':").append("'").append(((HasVkEventHandler)widgetSource).getPriorJs(HasVkKeyUpHandler.NAME).replace("'", "\\'")).append("'");
 		if(widgetSource instanceof HasVkClickHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkClickHandler.NAME).isEmpty())
 			buffer.append(",'" ).append(HasVkClickHandler.NAME).append("':").append("'").append(((HasVkEventHandler)widgetSource).getPriorJs(HasVkClickHandler.NAME).replace('\'', '"')).append("'");
+		if(widgetSource instanceof HasVkDoubleClickHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkDoubleClickHandler.NAME).isEmpty())
+			buffer.append(",'" ).append(HasVkDoubleClickHandler.NAME).append("':").append("'").append(((HasVkEventHandler)widgetSource).getPriorJs(HasVkDoubleClickHandler.NAME).replace('\'', '"')).append("'");
 		if(widgetSource instanceof HasVkMouseDownHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseDownHandler.NAME).isEmpty())
 			buffer.append(",'" ).append(HasVkMouseDownHandler.NAME).append("':").append("'").append(((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseDownHandler.NAME).replace("'", "\\'")).append("'");
 		if(widgetSource instanceof HasVkMouseMoveHandler && !((HasVkEventHandler)widgetSource).getPriorJs(HasVkMouseMoveHandler.NAME).isEmpty())
@@ -390,7 +393,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		JSONBoolean attributeBooleanObj;
 		JSONValue attributeJsObj = childObj.get("style");
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
-			DOM.setElementAttribute(widget.getElement(), "style", attributeStringObj.stringValue());
+			VkDesignerUtil.setCssText(widget, attributeStringObj.stringValue());
 		attributeJsObj = childObj.get("title");
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			DOM.setElementAttribute(widget.getElement(), "title", attributeStringObj.stringValue());
@@ -525,6 +528,9 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		attributeJsObj = childObj.get(HasVkClickHandler.NAME);
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			((HasVkClickHandler)widget).addClickHandler(attributeStringObj.stringValue());
+		attributeJsObj = childObj.get(HasVkDoubleClickHandler.NAME);
+		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
+			((HasVkDoubleClickHandler)widget).addDoubleClickHandler(attributeStringObj.stringValue());
 		attributeJsObj = childObj.get(HasVkMouseDownHandler.NAME);
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)
 			((HasVkMouseDownHandler)widget).addMouseDownHandler(attributeStringObj.stringValue());

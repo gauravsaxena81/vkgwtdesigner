@@ -14,7 +14,7 @@ import com.gwtstructs.gwt.client.widgets.autocompleterTextbox.ICustomSuggestion;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkDateBox;
 
 public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
@@ -92,7 +92,7 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 			//AutoCompleterTextBox textBox = new AutoCompleterTextBox(suggestions);
 			textBox.setText(widget.getPattern());
 			textBox.setSuggestionWidth(500);
-			VkDesignerUtil.getEngine().showAddAutoCompleteTextDialog("Please select the date format", textBox
+			VkDesignerUtil.showAddAutoCompleteTextDialog("Please select the date format", textBox
 				, new IEventRegister() {
 					@Override
 					public void registerEvent(String pattern) {
