@@ -6,6 +6,8 @@ import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyDownEvent;
@@ -35,16 +37,17 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.RichTextArea;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.RichTextArea.FontSize;
 import com.google.gwt.user.client.ui.RichTextArea.Justification;
+import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAccessKey;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllKeyHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkBlurHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkDoubleClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkFocusHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
@@ -62,7 +65,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.widgets.richtexttoolbar.RichTextToolbar;
 
 public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkHtml, HasVkAllKeyHandlers
@@ -72,6 +75,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 	private RichTextArea richTextArea;
 	private RichTextToolbar toolbar;
 	private HandlerRegistration clickHandlerRegistration;
+	private HandlerRegistration doubleClickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
 	private HandlerRegistration mouseUpHandlerRegistration;
 	private HandlerRegistration mouseMoveHandlerRegistration;
@@ -96,6 +100,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 	private String focusJs = "";
 	private String blurJs = "";
 	private String clickJs = "";
+	private String doubleClickJs = "";
 	private String initializeJs = "";
 	private char accessKey;
 	private boolean enabled = true;
@@ -164,6 +169,22 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 				@Override
 				public void onClick(ClickEvent event) {
 					VkDesignerUtil.executeEvent(clickJs, event, true);
+				}
+			});
+		}
+	}
+	@Override
+	public void addDoubleClickHandler(final String js) {
+		if(doubleClickHandlerRegistration != null)
+			doubleClickHandlerRegistration.removeHandler();
+		doubleClickHandlerRegistration = null;
+		doubleClickJs  = js.trim();
+		if(!doubleClickJs.isEmpty())
+		{
+			doubleClickHandlerRegistration = addDoubleClickHandler(new DoubleClickHandler() {
+				@Override
+				public void onDoubleClick(DoubleClickEvent event) {
+					VkDesignerUtil.executeEvent(doubleClickJs, event, true);
 				}
 			});
 		}
@@ -364,6 +385,8 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 	public String getPriorJs(String eventName) {
 		if(eventName.equals(HasVkClickHandler.NAME))
 			return clickJs;
+		else if(eventName.equals(HasVkDoubleClickHandler.NAME))
+			return doubleClickJs;
 		else if(eventName.equals(HasVkMouseDownHandler.NAME))
 			return mouseDownJs;
 		else if(eventName.equals(HasVkMouseUpHandler.NAME))
@@ -433,7 +456,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 	{
 		final TextBox tb = new TextBox();
 		tb.setWidth("300px");
-		VkDesignerUtil.getEngine().showAddTextAttributeDialog("Please provide a link", tb
+		VkDesignerUtil.showAddTextAttributeDialog("Please provide a link", tb
 			, new IEventRegister() {
 				@Override
 				public void registerEvent(String link) {

@@ -23,7 +23,7 @@ import com.vk.gwt.designer.client.api.engine.IPanel;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 
 public class VkTabPanelEngine extends VkAbstractWidgetEngine<VkTabPanel> {
 	private final String DISABLE_TAB = "Disable a Tab";
@@ -51,7 +51,7 @@ public class VkTabPanelEngine extends VkAbstractWidgetEngine<VkTabPanel> {
 			for(int i = 0, len = widget.getTabCount(); i < len; i++)
 				listBox.addItem(widget.getTabHeaderText(i), Integer.toString(i));
 			listBox.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddListDialog("Add Tab number to enable", listBox
+			VkDesignerUtil.showAddListDialog("Add Tab number to enable", listBox
 			, new IEventRegister() {
 				@Override
 				public void registerEvent(String text) {
@@ -65,7 +65,7 @@ public class VkTabPanelEngine extends VkAbstractWidgetEngine<VkTabPanel> {
 			for(int i = 0, len = widget.getTabCount(); i < len; i++)
 				listBox.addItem(widget.getTabHeaderText(i), Integer.toString(i));
 			listBox.setWidth("300px");
-			VkDesignerUtil.getEngine().showAddListDialog("Add Tab number to disable", listBox
+			VkDesignerUtil.showAddListDialog("Add Tab number to disable", listBox
 			, new IEventRegister() {
 				@Override
 				public void registerEvent(String text) {

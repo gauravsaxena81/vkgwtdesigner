@@ -2,6 +2,8 @@ package com.vk.gwt.designer.client.widgets;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseMoveEvent;
@@ -25,6 +27,7 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkDirection;
+import com.vk.gwt.designer.client.api.attributes.HasVkDoubleClickHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseDownHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseMoveHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseOutHandler;
@@ -40,6 +43,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 , HasVkWordWrap, HasVkDirection{
 	final public static String NAME = "Inline Label";
 	private HandlerRegistration clickHandlerRegistration;
+	private HandlerRegistration doubleClickHandlerRegistration;
 	private HandlerRegistration mouseDownHandlerRegistration;
 	private HandlerRegistration mouseUpHandlerRegistration;
 	private HandlerRegistration mouseMoveHandlerRegistration;
@@ -53,6 +57,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 	private String mouseOverJs = "";
 	private String mouseWheelJs = "";
 	private String clickJs = "";
+	private String doubleClickJs = "";
 	
 	public VkInlineLabel() {
 		super.setDirectionEstimator(true);
@@ -63,6 +68,8 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 	public String getPriorJs(String eventName) {
 		if(eventName.equals(HasVkClickHandler.NAME))
 			return clickJs;
+		else if(eventName.equals(HasVkDoubleClickHandler.NAME))
+			return doubleClickJs;
 		else if(eventName.equals(HasVkMouseDownHandler.NAME))
 			return mouseDownJs;
 		else if(eventName.equals(HasVkMouseUpHandler.NAME))
@@ -89,6 +96,22 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 				@Override
 				public void onClick(ClickEvent event) {
 					VkDesignerUtil.executeEvent(clickJs, event, true);
+				}
+			});
+		}
+	}
+	@Override
+	public void addDoubleClickHandler(final String js) {
+		if(doubleClickHandlerRegistration != null)
+			doubleClickHandlerRegistration.removeHandler();
+		doubleClickHandlerRegistration = null;
+		doubleClickJs  = js.trim();
+		if(!doubleClickJs.isEmpty())
+		{
+			doubleClickHandlerRegistration = addDoubleClickHandler(new DoubleClickHandler() {
+				@Override
+				public void onDoubleClick(DoubleClickEvent event) {
+					VkDesignerUtil.executeEvent(doubleClickJs, event, true);
 				}
 			});
 		}

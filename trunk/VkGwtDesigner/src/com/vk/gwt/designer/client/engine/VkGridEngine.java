@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.engine.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.api.widgets.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkEngine.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.widgets.VkGrid;
 
 public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
@@ -21,8 +21,6 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 	private static final String ADD_NEW_COLUMN = "Add New Column";
 	private static final String REMOVE_ROW = "Remove Selected Row";
 	private static final String REMOVE_COLUMN = "Remove Selected Column";
-	private static final String CLEAR_SELECTION = "Clear And Stop Cell Selection";
-	private static final String START_SELECTION = "Start Cell Selection";
 	private static final String ADD_CELLSPACING = "Add Cell Spacing";
 	private static final String ADD_CELLPADDING = "Add Cell Padding";
 	@Override
@@ -39,8 +37,6 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 		list.add(ADD_NEW_COLUMN);
 		list.add(REMOVE_ROW);
 		list.add(REMOVE_COLUMN);
-		list.add(CLEAR_SELECTION);
-		list.add(START_SELECTION);
 		list.add(ADD_CELLSPACING);
 		list.add(ADD_CELLPADDING);
 		return list;
@@ -56,10 +52,6 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 			removeSelectedColumns(table);
 		else if(attributeName.equals(REMOVE_ROW))
 			removeSelectedRows(table);
-		else if(attributeName.equals(CLEAR_SELECTION))
-			clearAndStopCellSelection(table);
-		else if(attributeName.equals(START_SELECTION))
-			startCellSelection(table);
 		else if (attributeName.equals(ADD_CELLSPACING))
 			addCellSpacing(table);
 		else if (attributeName.equals(ADD_CELLPADDING))
@@ -106,23 +98,58 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 	}
 	
 	private void addNewColumn(VkGrid table) {
-		int rowCount = table.getRowCount();
-		int cols = table.getColumnCount();
-		boolean designerMode = VkDesignerUtil.isDesignerMode;
+		boolean isAnyCellSelected = false;
+		int columnNumber = 0;
+		boolean isDesignerMode = VkDesignerUtil.isDesignerMode;
 		VkDesignerUtil.isDesignerMode = false;
-		table.resizeColumns(cols + 1);
-		VkDesignerUtil.isDesignerMode = designerMode;
-		for(int i = 0; i < rowCount; i++)
-			table.makeCell(i, cols);
+		table.resizeColumns(table.getColumnCount() + 1);
+		VkDesignerUtil.isDesignerMode = isDesignerMode;
+		A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
+			int colCount = table.getColumnCount();
+			for(int j = 0; j < colCount; j++) {
+				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
+					isAnyCellSelected = true;
+					columnNumber = j;
+					for(int k = 0; k < rowCount; k++) {
+						table.removeCell(k, colCount - 1);
+						table.insertCell(k, j + 1);
+					}
+					break A;
+				}
+			}
+		}
+		for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++)
+			for(int j = 0, colCount = table.getColumnCount(); j < colCount; j++)
+				DOM.setElementAttribute(table.getCellFormatter().getElement(i, j), "col", Integer.toString(j));
+		
+		for(int i = columnNumber + 2, len = table.getColumnCount(); i < len; i++)
+			table.getColumnFormatter().setWidth(i, DOM.getElementAttribute(table.getColumnFormatter().getElement(i - 1), "width"));
+		if(isAnyCellSelected)
+			clearAndStopCellSelection(table);
+		else
+			Window.alert("Please select cells before applying cell operations");
 	}
 	private void addNewRow(VkGrid table) {
-		int rowCount = table.getRowCount();
-		table.insertRow(rowCount);
+		boolean isAnyCellSelected = false;
+		A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
+			int colCount = table.getCellCount(i);
+			for(int j = 0; j < colCount; j++) {
+				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
+					isAnyCellSelected = true;
+					table.insertRow(i + 1);
+					break A;
+				}
+			}
+		}
+		if(isAnyCellSelected)
+			clearAndStopCellSelection(table);
+		else
+			Window.alert("Please select cells before applying cell operations");
 	}
 	private void addCellPadding(final VkGrid table) {
 		TextBox tb = new TextBox();
 		tb.setWidth("100px");
-		VkDesignerUtil.getEngine().showAddTextAttributeDialog("Add Cell Spacing", tb, new IEventRegister() {
+		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
 				try{
@@ -138,7 +165,7 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 	private void addCellSpacing(final VkGrid table) {
 		TextBox tb = new TextBox();
 		tb.setWidth("300px");
-		VkDesignerUtil.getEngine().showAddTextAttributeDialog("Add Cell Spacing", tb, new IEventRegister() {
+		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
 				try{
@@ -151,7 +178,7 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 			}
 		});
 	}
-	private void startCellSelection(VkGrid table) {
+	/*private void startCellSelection(VkGrid table) {
 		table.setSelectionEnabled(true);
 		int rowCount = table.getRowCount();
 		for(int i = 0; i < rowCount; i++)
@@ -161,7 +188,7 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 				table.getCellFormatter().setStyleName(i, j, "");
 		}
 		Window.alert("Cell Selection is enabled. Click on a cell to start cell selecting and click again to stop");
-	}
+	}*/
 	private void clearAndStopCellSelection(VkGrid table) {
 		int rowCount = table.getRowCount();
 		for(int i = 0; i < rowCount; i++)
@@ -170,7 +197,6 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 			for(int j = 0; j < colCount; j++)
 				table.getCellFormatter().setStyleName(i, j, "");
 		}
-		table.setSelectionEnabled(false);
 	}
 	@Override
 	public String serialize(IVkWidget widget)

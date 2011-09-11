@@ -34,6 +34,11 @@ public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, 
 		super.add(child, container);
 		DOM.setElementAttribute(container, "width", "*");
 	}
+	@Override
+	public void insert(Widget w, int beforeIndex) {
+		super.insert(w, beforeIndex);
+		DOM.setElementAttribute((Element)getWidget(beforeIndex).getElement().getParentElement(), "width", "1px");
+	}
 	public void setHorizontalAlignment(String horizontalAlignment) {
 		if(VkDesignerUtil.isDesignerMode)
 		{

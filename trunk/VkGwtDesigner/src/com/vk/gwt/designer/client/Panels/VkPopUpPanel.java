@@ -29,15 +29,22 @@ HasVkModal, HasVkInitiallyShowing{
 	private HandlerRegistration closeRegistration;
 	private String closeJs = "";
 	private boolean isShowing = true;
-	public VkPopUpPanel() {
-		show();
-	}
 	@Override
 	public void add(Widget w) {
 		if(getWidget() != null)
 			Window.alert("VkPopUpPanel can add only one widget");
 		else
 			super.add(w);
+	}
+	@Override
+	public void setWidth(String width) {
+		super.setWidth(width);
+		DOM.setStyleAttribute(getElement(), "width", width);
+	}
+	@Override
+	public void setHeight(String height) {
+		super.setHeight(height);
+		DOM.setStyleAttribute(getElement(), "height", height);
 	}
 	@Override
 	public void addCloseHandler(String js) {

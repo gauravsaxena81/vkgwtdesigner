@@ -1,3 +1,4 @@
+
 package com.vk.gwt.designer.client.widgets;
 
 import java.util.List;
@@ -5,8 +6,15 @@ import java.util.List;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
@@ -31,7 +39,6 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	private String clickJs = "";
 	private boolean startSelection = false;
 	private boolean firstSelection = false;
-	private boolean isSelectionEnabled;
 	private VkFlexTableColumnFormatter columnFormatter;
 	
 	class VkFlexTableColumnFormatter extends ColumnFormatter
@@ -42,34 +49,29 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 		}
 	}
 	
-	class VkFlexTableAbsolutePanel extends VkAbsolutePanel{
+	class VkGridAbsolutePanel extends VkAbsolutePanel{
 		final public static String NAME = "FlexTable Panel";
-		public void setWidth(String width)
-		{
+		public void setWidth(String width) {
 			super.setWidth("100%");
-			if(width.endsWith("px"))
-			{
-				double diff = Double.parseDouble(width.replaceAll("px", "")) - getOffsetWidth();
+			if(width.endsWith("px")) {
+				//double diff = Double.parseDouble(width.replaceAll("px", "")) - getOffsetWidth();
 				int currentCol = Integer.parseInt(DOM.getElementAttribute((com.google.gwt.user.client.Element) getElement().getParentElement(), "col"));
 				VkGrid.this.columnFormatter.setWidth(currentCol
-					, Double.parseDouble(DOM.getElementAttribute(VkGrid.this.columnFormatter.getElement(currentCol)
-						, "width").replaceAll("px", "")) + diff + "px");
+					, width/*Double.parseDouble(DOM.getElementAttribute(VkGrid.this.columnFormatter.getElement(currentCol)
+						, "width").replaceAll("px", "")) + diff + "px"*/);
 			}
 		}
-		public void setHeight(String height)
-		{
+		public void setHeight(String height) {
 			super.setHeight("100%");
-			if(height.endsWith("px"))
-			{
-				double diff = Double.parseDouble(height.replaceAll("px", "")) - getOffsetHeight();
+			if(height.endsWith("px")) {
+				//double diff = Double.parseDouble(height.replaceAll("px", "")) - getOffsetHeight();
 				int currentRow = getRow();
 				DOM.setElementAttribute(VkGrid.this.getRowFormatter().getElement(currentRow), "height"
-					, Double.parseDouble(DOM.getElementAttribute(VkGrid.this.getRowFormatter().getElement(currentRow)
-						, "height").replaceAll("px", "")) + diff + "px");
+					, height/*Double.parseDouble(DOM.getElementAttribute(VkGrid.this.getRowFormatter().getElement(currentRow)
+						, "height").replaceAll("px", "")) + diff + "px"*/);
 			}
 		}
-		public void onLoad()
-		{
+		public void onLoad() {
 			super.onLoad();
 			super.setSize("100%", "100%");
 		}
@@ -85,20 +87,19 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 			return -1;
 		}
 		@Override
-		public String getWidgetName()
-		{
-			return VkFlexTableAbsolutePanel.NAME;
+		public String getWidgetName() {
+			return VkGridAbsolutePanel.NAME;
 		}
 		@Override
 		public boolean showMenu() {
-			return !isSelectionEnabled;
+			return true;
 		}
 	};
 	
 	class VkFlexTableAbsolutePanelEngine extends VkAbsolutePanelEngine{
 		@Override
-		public VkFlexTableAbsolutePanel getWidget() {
-			VkFlexTableAbsolutePanel widget = new VkFlexTableAbsolutePanel();
+		public VkGridAbsolutePanel getWidget() {
+			VkGridAbsolutePanel widget = new VkGridAbsolutePanel();
 			init(widget);
 			return widget;
 		}
@@ -114,13 +115,42 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	
 	public VkGrid()
 	{
-		if(!VkDesignerUtil.getEngineMap().containsKey(VkFlexTableAbsolutePanel.NAME))
-			VkDesignerUtil.getEngineMap().put(VkFlexTableAbsolutePanel.NAME, new VkFlexTableAbsolutePanelEngine());
+		if(!VkDesignerUtil.getEngineMap().containsKey(VkGridAbsolutePanel.NAME))
+			VkDesignerUtil.getEngineMap().put(VkGridAbsolutePanel.NAME, new VkFlexTableAbsolutePanelEngine());
 		if(VkDesignerUtil.isDesignerMode)
 			showAddTextAttributeDialog();
 		super.setHeight("100px");
 		super.setWidth("100px");
+		this.columnFormatter = new VkFlexTableColumnFormatter();
+		setColumnFormatter(columnFormatter);
 		DOM.setStyleAttribute(getElement(), "tableLayout", "fixed");
+		this.addDomHandler(new MouseDownHandler() {
+			@Override
+			public void onMouseDown(MouseDownEvent event) {
+				if(event.getNativeButton() == Event.BUTTON_LEFT){
+					startSelection = true;
+					firstSelection = true;
+					clearAllStyles();
+					Element td = getEventTargetCell(Event.as(event.getNativeEvent()));
+					if(td != null) {
+					    /*int row = TableRowElement.as(td.getParentElement()).getSectionRowIndex();
+					    int column = TableCellElement.as(td).getCellIndex();
+						VkFlexTable.this.getFlexCellFormatter().setStyleName(cell.getRowIndex(), cell.getCellIndex(), "vkflextable-cell-selected first");*/
+						td.setClassName("vkflextable-cell-selected first");
+					}
+				}
+			}
+		}, MouseDownEvent.getType());
+		this.addDomHandler(new MouseUpHandler() {
+			@Override
+			public void onMouseUp(MouseUpEvent event) {
+				if(event.getNativeButton() == Event.BUTTON_LEFT){
+					startSelection = false;
+					firstSelection = false;
+					VkDesignerUtil.clearSelection();
+				}
+			}
+		}, MouseUpEvent.getType());
 	}
 	@Override
 	public void onLoad()
@@ -128,32 +158,25 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 		setCellPadding(0);
 		setCellSpacing(0);
 		DOM.setElementAttribute(getElement(), "cellspacing", "0");
-		this.columnFormatter = new VkFlexTableColumnFormatter();
-		setColumnFormatter(columnFormatter);
 	}
 	@Override
-	public void setWidth(String width)
-	{
-		if(getRowCount() != 0)
-		{
-			double percentage = (double)Integer.parseInt(width.replace("px", "")) / (double)getOffsetWidth();
+	public void setWidth(String width) {
+		if(getRowCount() != 0)	{
+			double percentage = (double)(Integer.parseInt(width.replace("px", "")) + VkDesignerUtil.getDecorationsWidth(this))/ (double)getOffsetWidth();
 			int columns = getCellCount(0);
 			for(int i = 0; i < columns; i++)
-				columnFormatter.setWidth(i, percentage * Double.parseDouble(DOM.getElementAttribute(VkGrid.this.columnFormatter.getElement(i)
-						, "width").replaceAll("px", "")) + "px");
+				columnFormatter.setWidth(i
+				, percentage * Double.parseDouble(DOM.getElementAttribute(VkGrid.this.columnFormatter.getElement(i), "width").replaceAll("px", "")) + "px");
 		}
 	}
 	@Override
-	public void setHeight(final String height)
-	{
+	public void setHeight(final String height) {
 		int rows = getRowCount();
-		if(rows != 0)
-		{
-			double percentage = (double)Integer.parseInt(height.replace("px", "")) / (double)getOffsetHeight();
+		if(rows != 0) {
+			double percentage =  (double)(Integer.parseInt(height.replace("px", "")) + VkDesignerUtil.getDecorationsHeight(this)) / (double)getOffsetHeight();
 			for(int i = 0; i < rows; i++)
 				DOM.setElementAttribute(getRowFormatter().getElement(i), "height"
-					, percentage * Double.parseDouble(DOM.getElementAttribute(getRowFormatter().getElement(i)
-							, "height").replaceAll("px", "")) + "px");
+				, percentage * Double.parseDouble(DOM.getElementAttribute(getRowFormatter().getElement(i), "height").replaceAll("px", "")) + "px");
 		}
 	}
 	private void showAddTextAttributeDialog() {
@@ -224,8 +247,23 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	}
 	public void makeCell(final int row, final int col)
 	{
-		VkFlexTableAbsolutePanel l2 = new VkFlexTableAbsolutePanel();
+		VkGridAbsolutePanel l2 = new VkGridAbsolutePanel();
+		l2.addDomHandler(new MouseOverHandler() {
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				if(startSelection){
+					clearSelectedCells();
+					Element td = getEventTargetCell(Event.as(event.getNativeEvent()));
+					if(td != null) {
+						if(td.getClassName().indexOf("first") == -1)
+							td.setClassName("vkflextable-cell-selected");
+						selectAll();
+					}
+				}
+			}
+		}, MouseOverEvent.getType());
 		DOM.setStyleAttribute(l2.getElement(), "border", "solid 1px gray");
+		DOM.setStyleAttribute(l2.getElement(), "overflow", "");
 		VkDesignerUtil.getEngine().prepareWidget(l2, VkDesignerUtil.getEngineMap().get(VkAbsolutePanel.NAME));
 		boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
 		VkDesignerUtil.isDesignerMode = false;//important as call routes to inserRow here instead of super's
@@ -235,46 +273,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 		DOM.setElementAttribute(VkGrid.this.getRowFormatter().getElement(row), "height", "40px");
 		DOM.setStyleAttribute(VkGrid.this.getCellFormatter().getElement(row, col), "position", "relative");
 		columnFormatter.setWidth(col, "80px");
-		prepareForSelection(getCellFormatter(), row, col);
 	}
-	private native void prepareForSelection(CellFormatter flexCellFormatter, int i, int j) /*-{
-		var element = flexCellFormatter.@com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter::getElement(II)(i, j);
-		var t = this;
-		t.@com.vk.gwt.designer.client.widgets.VkGrid::getElement()().onclick = function(e){
-			e = e || $wnd.event;
-			if(e.button == 0 && t.@com.vk.gwt.designer.client.widgets.VkGrid::isSelectionEnabled)
-			{
-				if(!t.@com.vk.gwt.designer.client.widgets.VkGrid::startSelection)
-				{
-					t.@com.vk.gwt.designer.client.widgets.VkGrid::startSelection = true;
-					t.@com.vk.gwt.designer.client.widgets.VkGrid::firstSelection = true;
-					t.@com.vk.gwt.designer.client.widgets.VkGrid::clearAllStyles()();
-					var source = e.srcElement || e.target;
-					while(source.tagName != 'TD')
-						source = source.parentNode;
-					source.className = 'vkflextable-cell-selected first';
-				}
-				else
-				{
-					t.@com.vk.gwt.designer.client.widgets.VkGrid::startSelection = false;
-					t.@com.vk.gwt.designer.client.widgets.VkGrid::firstSelection = false;
-				}
-			}
-			if(e.cancelBubble)
-				e.cancelBubble = true;
-			else
-				e.stopPropagation();
-		}
-		element.onmouseover = function(){
-			if(t.@com.vk.gwt.designer.client.widgets.VkGrid::startSelection)
-			{
-				t.@com.vk.gwt.designer.client.widgets.VkGrid::clearSelectedCells()();
-				if(element.className.indexOf('first') == -1)
-					element.className = 'vkflextable-cell-selected';
-				t.@com.vk.gwt.designer.client.widgets.VkGrid::selectAll()();
-			}
-		}
-	}-*/;
 	private void clearSelectedCells()
 	{
 		int rowCount = getRowCount();
@@ -370,12 +369,6 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 			return clickJs;
 		else
 			return "";
-	}
-	public boolean isSelectionEnabled() {
-		return isSelectionEnabled;
-	}
-	public void setSelectionEnabled(boolean isSelectionEnabled) {
-		this.isSelectionEnabled = isSelectionEnabled;
 	}
 	@Override
 	public void setBorderWidth(int width){
@@ -475,8 +468,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	@Export
 	public int insertRow(int beforeRow) {
 	    int rowNum =  super.insertRow(beforeRow);
-	    if(VkDesignerUtil.isDesignerMode)
-	    {
+	    if(VkDesignerUtil.isDesignerMode) {
 			int columnCount = getColumnCount();
 		    for(int i = 0; i < columnCount; i++)
 		    	makeCell(rowNum, i);

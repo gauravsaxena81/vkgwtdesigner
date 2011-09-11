@@ -15,7 +15,6 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
-import com.vk.gwt.designer.client.Panels.VkAbsolutePanel;
 import com.vk.gwt.designer.client.api.attributes.HasVkAutoHide;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionText;
@@ -33,13 +32,6 @@ public class VkDialogBox extends DialogBox implements IPanel, HasVkCloseHandler,
 	private HandlerRegistration closeRegistration;
 	private String closeJs = "";
 	private boolean isInitiallyShowing = true;
-	public VkDialogBox()
-	{
-		setText("Untitled");
-		setModal(false);
-		if(VkDesignerUtil.isDesignerMode)
-			add(VkDesignerUtil.getEngine().getWidget(VkAbsolutePanel.NAME));
-	}
 	@Override
 	public void add(Widget w) {
 		if(getWidget() != null)
