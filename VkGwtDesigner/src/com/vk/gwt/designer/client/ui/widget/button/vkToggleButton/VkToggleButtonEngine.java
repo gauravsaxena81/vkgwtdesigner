@@ -12,6 +12,7 @@ import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton> {
 	private static final String ADD_UP_IMAGE = "Add Up Image";
@@ -114,7 +115,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 					});
 		}
 		else
-			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget)
@@ -126,7 +127,7 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 		list.add(ADD_DOWN_HTML);
 		list.add(ADD_UP_TEXT);
 		list.add(ADD_DOWN_TEXT);
-		list.addAll(VkDesignerUtil.getEngine().getAttributesList(invokingWidget));
+		list.addAll(VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget));
 		return list;
 	}
 	@Override

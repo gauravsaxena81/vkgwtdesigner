@@ -18,7 +18,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkTarget;
 import com.vk.gwt.designer.client.api.attributes.HasVkUrl;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.EventHelper;
 
 /**
  * @author gaurav.saxena
@@ -51,7 +51,7 @@ HasVkUrl, HasVkFormEncoding{
 				public void onSubmitComplete(SubmitCompleteEvent event) {
 					Map<String, String> eventproperties = new HashMap<String, String>();
 					eventproperties.put("resultHtml", event.getResults());
-					VkDesignerUtil.executeEvent(submitCompleteJs, eventproperties);
+					EventHelper.getInstance().executeEvent(submitCompleteJs, eventproperties);
 				}
 			});
 		}
@@ -59,7 +59,7 @@ HasVkUrl, HasVkFormEncoding{
 	@Override
 	public void addSubmitHandler(String js) {
 		submitJs = js;
-		addOnSubmitFunction(VkDesignerUtil.formatJs(submitJs));
+		addOnSubmitFunction(EventHelper.formatJs(submitJs));
 	}
 	private native void addOnSubmitFunction(String formatJs) /*-{
 		this.@com.vk.gwt.designer.client.ui.panel.vkFormPanel.VkFormPanel::getElement()().onsubmit = function(){

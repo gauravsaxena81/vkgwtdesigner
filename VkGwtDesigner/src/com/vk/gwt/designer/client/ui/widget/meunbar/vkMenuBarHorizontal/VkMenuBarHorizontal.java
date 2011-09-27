@@ -23,7 +23,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.EventHelper;
 import com.vk.gwt.designer.client.ui.widget.meunbar.vkMenuBarVertical.VkMenuBarVertical;
 
 public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkCloseHandler, HasVkAnimation, HasVkAutoOpen, HasVkWidgets, IVkPanel{
@@ -90,7 +90,7 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 				public void onClose(CloseEvent<PopupPanel> event) {
 					Map<String, String> map = new HashMap<String, String>();
 					map.put("autoClosed",Boolean.toString(event.isAutoClosed()));
-					VkDesignerUtil.executeEvent(closeJs, map);
+					EventHelper.getInstance().executeEvent(closeJs, map);
 				}
 			});
 		}

@@ -13,6 +13,7 @@ import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 	private static final String ADD_UP_IMAGE = "Add Up Image";
@@ -331,7 +332,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 				}});
 		}
 		else
-			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget)
@@ -356,7 +357,7 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 		list.add(ADD_DOWN_DISABLED_HTML);
 		list.add(ADD_DOWN_DISABLED_TEXT);
 		list.add(ALLOW_HOLD_DOWN);
-		list.addAll(VkDesignerUtil.getEngine().getAttributesList(invokingWidget));
+		list.addAll(VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget));
 		return list;
 	}
 	@Override

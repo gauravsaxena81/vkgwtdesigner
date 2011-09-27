@@ -21,7 +21,9 @@ import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkOpenHandler;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
+import com.vk.gwt.designer.client.designer.EventHelper;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidgets, HasVkAnimation, HasVkCloseHandler, HasVkOpenHandler{
 	public static final String NAME = "Disclosure Panel";
@@ -42,16 +44,16 @@ public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidge
 		if(dp.getHeader() == null)
 		{
 			dp.setHeader(w);
-			w.setWidth(VkDesignerUtil.getPixelValue(dp, "width") + "px");
-			if(VkDesignerUtil.isDesignerMode)
+			w.setWidth(VkDesignerUtil.getPixelValue(dp.getElement(), "width") + "px");
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as header of Disclosure Panel");
 		}
 		else if(dp.getContent() == null)
 		{
 			dp.add(w);
-			w.setWidth(VkDesignerUtil.getPixelValue(dp, "width") + "px");
+			w.setWidth(VkDesignerUtil.getPixelValue(dp.getElement(), "width") + "px");
 			DOM.setStyleAttribute(w.getElement(), "margin", "0px");
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as content of Disclosure Panel");
 		}
 		else
@@ -78,7 +80,7 @@ public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidge
 			closeHandlerRegistration = dp.addCloseHandler(new CloseHandler<DisclosurePanel>() {
 				@Override
 				public void onClose(CloseEvent<DisclosurePanel> event) {
-					VkDesignerUtil.executeEvent(closeJs, (Map<String, String>)null);
+					EventHelper.getInstance().executeEvent(closeJs, (Map<String, String>)null);
 				}
 			});
 		}
@@ -95,7 +97,7 @@ public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidge
 			openHandlerRegistration = dp.addOpenHandler(new OpenHandler<DisclosurePanel>() {
 				@Override
 				public void onOpen(OpenEvent<DisclosurePanel> event) {
-					VkDesignerUtil.executeEvent(openJs, (Map<String, String>)null);
+					EventHelper.getInstance().executeEvent(openJs, (Map<String, String>)null);
 				}
 			});
 		}
@@ -132,7 +134,7 @@ public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidge
 	@Override
 	public void setWidth(String width){
 		dp.setWidth(width);
-		int widthValue = VkDesignerUtil.getPixelValue(dp, "width");
+		int widthValue = VkDesignerUtil.getPixelValue(dp.getElement(), "width");
 		if(dp.getHeader() != null)
 			dp.getHeader().setWidth(widthValue + "px");
 		if(dp.getContent() != null)

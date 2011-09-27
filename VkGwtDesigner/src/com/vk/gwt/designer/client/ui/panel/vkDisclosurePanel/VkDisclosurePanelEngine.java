@@ -11,6 +11,7 @@ import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDisclosurePanelEngine extends VkAbstractWidgetEngine<VkDisclosurePanel>{
 	@Override
@@ -22,7 +23,7 @@ public class VkDisclosurePanelEngine extends VkAbstractWidgetEngine<VkDisclosure
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget)
 	{
-		List<String> optionList = VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
+		List<String> optionList = VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget);
 		return optionList;
 	}
 	@Override
@@ -41,7 +42,7 @@ public class VkDisclosurePanelEngine extends VkAbstractWidgetEngine<VkDisclosure
 			{
 				Widget child = widgetList.next();
 				if(child instanceof IVkWidget)
-					buffer.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
+					buffer.append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
 			}
 		}
 		if(buffer.charAt(buffer.length() - 1) == ',')

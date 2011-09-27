@@ -14,6 +14,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkBeforeSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
@@ -23,8 +24,8 @@ import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderText;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
+import com.vk.gwt.designer.client.designer.EventHelper;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkTabPanel extends TabPanel implements HasVkWidgets, IVkPanel, HasVkAnimation, HasVkTabHeaderText, HasVkTabHeaderHtml, HasVkEnabled, HasVkSwitchNumberedWidget
 , HasVkBeforeSelectionHandler,HasVkSelectionHandler{
@@ -46,7 +47,7 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IVkPanel, HasV
 			setTabHeaderHtml(getSelectedTab(), html);
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -58,7 +59,7 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IVkPanel, HasV
 			return getTabHeaderHtml(selectedIndex);
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -70,7 +71,7 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IVkPanel, HasV
 			setTabHeaderText(getSelectedTab(), text);
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -83,7 +84,7 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IVkPanel, HasV
 			return super.getTabBar().getTabHTML(selectedIndex);
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -95,7 +96,7 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IVkPanel, HasV
 			return getTabEnabled(getSelectedTab());
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -110,7 +111,7 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IVkPanel, HasV
 			public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
 				Map<String, String> eventproperties = new HashMap<String, String>();
 				eventproperties.put("item", event.getItem().toString());
-				VkDesignerUtil.executeEvent(beforeSelectionJs, eventproperties);
+				EventHelper.getInstance().executeEvent(beforeSelectionJs, eventproperties);
 			}
 		});
 	}
@@ -136,7 +137,7 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IVkPanel, HasV
 			public void onSelection(SelectionEvent<Integer> event) {
 				Map<String, String> eventproperties = new HashMap<String, String>();
 				eventproperties.put("item", event.getSelectedItem().toString());
-				VkDesignerUtil.executeEvent(selectionJs, eventproperties);
+				EventHelper.getInstance().executeEvent(selectionJs, eventproperties);
 			}
 		});
 	}
@@ -148,7 +149,7 @@ public class VkTabPanel extends TabPanel implements HasVkWidgets, IVkPanel, HasV
 			setTabEnabled(getSelectedTab(), enabled);
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}

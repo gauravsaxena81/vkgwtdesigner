@@ -64,8 +64,10 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.designer.EventHelper;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 import com.vk.gwt.designer.client.ui.widget.vkRichText.richtexttoolbar.RichTextToolbar;
 
 public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkHtml, HasVkAllKeyHandlers
@@ -120,7 +122,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 		toolbar = new RichTextToolbar(richTextArea);
 		toolbar.setWidth("100%");
 		richTextArea.setWidth("100%");
-		if(!VkDesignerUtil.isDesignerMode){
+		if(!VkStateHelper.getInstance().isDesignerMode()){
 			richTextArea.addInitializeHandler(new InitializeHandler(){
 				@Override
 				public void onInitialize(InitializeEvent event) {
@@ -133,7 +135,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 		}
 		setWidget(0, 0, toolbar);
 		setWidget(1, 0, richTextArea);
-		if(VkDesignerUtil.isDesignerMode)
+		if(VkStateHelper.getInstance().isDesignerMode())
 		{
 			toolbar.addDomHandler(new MouseDownHandler(){
 				@Override
@@ -167,7 +169,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			clickHandlerRegistration = richTextArea.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					VkDesignerUtil.executeEvent(clickJs, event, true);
+					EventHelper.getInstance().executeEvent(clickJs, event, true);
 				}
 			});
 		}
@@ -183,7 +185,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			doubleClickHandlerRegistration = addDoubleClickHandler(new DoubleClickHandler() {
 				@Override
 				public void onDoubleClick(DoubleClickEvent event) {
-					VkDesignerUtil.executeEvent(doubleClickJs, event, true);
+					EventHelper.getInstance().executeEvent(doubleClickJs, event, true);
 				}
 			});
 		}
@@ -199,7 +201,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			mouseDownHandlerRegistration = richTextArea.addMouseDownHandler(new MouseDownHandler() {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
-					VkDesignerUtil.executeEvent(mouseDownJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseDownJs, event, true);
 				}
 			});
 		}
@@ -215,7 +217,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			mouseUpHandlerRegistration = richTextArea.addMouseUpHandler(new MouseUpHandler() {
 				@Override
 				public void onMouseUp(MouseUpEvent event) {
-					VkDesignerUtil.executeEvent(mouseUpJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseUpJs, event, true);
 				}
 			});
 		}
@@ -231,7 +233,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			mouseMoveHandlerRegistration = richTextArea.addMouseMoveHandler(new MouseMoveHandler() {
 				@Override
 				public void onMouseMove(MouseMoveEvent event) {
-					VkDesignerUtil.executeEvent(mouseMoveJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseMoveJs, event, true);
 				}
 			});
 		}
@@ -247,7 +249,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			mouseOverHandlerRegistration = richTextArea.addMouseOverHandler(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
-					VkDesignerUtil.executeEvent(mouseOverJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOverJs, event, true);
 				}
 			});
 		}
@@ -263,7 +265,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			mouseOutHandlerRegistration = richTextArea.addMouseOutHandler(new MouseOutHandler() {
 				@Override
 				public void onMouseOut(MouseOutEvent event) {
-					VkDesignerUtil.executeEvent(mouseOutJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOutJs, event, true);
 				}
 			});
 		}
@@ -279,7 +281,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			mouseWheelHandlerRegistration = richTextArea.addMouseWheelHandler(new MouseWheelHandler() {
 				@Override
 				public void onMouseWheel(MouseWheelEvent event) {
-					VkDesignerUtil.executeEvent(mouseWheelJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseWheelJs, event, true);
 				}
 			});
 		}
@@ -295,7 +297,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			keyDownHandlerRegistration = richTextArea.addKeyDownHandler(new KeyDownHandler() {
 				@Override
 				public void onKeyDown(KeyDownEvent event) {
-					VkDesignerUtil.executeEvent(keyDownJs, event, true);
+					EventHelper.getInstance().executeEvent(keyDownJs, event, true);
 				}
 			});
 		}
@@ -311,7 +313,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			keyUpHandlerRegistration = richTextArea.addKeyUpHandler(new KeyUpHandler() {
 				@Override
 				public void onKeyUp(KeyUpEvent event) {
-					VkDesignerUtil.executeEvent(keyUpJs, event, true);
+					EventHelper.getInstance().executeEvent(keyUpJs, event, true);
 				}
 			});
 		}
@@ -327,7 +329,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			keyPressHandlerRegistration = richTextArea.addKeyPressHandler(new KeyPressHandler() {
 				@Override
 				public void onKeyPress(KeyPressEvent event) {
-					VkDesignerUtil.executeEvent(keyPressJs, event, true);
+					EventHelper.getInstance().executeEvent(keyPressJs, event, true);
 				}
 			});
 		}
@@ -343,7 +345,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			focusHandlerRegistration = richTextArea.addFocusHandler(new FocusHandler() {
 				@Override
 				public void onFocus(FocusEvent event) {
-					VkDesignerUtil.executeEvent(focusJs, event, true);
+					EventHelper.getInstance().executeEvent(focusJs, event, true);
 				}
 			});
 		}
@@ -359,7 +361,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			blurHandlerRegistration = richTextArea.addBlurHandler(new BlurHandler() {
 				@Override
 				public void onBlur(BlurEvent event) {
-					VkDesignerUtil.executeEvent(blurJs, event, true);
+					EventHelper.getInstance().executeEvent(blurJs, event, true);
 				}
 			});
 		}
@@ -375,7 +377,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 			initializeHandlerRegistration = richTextArea.addInitializeHandler(new InitializeHandler() {	
 				@Override
 				public void onInitialize(InitializeEvent event) {
-					VkDesignerUtil.executeEvent(initializeJs, (Map<String, String>) null);
+					EventHelper.getInstance().executeEvent(initializeJs, (Map<String, String>) null);
 				}
 			});
 		}
@@ -603,9 +605,9 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 	@Export
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled;
-		/*if(VkDesignerUtil.isDesignerMode)
+		/*if(VkStateHelper.getInstance().isDesignerMode())
 			makeEnable(enabled);*/
-		if(VkDesignerUtil.isDesignerMode && !enabled)
+		if(VkStateHelper.getInstance().isDesignerMode() && !enabled)
 			Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");
 	}
 	private void makeEnable(final boolean enabled) {

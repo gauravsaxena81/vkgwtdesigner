@@ -13,6 +13,7 @@ import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 
@@ -31,7 +32,7 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget)
 	{
-		List<String> list = VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
+		List<String> list = VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget);
 		list.add(ADD_NEW_ROW);
 		list.add(ADD_NEW_COLUMN);
 		list.add(REMOVE_ROW);
@@ -56,7 +57,7 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 		else if (attributeName.equals(ADD_CELLPADDING))
 			addCellPadding(table);
 		else
-			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	private void removeSelectedColumns(VkGrid table) {
 		int rowCount = table.getRowCount();
@@ -99,10 +100,10 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 	private void addNewColumn(VkGrid table) {
 		boolean isAnyCellSelected = false;
 		int columnNumber = 0;
-		boolean isDesignerMode = VkDesignerUtil.isDesignerMode;
-		VkDesignerUtil.isDesignerMode = false;
+		boolean isDesignerMode = VkStateHelper.getInstance().isDesignerMode();
+		VkStateHelper.getInstance().setDesignerMode(false);
 		table.resizeColumns(table.getColumnCount() + 1);
-		VkDesignerUtil.isDesignerMode = isDesignerMode;
+		VkStateHelper.getInstance().setDesignerMode(isDesignerMode);
 		A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
 			int colCount = table.getColumnCount();
 			for(int j = 0; j < colCount; j++) {
@@ -216,7 +217,7 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 			int colCount = table.getCellCount(i);
 			for(int j = 0; j < colCount; j++)
 				buffer.append("{row:").append(i).append(",col:").append(j)
-				.append(",child:").append(VkDesignerUtil.getEngineMap()
+				.append(",child:").append(VkStateHelper.getInstance().getEngineMap()
 						.get(((IVkWidget)table.getWidget(i,j)).getWidgetName())
 							.serialize((IVkWidget) table.getWidget(i,j)))
 				.append("},");
@@ -262,7 +263,7 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 			Widget widget = table.getWidget(row, col);
 			JSONObject child = cellsArray.get(i).isObject().get("child").isObject();
 			//addAttributes(child, widget);
-			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(child, widget);
+			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(child, widget);
 		}
 		JSONArray widthArray = jsonObj.get("widths").isArray();
 		for(int i = 0; i < widthArray.size(); i++)

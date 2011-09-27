@@ -206,7 +206,7 @@ public class VkEventTextArea extends Composite {
 		com.google.gwt.dom.client.Element currentElement = element;
 		while(currentElement != null && currentElement.getId().isEmpty())
 			currentElement = currentElement.getParentElement();
-		if(currentElement != null && currentElement != VkDesignerUtil.getDrawingPanel().getElement())
+		if(currentElement != null && currentElement != VkMainDrawingPanel.getInstance().getElement())
 			return currentElement.getId();
 		else
 			return "";

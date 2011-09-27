@@ -13,7 +13,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkCaptionText;
 import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDecoratedStackPanel extends DecoratedStackPanel implements HasVkWidgets, IVkPanel, HasVkSwitchNumberedWidget, HasVkCaptionHtml, HasVkCaptionText {
 	public static final String NAME = "Decorated Stack Panel";
@@ -63,7 +63,7 @@ public class VkDecoratedStackPanel extends DecoratedStackPanel implements HasVkW
 private boolean checkAccess(int index) {
 	if(index >=0 && index < super.getWidgetCount())
 		return true;
-	else if(VkDesignerUtil.isDesignerMode)
+	else if(VkStateHelper.getInstance().isDesignerMode())
 		Window.alert("None of the stack panels are selected");
 	return false;
 	}

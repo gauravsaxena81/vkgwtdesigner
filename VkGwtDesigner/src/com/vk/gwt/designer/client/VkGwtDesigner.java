@@ -4,6 +4,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkMainDrawingPanel;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -11,13 +13,13 @@ import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 public class VkGwtDesigner implements EntryPoint {
 	public final void onModuleLoad() {
 		init();
-		RootPanel.get().add(VkDesignerUtil.getDrawingPanel());
+		RootPanel.get().add(VkMainDrawingPanel.getInstance());
 		if(Window.Location.getParameter("isDesignerMode") != null && Window.Location.getParameter("isDesignerMode").equals("false")) {
-			VkDesignerUtil.isDesignerMode = false;
+			VkStateHelper.getInstance().setDesignerMode(false);
 			VkDesignerUtil.loadApplication(getLoadString());
 		}
-		if(VkDesignerUtil.isDesignerMode)
-			RootPanel.get().insert(VkDesignerUtil.getMenu(), 0);
+		if(VkStateHelper.getInstance().isDesignerMode())
+			RootPanel.get().insert(VkStateHelper.getInstance().getMenu(), 0);
 	}
 	protected void init() {
 		//VkDesignerUtil.setEngineMap();

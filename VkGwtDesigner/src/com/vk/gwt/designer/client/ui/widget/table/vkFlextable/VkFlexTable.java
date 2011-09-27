@@ -28,7 +28,9 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.engine.IEngine;
+import com.vk.gwt.designer.client.designer.EventHelper;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 import com.vk.gwt.designer.client.ui.panel.vkAbsolutePanel.VkAbsolutePanel;
 import com.vk.gwt.designer.client.ui.panel.vkAbsolutePanel.VkAbsolutePanelEngine;
 import com.vk.gwt.designer.client.ui.widget.label.vkHtml.VkHTML;
@@ -64,7 +66,8 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 				for(int i = currentCol; i < maxCols; i++)
 					denominator += DOM.getElementPropertyInt(VkFlexTable.this.columnFormatter.getElement(i), "width");
 				for(int i = currentCol; i < maxCols; i++)
-					VkFlexTable.this.columnFormatter.setWidth(i,  intWidth * DOM.getElementPropertyInt(VkFlexTable.this.columnFormatter.getElement(i), "width") / denominator + "px");
+					VkFlexTable.this.columnFormatter.setWidth(i
+					, intWidth * DOM.getElementPropertyInt(VkFlexTable.this.columnFormatter.getElement(i), "width") / denominator - VkDesignerUtil.getDecorationsHeight(getElement()) + "px");
 			}
 		}
 		public void setHeight(String height) {
@@ -78,7 +81,8 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 					denominator += Double.parseDouble(DOM.getElementAttribute(VkFlexTable.this.getRowFormatter().getElement(i), "height").replaceAll("px", ""));
 				for(int i = currentRow; i < maxRows; i++)
 					DOM.setElementAttribute(VkFlexTable.this.getRowFormatter().getElement(i), "height"
-					,intHeight * (int)Double.parseDouble(DOM.getElementAttribute(VkFlexTable.this.getRowFormatter().getElement(i), "height").replaceAll("px", "")) / denominator + "px");
+					, intHeight * (int)Double.parseDouble(DOM.getElementAttribute(VkFlexTable.this.getRowFormatter().getElement(i), "height").replaceAll("px", "")) / denominator 
+					- VkDesignerUtil.getDecorationsHeight(getElement())+ "px");
 			}
 		}
 		public void onLoad() {
@@ -118,25 +122,23 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 			return widget;
 		}
 		@Override
-		public List<String> getOperationsList(Widget invokingWidget)
-		{
-			List<String> operationsList = VkDesignerUtil.getEngine().getOperationsList(invokingWidget);
+		public List<String> getOperationsList(Widget invokingWidget) {
+			List<String> operationsList = VkStateHelper.getInstance().getEngine().getOperationsList(invokingWidget);
 			operationsList.remove(IEngine.REMOVE);
 			operationsList.remove(IEngine.CUT);
 			return operationsList;
 		}
 	}
 	
-	public VkFlexTable()
-	{
-		if(!VkDesignerUtil.getEngineMap().containsKey(VkFlexTableAbsolutePanel.NAME))
-			VkDesignerUtil.getEngineMap().put(VkFlexTableAbsolutePanel.NAME, new VkFlexTableAbsolutePanelEngine());
-		if(VkDesignerUtil.isDesignerMode)
+	public VkFlexTable() {
+		if(!VkStateHelper.getInstance().getEngineMap().containsKey(VkFlexTableAbsolutePanel.NAME))
+			VkStateHelper.getInstance().getEngineMap().put(VkFlexTableAbsolutePanel.NAME, new VkFlexTableAbsolutePanelEngine());
+		if(VkStateHelper.getInstance().isDesignerMode())
 			showAddTextAttributeDialog();
 		this.columnFormatter = new VkFlexTableColumnFormatter();
 		setColumnFormatter(columnFormatter);
 		DOM.setStyleAttribute(getElement(), "tableLayout", "fixed");
-		if(VkDesignerUtil.isDesignerMode) {
+		if(VkStateHelper.getInstance().isDesignerMode()) {
 			this.addDomHandler(new MouseDownHandler() {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
@@ -185,7 +187,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	@Override
 	public void setWidth(String width) {
 		if(getRowCount() != 0) {
-			double percentage = (double)(Integer.parseInt(width.replace("px", "")) + VkDesignerUtil.getDecorationsWidth(this)) / (double)getOffsetWidth();
+			double percentage = (double)(Integer.parseInt(width.replace("px", "")) + VkDesignerUtil.getDecorationsWidth(this.getElement())) / (double)getOffsetWidth();
 			int columns = getCellCount(0);
 			int colCount = 0;
 			for(int i = 0; i < columns; i++)
@@ -199,10 +201,15 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	public void setHeight(final String height) {
 		int rows = getRowCount();
 		if(rows != 0) {
-			double percentage = (double)(Integer.parseInt(height.replace("px", "")) + VkDesignerUtil.getDecorationsHeight(this)) / (double)getOffsetHeight();
-			for(int i = 0; i < rows; i++)
+			double percentage = (double)(Integer.parseInt(height.replace("px", "")) + VkDesignerUtil.getDecorationsHeight(this.getElement())) / (double)getOffsetHeight();
+			for(int i = 0; i < rows; i++) {
 				DOM.setElementAttribute(getRowFormatter().getElement(i), "height"
 				, percentage * Double.parseDouble(DOM.getElementAttribute(getRowFormatter().getElement(i), "height").replaceAll("px", "")) + "px");
+				for(int j = 0, cols = getCellCount(i); j < cols; j++) {
+					DOM.setStyleAttribute(getFlexCellFormatter().getElement(i, j), "height", "");
+					DOM.setStyleAttribute(getFlexCellFormatter().getElement(i, j), "height", "inherit");//IE otherwise doesn't resize cells
+				}
+			}
 		}
 	}
 	private void showAddTextAttributeDialog() {
@@ -272,7 +279,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	}
 	public void makeCell(final int row, final int col, int actualCol) {
 		VkFlexTableAbsolutePanel l2 = new VkFlexTableAbsolutePanel();
-		if(VkDesignerUtil.isDesignerMode) {
+		if(VkStateHelper.getInstance().isDesignerMode()) {
 			l2.addDomHandler(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
@@ -290,11 +297,12 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		}
 		DOM.setStyleAttribute(l2.getElement(), "border", "solid 1px gray");
 		DOM.setStyleAttribute(l2.getElement(), "overflow", "");//otherwise mouse over is not called when mouse button is pressed 
-		VkDesignerUtil.getEngine().prepareWidget(l2, VkDesignerUtil.getEngineMap().get(VkAbsolutePanel.NAME));
-		boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
-		VkDesignerUtil.isDesignerMode = false;//important as call routes to inserRow here instead of super's
+		VkStateHelper.getInstance().getEngine().prepareWidget(l2, VkStateHelper.getInstance().getEngineMap().get(VkAbsolutePanel.NAME));
+		boolean isVkDesignerMode = VkStateHelper.getInstance().isDesignerMode();
+		VkStateHelper.getInstance().setDesignerMode(false);//important as call routes to inserRow here instead of super's
 		super.setWidget(row, col, l2);
-		VkDesignerUtil.isDesignerMode = isVkDesignerMode;
+		VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
+		DOM.setStyleAttribute(getFlexCellFormatter().getElement(row, col), "height", "inherit");
 		DOM.setElementAttribute(getFlexCellFormatter().getElement(row, col), "col", Integer.toString(actualCol));
 		DOM.setElementAttribute(VkFlexTable.this.getRowFormatter().getElement(row), "height", "40px");
 		DOM.setStyleAttribute(VkFlexTable.this.getFlexCellFormatter().getElement(row, col), "position", "relative");
@@ -391,7 +399,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 				public void onClick(ClickEvent event) {
 					Cell cell = getCellForEvent(event);
 					setUpCellCallingEvent(cell.getRowIndex(), cell.getCellIndex());
-					VkDesignerUtil.executeEvent(clickJs, event, false);
+					EventHelper.getInstance().executeEvent(clickJs, event, false);
 				}			
 			});
 		}
@@ -505,6 +513,10 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		actualColumnNumber += Math.max(getColSpan(beforeRow, beforeColumn - 1), 1);
 		return actualColumnNumber;
 	}
+	@Override
+	public List<Widget> getToolbarWidgets() {
+		return null;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
@@ -520,7 +532,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	@Export
 	public int insertRow(int beforeRow) {
 	    int rowNum =  super.insertRow(beforeRow);
-	    if(VkDesignerUtil.isDesignerMode) {
+	    if(VkStateHelper.getInstance().isDesignerMode()) {
 	    	int lastActualColumnNumber = 0;
 		    for(int i = 0, colsAdded = 0; i < beforeRow; i++) {
 		    	for(int j = 0, cols = getCellCount(i); j < cols; j++) {
@@ -650,76 +662,62 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	}
 	@Override
 	@Export
-	public boolean clearCell(int row, int col)
-	{
+	public boolean clearCell(int row, int col) {
 		checkCellBounds(row, col);
 		VkAbsolutePanel panel = (VkAbsolutePanel)getWidget(row, col);
-		boolean isWidgetPresent;
-		if(panel.getWidgetCount() > 0)
-			isWidgetPresent = true;
-		else
-			isWidgetPresent = false;
+		boolean isWidgetPresent = panel.getWidgetCount() > 0;
 		panel.clear();
 		return isWidgetPresent;
 	}
 	@Override
 	@Export
-	public String getHTML(int row, int col)
-	{
+	public String getHTML(int row, int col) {
 		return super.getHTML(row, col);
 	}
 	@Override
 	@Export
-	public void setHTML(int row, int col, String html)
-	{
+	public void setHTML(int row, int col, String html) {
 		checkCellBounds(row, col);
 		VkAbsolutePanel panel = (VkAbsolutePanel)getWidget(row, col);
 		panel.clear();
 		DOM.setInnerHTML(panel.getElement(), "");
-		VkDesignerUtil.getEngine().addWidget(VkDesignerUtil.getEngine().getWidget(VkHTML.NAME), panel);
+		VkStateHelper.getInstance().getEngine().addWidget(VkStateHelper.getInstance().getEngine().getWidget(VkHTML.NAME), panel);
 	}
 	@Override
 	@Export
-	public boolean isCellPresent(int row, int col)
-	{
+	public boolean isCellPresent(int row, int col) {
 		return super.isCellPresent(row, col);
 	}
 	@Override
 	@Export
-	public String getText(int row, int col)
-	{
+	public String getText(int row, int col)	{
 		return DOM.getInnerText(getWidget(row, col).getElement());
 	}
 	@Override
 	@Export
-	public void setText(int row, int col, String text)
-	{
+	public void setText(int row, int col, String text) {
 		VkAbsolutePanel panel = (VkAbsolutePanel)getWidget(row, col);
 		panel.clear();
-		VkDesignerUtil.getEngine().addWidget(VkDesignerUtil.getEngine().getWidget(VkLabel.NAME), panel);
+		VkStateHelper.getInstance().getEngine().addWidget(VkStateHelper.getInstance().getEngine().getWidget(VkLabel.NAME), panel);
 	}
 	@Override
 	@Export
-	public void setVisible(boolean isVisible)
-	{
+	public void setVisible(boolean isVisible) {
 		super.setVisible(isVisible);
 	}
 	@Override
 	@Export
-	public boolean isVisible()
-	{
+	public boolean isVisible() {
 		return super.isVisible();
 	}
 	@Override
 	@Export
-	public void addStyleName(String className)
-	{
+	public void addStyleName(String className) {
 		super.addStyleName(className);
 	}
 	@Override
 	@Export
-	public void removeStyleName(String className)
-	{
+	public void removeStyleName(String className) {
 		super.removeStyleName(className);
 	}
 	public int getInitialRowCount() {
@@ -733,10 +731,5 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	}
 	public void setInitialColumnCount(int initialColumnCount) {
 		this.initialColumnCount = initialColumnCount;
-	}
-	@Override
-	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

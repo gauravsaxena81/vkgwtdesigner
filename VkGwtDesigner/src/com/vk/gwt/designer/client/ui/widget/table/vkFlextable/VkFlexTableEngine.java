@@ -13,6 +13,7 @@ import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 
@@ -32,7 +33,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 	}
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget) {
-		List<String> list = VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
+		List<String> list = VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget);
 		list.add(ADD_NEW_ROW);
 		list.add(ADD_NEW_COLUMN);
 		list.add(REMOVE_ROW);
@@ -63,7 +64,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 		else if (attributeName.equals(SPLIT_CELLS))
 			splitCells(table);
 		else
-			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	private void splitCells(VkFlexTable table) {
 		A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
@@ -343,7 +344,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 				buffer.append("{row:").append(i).append(",col:").append(j).append(",rowSpan:")
 					.append(flexTable.getRowSpan(i, j))
 				.append(",colSpan:").append(flexTable.getColSpan(i, j))
-				.append(",child:").append(VkDesignerUtil.getEngineMap()
+				.append(",child:").append(VkStateHelper.getInstance().getEngineMap()
 						.get(((IVkWidget)flexTable.getWidget(i,j)).getWidgetName())
 							.serialize((IVkWidget) flexTable.getWidget(i,j)))
 				.append("},");
@@ -382,12 +383,10 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 		addAttributes(jsonObj, parent);
 		JSONArray cellsArray = jsonObj.get("cells").isArray();
 		int lastRow = 0;
-		for(int i = 0, colNum = 0; i < cellsArray.size(); i++)
-		{
+		for(int i = 0, colNum = 0; i < cellsArray.size(); i++) {
 			int row = (int)cellsArray.get(i).isObject().get("row").isNumber().doubleValue();
 			int col = (int)cellsArray.get(i).isObject().get("col").isNumber().doubleValue();
-			if(row != lastRow)
-			{
+			if(row != lastRow) {
 				colNum = 0;
 				lastRow = row;
 			}
@@ -401,8 +400,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 					.doubleValue());
 			flexTable.setColSpan(row, col, colSpan);
 			//addAttributes(cellsArray.get(i).isObject().get("child").isObject(), widget);
-			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName())
-				.buildWidget(cellsArray.get(i).isObject().get("child").isObject(), widget);
+			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(cellsArray.get(i).isObject().get("child").isObject(), widget);
 		}
 		JSONArray widthArray = jsonObj.get("widths").isArray();
 		for(int i = 0, len = widthArray.size(); i < len; i++)
@@ -410,8 +408,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 				flexTable.getColumnFormatter().setWidth(i, widthArray.get(i).isNumber().doubleValue() + "px");
 		JSONArray heightArray = jsonObj.get("heights").isArray();
 		for(int i = 0; i < heightArray.size(); i++)
-			DOM.setElementAttribute(flexTable.getRowFormatter().getElement(i), "height"
-					, heightArray.get(i).isNumber().doubleValue() + "px");
+			DOM.setElementAttribute(flexTable.getRowFormatter().getElement(i), "height", heightArray.get(i).isNumber().doubleValue() + "px");
 	}
 	@Override
 	public void copyAttributes(Widget widgetSource, Widget widgetTarget){
@@ -419,11 +416,9 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 		VkFlexTable sourceTable = (VkFlexTable)widgetSource;
 		VkFlexTable targetTable = (VkFlexTable)widgetTarget;
 		int rowCount = sourceTable.getRowCount();
-		for(int i = 0; i < rowCount; i++)
-		{
+		for(int i = 0; i < rowCount; i++) {
 			int columnCount = sourceTable.getCellCount(i);
-			for(int j = 0, colNum = 0; j < columnCount; j++)
-			{
+			for(int j = 0, colNum = 0; j < columnCount; j++) {
 				targetTable.makeCell(i, j , colNum);
 				int colspan = sourceTable.getColSpan(i, j);
 				colNum += colspan;

@@ -24,7 +24,8 @@ import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderText;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.EventHelper;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidgets, IVkPanel, HasVkAnimation, HasVkTabHeaderText, HasVkTabHeaderHtml, HasVkEnabled, HasVkSwitchNumberedWidget
 , HasVkBeforeSelectionHandler, HasVkSelectionHandler{
@@ -46,7 +47,7 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			setTabHeaderHtml(getSelectedTab(), html);
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -58,7 +59,7 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			return getTabHeaderHtml(selectedIndex);
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -70,7 +71,7 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			setTabHeaderText(getSelectedTab(), text);
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -83,7 +84,7 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			return super.getTabBar().getTabHTML(selectedIndex);
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -95,7 +96,7 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			return getTabEnabled(getSelectedTab());
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -110,7 +111,7 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
 				Map<String, String> eventproperties = new HashMap<String, String>();
 				eventproperties.put("item", event.getItem().toString());
-				VkDesignerUtil.executeEvent(beforeSelectionJs, eventproperties);
+				EventHelper.getInstance().executeEvent(beforeSelectionJs, eventproperties);
 			}
 		});
 	}
@@ -136,7 +137,7 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 				public void onSelection(SelectionEvent<Integer> event) {
 					Map<String, String> eventproperties = new HashMap<String, String>();
 					eventproperties.put("item", event.getSelectedItem().toString());
-					VkDesignerUtil.executeEvent(selectionJs, eventproperties);
+					EventHelper.getInstance().executeEvent(selectionJs, eventproperties);
 				}
 			});
 		}
@@ -148,7 +149,7 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 			setTabEnabled(getSelectedTab(), enabled);
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("No Tab has been selected");
 			throw new IllegalStateException("No Tab has been selected");
 		}

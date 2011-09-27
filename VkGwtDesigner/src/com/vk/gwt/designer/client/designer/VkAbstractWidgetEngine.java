@@ -82,15 +82,15 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 	public abstract T getWidget();
 	@Override
 	public void applyAttribute(String attributeName, Widget invokingWidget) {
-		VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+		VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget) {
-		return VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
+		return VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget);
 	}
 	@Override
 	public List<String> getOperationsList(Widget invokingWidget) {
-		return VkDesignerUtil.getEngine().getOperationsList(invokingWidget);
+		return VkStateHelper.getInstance().getEngine().getOperationsList(invokingWidget);
 	}
 	protected void init(Widget widget) {
 		widget.setPixelSize(100, 20);
@@ -98,22 +98,22 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 	}
 	@Override
 	public Widget deepClone(Widget sourceWidget, Widget targetWidget) {
-		boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
+		boolean isVkDesignerMode = VkStateHelper.getInstance().isDesignerMode();
 		//TODO: applying attribute is best done after all the children are added, because some widgets apply attributes to their widget holders e.g. stackpanel
-		VkDesignerUtil.isDesignerMode = false;
+		VkStateHelper.getInstance().setDesignerMode(false);
 		((IVkWidget)sourceWidget).clone(targetWidget);
-		//VkDesignerUtil.getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
+		//VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
 		copyAttributes(sourceWidget, targetWidget);
-		VkDesignerUtil.isDesignerMode = isVkDesignerMode;
+		VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 		if(sourceWidget instanceof IVkPanel && targetWidget instanceof IVkPanel) {
 			Iterator<Widget> widgets = ((IVkPanel)sourceWidget).iterator();
 			while(widgets.hasNext()) {
 				Widget currentWidget = widgets.next();
-				Widget newWidget = VkDesignerUtil.getEngine().getWidget(((IVkWidget)currentWidget).getWidgetName());
-				VkDesignerUtil.isDesignerMode = false;
+				Widget newWidget = VkStateHelper.getInstance().getEngine().getWidget(((IVkWidget)currentWidget).getWidgetName());
+				VkStateHelper.getInstance().setDesignerMode(false);
 				if(currentWidget instanceof IVkWidget)
-					VkDesignerUtil.getEngine().addWidget(VkDesignerUtil.getEngineMap().get(((IVkWidget)currentWidget).getWidgetName()).deepClone(currentWidget, newWidget), (IVkPanel)targetWidget);
-				VkDesignerUtil.isDesignerMode = isVkDesignerMode;
+					VkStateHelper.getInstance().getEngine().addWidget(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)currentWidget).getWidgetName()).deepClone(currentWidget, newWidget), (IVkPanel)targetWidget);
+				VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 			}
 		}
 		return targetWidget;
@@ -201,7 +201,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			while(widgetList.hasNext())	{
 				Widget child = widgetList.next();
 				if(child instanceof IVkWidget)
-					buffer.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
+					buffer.append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
 			}
 		}
 		if(buffer.charAt(buffer.length() - 1) == ',')
@@ -348,16 +348,16 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			Window.alert("JSON String is not well-formed. Application cannot be built.");
 			return;
 		}
-		boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
-		VkDesignerUtil.isDesignerMode = false;
+		boolean isVkDesignerMode = VkStateHelper.getInstance().isDesignerMode();
+		VkStateHelper.getInstance().setDesignerMode(false);
 		((Panel)invokingWidget).clear();//for LOAD command
 		try{
-			VkDesignerUtil.getEngineMap().get(invokingWidget.getWidgetName()).buildWidget(jsonObj, (Widget) invokingWidget);//cast is safe because root of DOM is drawingPanel
+			VkStateHelper.getInstance().getEngineMap().get(invokingWidget.getWidgetName()).buildWidget(jsonObj, (Widget) invokingWidget);//cast is safe because root of DOM is drawingPanel
 		}catch(Exception e)	{
 			Window.alert("JSON String is not well-formed. Application cannot be built.");	
 			e.printStackTrace();
 		}
-		VkDesignerUtil.isDesignerMode = isVkDesignerMode;
+		VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 	}
 	//TODO buildWidget should return a widget and the work of addition should be performed in the parent. It is not right to pass parent object and adding
 	//work is being done by the child
@@ -370,10 +370,9 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			if(childObj == null)
 				return;
 			JSONString widgetName = childObj.get("widgetName").isString();
-			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
-			VkDesignerUtil.getEngine().addWidget(widget, ((IVkPanel)parent));
-			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
-			//addAttributes(childObj, widget);
+			Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
+			VkStateHelper.getInstance().getEngine().addWidget(widget, ((IVkPanel)parent));
+			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 		}
 	}
 	protected void addAttributes(JSONObject childObj, Widget widget) {
@@ -444,7 +443,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		if(attributeJsObj != null && (attributeBooleanObj = attributeJsObj.isBoolean()) != null)
 			((HasVkScrollBarShowing)widget).setAlwaysShowScrollBars(attributeBooleanObj.booleanValue());
 		attributeJsObj = childObj.get(HasVkSwitchNumberedWidget.NAME);
-		if(attributeJsObj != null && (attributeNumberObj = attributeJsObj.isNumber()) != null)
+		if(attributeJsObj != null && (attributeNumberObj = attributeJsObj.isNumber()) != null && attributeNumberObj.doubleValue() > -1)
 			((HasVkSwitchNumberedWidget)widget).showWidget((int)attributeNumberObj.doubleValue());
 		attributeJsObj = childObj.get(HasVkName.NAME);
 		if(attributeJsObj != null && (attributeStringObj = attributeJsObj.isString()) != null)

@@ -15,6 +15,7 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -23,13 +24,29 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
-import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkVerticalPanel extends VerticalPanel implements IVkPanel, HasVkWidgets, HasVkHorizontalAlignment, HasVkVerticalAlignment {
 	public static final String NAME = "Vertical Panel";
-
+	
+	public VkVerticalPanel(){
+		getBody().setInnerHTML("<tr></tr>");
+	}
+	
+	@Override
+	public void add(Widget child) {
+		if (getWidgetCount() == 0)
+			getBody().setInnerHTML("");
+		super.add(child);
+	}
+	@Override
+	public void add(IsWidget child) {
+		if (getWidgetCount() == 0)
+			getBody().setInnerHTML("");
+		super.add(child);
+	}
 	@Override
 	protected void add(Widget child, Element container) {
 		// So that TD resizes with the widget inside
@@ -44,7 +61,7 @@ public class VkVerticalPanel extends VerticalPanel implements IVkPanel, HasVkWid
 		DOM.setElementAttribute((Element)getWidget(beforeIndex).getElement().getParentElement(), "height", "1px");
 	}
 	public void setHorizontalAlignment(String horizontalAlignment) {
-		if (VkDesignerUtil.isDesignerMode) {
+		if (VkStateHelper.getInstance().isDesignerMode()) {
 			final ListBox listBox = new ListBox(false);
 			listBox.addItem("Left", "left");
 			listBox.addItem("Center", "center");
@@ -58,10 +75,9 @@ public class VkVerticalPanel extends VerticalPanel implements IVkPanel, HasVkWid
 			});
 		}
 	}
-
 	@Override
 	public void setVerticalAlignment(String verticalAlignment) {
-		if (VkDesignerUtil.isDesignerMode) {
+		if (VkStateHelper.getInstance().isDesignerMode()) {
 			final ListBox listBox = new ListBox(false);
 			listBox.addItem("Top", "top");
 			listBox.addItem("Middle", "middle");
@@ -81,7 +97,13 @@ public class VkVerticalPanel extends VerticalPanel implements IVkPanel, HasVkWid
 			});
 		}
 	}
-
+	 @Override
+	 public boolean remove(Widget w) {
+		 boolean isRemoved = super.remove(w);
+		 if (getWidgetCount() == 0)
+			 getBody().setInnerHTML("<tr></tr>");
+		 return isRemoved;
+	 }
 	private void showSetCellAlignmentDialog(final ListBox listBox, final IAlignment iAlignment) {
 		final DialogBox origDialog = new DialogBox();
 		DOM.setStyleAttribute(origDialog.getElement(), "zIndex",
@@ -182,7 +204,7 @@ public class VkVerticalPanel extends VerticalPanel implements IVkPanel, HasVkWid
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
 				for(int i = 0, len = VkVerticalPanel.this.getWidgetCount(); i < len; i++)
-					if(VkDesignerUtil.getMenu().isLastSelectedWidget(VkVerticalPanel.this.getWidget(i)))
+					if(VkStateHelper.getInstance().getMenu().isLastSelectedWidget(VkVerticalPanel.this.getWidget(i)))
 						DOM.setElementAttribute((Element) getWidget(i).getElement().getParentElement(), "align", "left");
 			}
 		});
@@ -192,7 +214,7 @@ public class VkVerticalPanel extends VerticalPanel implements IVkPanel, HasVkWid
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
 				for(int i = 0, len = VkVerticalPanel.this.getWidgetCount(); i < len; i++)
-					if(VkDesignerUtil.getMenu().isLastSelectedWidget(VkVerticalPanel.this.getWidget(i)))
+					if(VkStateHelper.getInstance().getMenu().isLastSelectedWidget(VkVerticalPanel.this.getWidget(i)))
 						DOM.setElementAttribute((Element) getWidget(i).getElement().getParentElement(), "align", "center");
 			}
 		});
@@ -202,7 +224,7 @@ public class VkVerticalPanel extends VerticalPanel implements IVkPanel, HasVkWid
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
 				for(int i = 0, len = VkVerticalPanel.this.getWidgetCount(); i < len; i++)
-					if(VkDesignerUtil.getMenu().isLastSelectedWidget(VkVerticalPanel.this.getWidget(i)))
+					if(VkStateHelper.getInstance().getMenu().isLastSelectedWidget(VkVerticalPanel.this.getWidget(i)))
 						DOM.setElementAttribute((Element) getWidget(i).getElement().getParentElement(), "align", "right");
 			}
 		});

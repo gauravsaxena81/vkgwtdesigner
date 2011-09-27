@@ -20,9 +20,9 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
-import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, IVkPanel, HasVkVerticalAlignment, HasVkHorizontalAlignment {
 	public static final String NAME = "Horizontal Panel";
@@ -41,7 +41,7 @@ public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, 
 		DOM.setElementAttribute((Element)getWidget(beforeIndex).getElement().getParentElement(), "width", "1px");
 	}
 	public void setHorizontalAlignment(String horizontalAlignment) {
-		if(VkDesignerUtil.isDesignerMode)
+		if(VkStateHelper.getInstance().isDesignerMode())
 		{
 			final ListBox listBox = new ListBox(false);
 			listBox.addItem("Left", "left");
@@ -58,7 +58,7 @@ public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, 
 	}
 	@Override
 	public void setVerticalAlignment(String verticalAlignment) {
-		if(VkDesignerUtil.isDesignerMode)
+		if(VkStateHelper.getInstance().isDesignerMode())
 		{
 			final ListBox listBox = new ListBox(false);
 			listBox.addItem("Top", "top");

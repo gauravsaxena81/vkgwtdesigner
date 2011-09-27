@@ -166,25 +166,30 @@ import com.vk.gwt.designer.client.ui.widget.vkTree.VkTree;
 public class VkEngine implements IEngine{
 	
 	private JsBridgable jsBridgable = GWT.create(JsBridgable.class);
+	private int widgetCount = 0;
 	
 	public Widget getWidget(String widgetName) {
-		IWidgetEngine<? extends Widget> widgetEngine = VkDesignerUtil.getEngineMap().get(widgetName);
+		IWidgetEngine<? extends Widget> widgetEngine = VkStateHelper.getInstance().getEngineMap().get(widgetName);
 		Widget widget= widgetEngine.getWidget();
 		if(widget != null)
 			prepareWidget(widget, widgetEngine);
 		return widget;
 	}
 	public void prepareWidget(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) {
-		VkDesignerUtil.assignId(widget);
-		if(VkDesignerUtil.isDesignerMode || VkDesignerUtil.isLoadRunning)
-			VkDesignerUtil.initDesignerEvents(widget, widgetEngine);
+		SnapHelper.getInstance().addToSnappableWidgets(widget);
+		assignId(widget);
+		if(VkStateHelper.getInstance().isDesignerMode() || VkStateHelper.getInstance().isLoadRunning())
+			InitializeHelper.getInstance().initDesignerEvents(widget, widgetEngine);
 		if(widget instanceof IVkPanel)//all panels
 			addJavascriptAddWidgetFunction((IVkPanel) widget);
 		addRemoveJsFunction(widget);
 		jsBridgable.createBridge(widget);
 	}
+	private void assignId(Widget widget) {
+		widget.getElement().setId(++widgetCount + "");
+	}
 	private void addWidget(IVkPanel invokingWidget, String widgetName) {
-		Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName);
+		Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName);
 		if(widget != null)
 			addWidget(widget, invokingWidget);
 		else
@@ -213,7 +218,7 @@ public class VkEngine implements IEngine{
 	}
 	public void addWidget(Widget widget, IVkPanel invokingWidget, int top, int left, int beforeIndex) {
 		placeAddedElement(widget.getElement(), invokingWidget, top, left);
-		if(!VkDesignerUtil.isDesignerMode && (widget instanceof PopupPanel))
+		if(!VkStateHelper.getInstance().isDesignerMode() && (widget instanceof PopupPanel))
 			((PopupPanel)widget).center();
 		else if (invokingWidget instanceof IndexedPanel.ForIsWidget)
 			((InsertPanel.ForIsWidget)invokingWidget).insert(widget, beforeIndex);

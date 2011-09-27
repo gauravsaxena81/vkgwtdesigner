@@ -2,7 +2,6 @@ package com.vk.gwt.designer.client.designer;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
@@ -16,12 +15,6 @@ import com.google.gwt.event.dom.client.HasBlurHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.dom.client.MouseMoveEvent;
-import com.google.gwt.event.dom.client.MouseMoveHandler;
-import com.google.gwt.event.dom.client.MouseUpEvent;
-import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -32,8 +25,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.Frame;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.IndexedPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -53,16 +44,13 @@ import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.engine.IEngine;
 import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
 import com.vk.gwt.designer.client.ui.widget.colorpicker.VkColorPicker;
-import com.vk.gwt.designer.client.ui.widget.meunbar.vkMenuBarVertical.VkMenuBarVertical;
-import com.vk.gwt.designer.client.ui.widget.vkFrame.VkFrame;
 
-@SuppressWarnings("serial")
 public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private Widget copyStyleWidget;
 	private Widget invokingWidget;
 	private MenuItem selectedMenuItem;
-	private int top;
-	private int left;
+	//private int top;
+	//private int left;
 	private IWidgetEngine<? extends Widget> widgetEngine;
 	private IVkWidget copyWidget;
 	private TabPanel styleTabPanel;
@@ -80,47 +68,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private Widget lastSelectedWidget;
 	private PopupPanel stylePickerPopPanel;	
 	private Command clearCommand;
-	private Stack<Command> undoStack = new Stack<Command>(){
-		@Override
-		public Command push(Command c) {
-			if(size() == 10)
-				remove(0);
-			Command push = super.push(c);
-			refreshUndoRedo();
-			return push;
-		}
-		@Override
-		public Command pop() {
-			if(size() > 0)
-			{
-				Command pop = super.pop();
-				refreshUndoRedo();
-				return pop;
-			}
-			else return null;
-		}
-	};
-	private Stack<Command> redoStack = new Stack<Command>(){
-		@Override
-		public Command push(Command c)
-		{
-			if(size() == 10)
-				remove(0);
-			Command push = super.push(c);
-			refreshUndoRedo();
-			return push;
-		}
-		@Override
-		public Command pop() {
-			if(size() > 0)
-			{
-				Command pop = super.pop();
-				refreshUndoRedo();
-				return pop;
-			}
-			else return null;
-		}
-	};
+	
 	
 	public VkMenu() {
 		this(false);
@@ -143,18 +91,17 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	}
 	void prepareMenu(IVkWidget invokingWidget) {
 		if(invokingWidget.showMenu()) {
-			setPosition();
+			//setPosition();
 			initializeMenu(invokingWidget);
 			clearItems();
 			addItem("Operations", getOperationsItems(widgetEngine.getOperationsList((Widget) invokingWidget)));
-			List<String> widgetsList = VkDesignerUtil.getEngine().getWidgetsList((Widget) invokingWidget);
+			List<String> widgetsList = VkStateHelper.getInstance().getEngine().getWidgetsList((Widget) invokingWidget);
 			MenuBar widgetsMenu = getWidgetsList(widgetsList);
-			if(widgetsMenu != null)
-			{
+			if(widgetsMenu != null)	{
 				addSeparator();
 				addItem("Widgets", widgetsMenu);
 			}
-			List<String> panelsList = VkDesignerUtil.getEngine().getPanelsList(invokingWidget);
+			List<String> panelsList = VkStateHelper.getInstance().getEngine().getPanelsList(invokingWidget);
 			MenuBar panelsMenu = getPanelsList(panelsList);
 			if(panelsMenu != null) {
 				addSeparator();
@@ -167,17 +114,17 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		}
 	}
 	private void initializeMenu(IVkWidget widget) {
-		if(this.invokingWidget != null && VkDesignerUtil.isDesignerMode) {
+		if(this.invokingWidget != null && VkStateHelper.getInstance().isDesignerMode()) {
 			this.invokingWidget.removeStyleName("vk-selectedWidget");
 			((Widget) invokingWidget).getElement().getStyle().clearZIndex();
 		}
 		lastSelectedWidget = invokingWidget; 
 		invokingWidget = (Widget)widget; 
-		if(VkDesignerUtil.isDesignerMode && !((Widget) invokingWidget).getElement().getId().equals("drawingPanel"))	{
+		if(VkStateHelper.getInstance().isDesignerMode() && !((Widget) invokingWidget).getElement().getId().equals("drawingPanel"))	{
 			this.invokingWidget.addStyleName("vk-selectedWidget");
 			DOM.setStyleAttribute(invokingWidget.getElement(), "zIndex", "1");
 		}
-		this.widgetEngine = VkDesignerUtil.getEngineMap().get(widget.getWidgetName());
+		this.widgetEngine = VkStateHelper.getInstance().getEngineMap().get(widget.getWidgetName());
 		refreshStylePanelValues();
 	}
 	public final boolean isLastSelectedWidget(Widget w) {
@@ -215,7 +162,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		addItem("Preview", new Command() {
 			@Override
 			public void execute() {
-				VkDesignerUtil.setLoadString(VkDesignerUtil.getEngineMap().get(VkDesignerUtil.getDrawingPanel().getWidgetName()).serialize((IVkWidget) VkDesignerUtil.getDrawingPanel()));
+				VkDesignerUtil.setLoadString(VkStateHelper.getInstance().getEngineMap().get(VkMainDrawingPanel.getInstance().getWidgetName()).serialize((IVkWidget) VkMainDrawingPanel.getInstance()));
 				String href = Window.Location.getHref();
 				if(Window.Location.getParameterMap().size() == 0)
 					href += "?isDesignerMode=false";
@@ -230,22 +177,14 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		refreshUndoRedo();
 	}
 	private void refreshUndoRedo() {
-		if(!undoStack.isEmpty()) 
-			undoItem.setVisible(true);
-		else
-			undoItem.setVisible(false);
-		
-		if(!redoStack.isEmpty())
-			redoItem.setVisible(true);
-		else
-			redoItem.setVisible(false);
+		undoItem.setVisible(UndoHelper.getInstance().isUndoStackEmpty());
+		redoItem.setVisible(UndoHelper.getInstance().isRedoStackEmpty());
 	}
 	Command getRedoCommand() {
 		return redoCommand = redoCommand != null ? redoCommand : new Command(){
 			@Override
 			public void execute() {
-				redoStack.pop().execute();
-				refreshUndoRedo();
+				redoItem.setVisible(UndoHelper.getInstance().redo());
 				//hideMenu();
 			}};
 	}
@@ -253,8 +192,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		return undoCommand = undoCommand != null ? undoCommand : new Command(){
 			@Override
 			public void execute() {
-				undoStack.pop().execute();
-				refreshUndoRedo();
+				undoItem.setVisible(UndoHelper.getInstance().undo());
 				//hideMenu();
 			}};
 	}
@@ -262,12 +200,12 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	public HandlerRegistration addBlurHandler(BlurHandler handler) {
 		return addHandler(handler, BlurEvent.getType());
 	}
-	public void setTop(int top) {
+	/*public void setTop(int top) {
 		this.top = top;
 	}
 	public void setLeft(int left) {
 		this.left = left;
-	}	
+	}*/	
 	private void makeToolbar() {
 		styleMenu = new MenuBar();
 		styleMenu.setStyleName("vkgwtdesigner-toolbar");
@@ -304,23 +242,19 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					@Override
 					public void execute() {
 						final Widget widget = invokingWidget;
-						final int prior = VkDesignerUtil.getPixelValue(widget, "padding-left");
-						applyCommand(new Command(){
-							private final Command redoCommand = this;
+						final int prior = VkDesignerUtil.getPixelValue(widget.getElement(), "padding-left");
+						UndoHelper.getInstance().doCommand(new Command(){
 							@Override
 							public void execute() {
-								DOM.setStyleAttribute(widget.getElement(), "width", widget.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(widget) - 5 + "px");
+								DOM.setStyleAttribute(widget.getElement(), "width", widget.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(widget.getElement()) - 5 + "px");
 								DOM.setStyleAttribute(widget.getElement(), "paddingLeft", prior + 5 + "px");
-								undoStack.push(new Command(){
+							}}, new Command(){
 									@Override
 									public void execute() {
-										DOM.setStyleAttribute(widget.getElement(), "width", widget.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(widget) + 5 + "px");
+										DOM.setStyleAttribute(widget.getElement(), "width", widget.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(widget.getElement()) + 5 + "px");
 										DOM.setStyleAttribute(widget.getElement(), "paddingLeft", prior + "px");
-										redoStack.push(redoCommand);
 									}});
-							}});
-					}
-			});
+					}});
 	}
 	private MenuItem getLeftIndentItem() {
 		return new MenuItem("<img src='images/left-indent.png' height=16 width=16'>"
@@ -328,23 +262,19 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					@Override
 					public void execute() {
 						final Widget widget = invokingWidget;
-						final int prior = VkDesignerUtil.getPixelValue(widget, "padding-left");
-						applyCommand(new Command(){
-							private final Command redoCommand = this;
+						final int prior = VkDesignerUtil.getPixelValue(widget.getElement(), "padding-left");
+						UndoHelper.getInstance().doCommand(new Command(){
 							@Override
 							public void execute() {
-								DOM.setStyleAttribute(widget.getElement(), "width", widget.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(widget) + 5 + "px");
+								DOM.setStyleAttribute(widget.getElement(), "width", widget.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(widget.getElement()) + 5 + "px");
 								DOM.setStyleAttribute(widget.getElement(), "paddingLeft", prior - 5 + "px");
-								undoStack.push(new Command(){
+							}}, new Command(){
 									@Override
 									public void execute() {
-										DOM.setStyleAttribute(widget.getElement(), "width", widget.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(widget) - 5 + "px");
+										DOM.setStyleAttribute(widget.getElement(), "width", widget.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(widget.getElement()) - 5 + "px");
 										DOM.setStyleAttribute(widget.getElement(), "paddingLeft", prior + "px");
-										redoStack.push(redoCommand);
 									}});
-							}});
-					}
-			});
+					}});
 	}
 	private MenuItem getTopIndentItem() {
 		return new MenuItem("<img src='images/top-indent.png' height=16 width=16'>"
@@ -352,23 +282,19 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					@Override
 					public void execute() {
 						final Widget widget = invokingWidget;
-						final int prior = VkDesignerUtil.getPixelValue(widget, "padding-top");
-						applyCommand(new Command(){
-							private final Command redoCommand = this;
+						final int prior = VkDesignerUtil.getPixelValue(widget.getElement(), "padding-top");
+						UndoHelper.getInstance().doCommand(new Command(){
 							@Override
 							public void execute() {
-								DOM.setStyleAttribute(widget.getElement(), "height", widget.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(widget) - 5 + "px");
+								DOM.setStyleAttribute(widget.getElement(), "height", widget.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(widget.getElement()) - 5 + "px");
 								DOM.setStyleAttribute(widget.getElement(), "paddingTop", prior + 5 + "px");
-								undoStack.push(new Command(){
+							}}, new Command(){
 									@Override
 									public void execute() {
-										DOM.setStyleAttribute(widget.getElement(), "height", widget.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(widget) + 5 + "px");
+										DOM.setStyleAttribute(widget.getElement(), "height", widget.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(widget.getElement()) + 5 + "px");
 										DOM.setStyleAttribute(widget.getElement(), "paddingTop", prior + "px");
-										redoStack.push(redoCommand);
 									}});
-							}});
-					}
-			});
+					}});
 	}
 	private MenuItem getBottomIndentItem() {
 		return new MenuItem("<img src='images/bottom-indent.png' height=16 width=16'>"
@@ -376,23 +302,19 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					@Override
 					public void execute() {
 						final Widget widget = invokingWidget;
-						final int prior = VkDesignerUtil.getPixelValue(widget, "padding-top");
-						applyCommand(new Command(){
-							private final Command redoCommand = this;
+						final int prior = VkDesignerUtil.getPixelValue(widget.getElement(), "padding-top");
+						UndoHelper.getInstance().doCommand(new Command(){
 							@Override
 							public void execute() {
-								DOM.setStyleAttribute(widget.getElement(), "height", widget.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(widget) + 5 + "px");
+								DOM.setStyleAttribute(widget.getElement(), "height", widget.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(widget.getElement()) + 5 + "px");
 								DOM.setStyleAttribute(widget.getElement(), "paddingTop", prior - 5 + "px");
-								undoStack.push(new Command(){
+							}}, new Command(){
 									@Override
 									public void execute() {
-										DOM.setStyleAttribute(widget.getElement(), "height", widget.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(widget) - 5 + "px");
+										DOM.setStyleAttribute(widget.getElement(), "height", widget.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(widget.getElement()) - 5 + "px");
 										DOM.setStyleAttribute(widget.getElement(), "paddingTop", prior + "px");
-										redoStack.push(redoCommand);
 									}});
-							}});
-					}
-			});
+					}});
 	}
 	private MenuItem getUnderLineMenuItem() {
 		return new MenuItem("<span style='text-decoration: underline;'>U</span>", true, new Command(){
@@ -400,21 +322,18 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			public void execute() {
 				final Widget widget = invokingWidget;
 				final String prior = DOM.getStyleAttribute(widget.getElement(), "fontWeight");
-				applyCommand(new Command(){
-					private final Command redoCommand = this;
+				UndoHelper.getInstance().doCommand(new Command(){
 					@Override
 					public void execute() {
 						if(!DOM.getStyleAttribute(invokingWidget.getElement(), "textDecoration").equals("underline"))
 							DOM.setStyleAttribute(invokingWidget.getElement(), "textDecoration", "underline");
 						else
 							DOM.setStyleAttribute(invokingWidget.getElement(), "textDecoration", "");
-						undoStack.push(new Command(){
+					}}, new Command(){
 							@Override
 							public void execute() {
 								DOM.setStyleAttribute(widget.getElement(), "textDecoration", prior);
-								redoStack.push(redoCommand);
 							}});
-					}});
 			}});
 	}
 	private MenuItem getItalicMenuItem() {
@@ -423,21 +342,18 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			public void execute() {
 				final Widget widget = invokingWidget;
 				final String prior = DOM.getStyleAttribute(widget.getElement(), "fontWeight");
-				applyCommand(new Command(){
-					private final Command redoCommand = this;
+				UndoHelper.getInstance().doCommand(new Command(){
 					@Override
 					public void execute() {
 						if(!DOM.getStyleAttribute(invokingWidget.getElement(), "fontStyle").equals("italic"))
 							DOM.setStyleAttribute(invokingWidget.getElement(), "fontStyle", "italic");
 						else
 							DOM.setStyleAttribute(invokingWidget.getElement(), "fontStyle", "");
-						undoStack.push(new Command(){
+					}}, new Command(){
 							@Override
 							public void execute() {
 								DOM.setStyleAttribute(widget.getElement(), "fontStyle", prior);
-								redoStack.push(redoCommand);
 							}});
-					}});
 			}});
 	}
 	private MenuItem getBoldMenuItem() {
@@ -447,21 +363,18 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			public void execute() {
 				final Widget widget = invokingWidget;
 				final String prior = DOM.getStyleAttribute(widget.getElement(), "fontWeight");
-				applyCommand(new Command(){
-					private final Command redoCommand = this;
+				UndoHelper.getInstance().doCommand(new Command(){
 					@Override
 					public void execute() {
 						if(DOM.getStyleAttribute(invokingWidget.getElement(), "fontWeight").isEmpty())
 							DOM.setStyleAttribute(invokingWidget.getElement(), "fontWeight", "bold");
 						else
 							DOM.setStyleAttribute(invokingWidget.getElement(), "fontWeight", "");
-						undoStack.push(new Command(){
+					}}, new Command(){
 							@Override
 							public void execute() {
 								DOM.setStyleAttribute(widget.getElement(), "fontWeight", prior);
-								redoStack.push(redoCommand);
 							}});
-					}});
 			}});
 	}
 	private MenuItem getTextAlignRightMenuItem() {
@@ -471,20 +384,16 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				public void execute() {
 					final Widget widget = invokingWidget;
 					final String prior = DOM.getStyleAttribute(widget.getElement(), "textAlign");
-					applyCommand(new Command(){
-						private final Command redoCommand = this;
+					UndoHelper.getInstance().doCommand(new Command(){
 						@Override
 						public void execute() {
 							DOM.setStyleAttribute(widget.getElement(), "textAlign", "right");
-							undoStack.push(new Command(){
+						}}, new Command(){
 								@Override
 								public void execute() {
 									DOM.setStyleAttribute(widget.getElement(), "textAlign", prior);
-									redoStack.push(redoCommand);
 								}});
-						}});
-				}
-		});
+				}});
 	}
 	private MenuItem getTextAlignCenterMenuItem() {
 		return new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAH0lEQVR42mNgGAXUBv/JxIPXpaNhOBqGIzMMRwHpAAC130e5KyRN6AAAAABJRU5ErkJggg=='>"
@@ -493,20 +402,16 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				public void execute() {
 					final Widget widget = invokingWidget;
 					final String prior = DOM.getStyleAttribute(widget.getElement(), "textAlign");
-					applyCommand(new Command(){
-						private final Command redoCommand = this;
+					UndoHelper.getInstance().doCommand(new Command(){
 						@Override
 						public void execute() {
 							DOM.setStyleAttribute(widget.getElement(), "textAlign", "center");
-							undoStack.push(new Command(){
+						}}, new Command(){
 								@Override
 								public void execute() {
 									DOM.setStyleAttribute(widget.getElement(), "textAlign", prior);
-									redoStack.push(redoCommand);
 								}});
-						}});
-				}
-		});
+				}});
 	}
 	private MenuItem getTextAlignLeftMenuItem() {
 		
@@ -516,20 +421,16 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					public void execute() {
 						final Widget widget = invokingWidget;
 						final String prior = DOM.getStyleAttribute(widget.getElement(), "textAlign");
-						applyCommand(new Command(){
-							private final Command redoCommand = this;
+						UndoHelper.getInstance().doCommand(new Command(){
 							@Override
 							public void execute() {
 								DOM.setStyleAttribute(widget.getElement(), "textAlign", "left");
-								undoStack.push(new Command(){
+							}}, new Command(){
 									@Override
 									public void execute() {
 										DOM.setStyleAttribute(widget.getElement(), "textAlign", prior);
-										redoStack.push(redoCommand);
 									}});
-							}});
-					}
-		});
+					}});
 	}
 	private MenuItem getStyleDialogMenuItem(final TabPanel styleTabPanel) {
 		final MenuItem styleMenu = new MenuItem("SM", (Command)null);
@@ -580,21 +481,18 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					attribute = "border" + suffix + "Style";
 				else
 					attribute = "borderStyle";
-				applyCommand(new Command(){
-					private final Command redoCommand = this;
+				UndoHelper.getInstance().doCommand(new Command(){
 					@Override
 					public void execute() {
 						if(suffix != null)
 							DOM.setStyleAttribute(widget.getElement(), attribute, "solid");
 						else
 							DOM.setStyleAttribute(widget.getElement(), attribute, "none");
-						undoStack.push(new Command(){
+					}}, new Command(){
 							@Override
 							public void execute() {
 								DOM.setStyleAttribute(widget.getElement(), attribute, prior);
-								redoStack.push(redoCommand);
 							}});
-				}});
 			}};
 	}
 	private MenuItem getBorderWidthPickerMenuItem() {
@@ -618,29 +516,26 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			public void execute() {
 				final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), "borderWidth");
 				final Widget widget = invokingWidget;
-				applyCommand(new Command(){
-					private final Command redoCommand = this;
+				UndoHelper.getInstance().doCommand(new Command(){
 					@Override
 					public void execute() {
 						DOM.setStyleAttribute(widget.getElement(), "borderTopWidth", borderWidth + "px");
 						DOM.setStyleAttribute(widget.getElement(), "borderLeftWidth", borderWidth + "px");
 						DOM.setStyleAttribute(widget.getElement(), "borderRightWidth", borderWidth + "px");
 						DOM.setStyleAttribute(widget.getElement(), "borderBottomWidth", borderWidth + "px");
-						undoStack.push(new Command(){
+					}}, new Command(){
 							@Override
 							public void execute() {
 								DOM.setStyleAttribute(widget.getElement(), "borderTopWidth", prior);
 								DOM.setStyleAttribute(widget.getElement(), "borderLeftWidth", prior);
 								DOM.setStyleAttribute(widget.getElement(), "borderRightWidth", prior);
 								DOM.setStyleAttribute(widget.getElement(), "borderBottomWidth", prior);
-								redoStack.push(redoCommand);
 							}});
-				}});				
 			}};
 	}
 	private MenuItem getBorderColorPickerMenuItem() {
 		final MenuItem borderColorPicker = new MenuItem("BC", true, (Command)null);
-		final PopupPanel borderPickerPopPanel = new PopupPanel();
+		final PopupPanel borderPickerPopPanel = new PopupPanel(true);
 		borderPickerPopPanel.setAutoHideEnabled(true);
 		borderColorPicker.setCommand(new Command(){
 			@Override
@@ -654,18 +549,15 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 							final Widget widget = invokingWidget;
 							final String prior = DOM.getStyleAttribute(widget.getElement(), "borderColor");
 							final String color = event.getValue().getColor();
-							applyCommand(new Command(){
-								private final Command redoCommand = this;
+							UndoHelper.getInstance().doCommand(new Command(){
 								@Override
 								public void execute() {
 									DOM.setStyleAttribute(widget.getElement(), "borderColor", color);
-									undoStack.push(new Command(){
+								}}, new Command(){
 										@Override
 										public void execute() {
 											DOM.setStyleAttribute(widget.getElement(), "borderColor", prior);
-											redoStack.push(redoCommand);
 										}});
-							}});
 							borderPickerPopPanel.hide();
 						}
 					});
@@ -682,7 +574,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private MenuItem getBgColorPickerMenuItem() {
 		final MenuItem bgColorPicker = new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAANUlEQVR42mNgGAW0Av+JxNjB39/s/5ExSDE6H5sYFn10MhCbBdgMGDVw1EBqGkhGFhwFNAQAQy76sGFjx7gAAAAASUVORK5CYII='>"
 				, true, (Command)null);
-		final PopupPanel bgPickerPopPanel = new PopupPanel();
+		final PopupPanel bgPickerPopPanel = new PopupPanel(true);
 		bgPickerPopPanel.setAutoHideEnabled(true);
 		
 		bgColorPicker.setCommand(new Command(){
@@ -697,18 +589,15 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 							final Widget widget = invokingWidget;
 							final String prior = DOM.getStyleAttribute(widget.getElement(), "background");
 							final String color = event.getValue().getColor();
-							applyCommand(new Command(){
-								private final Command redoCommand = this;
+							UndoHelper.getInstance().doCommand(new Command(){
 								@Override
 								public void execute() {
 									DOM.setStyleAttribute(widget.getElement(), "background", color);
-									undoStack.push(new Command(){
+								}}, new Command(){
 										@Override
 										public void execute() {
 											DOM.setStyleAttribute(widget.getElement(), "background", prior);
-											redoStack.push(redoCommand);
 										}});
-							}});
 							bgPickerPopPanel.hide();
 						}
 					});
@@ -725,7 +614,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	private MenuItem getForeColorPickerMenuItem() {
 		final MenuItem foreColorPicker = new MenuItem("<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAgElEQVR42t2S4QqAMAiEfW//+t42XW4SozQhKuFQaH2duwC+VBxUCrj6wNmZZ4EQAMI7gYjIV0oD2zCkAOahMpCI6kCBiGxFm62nfnB5iZ0ndYjtGYH2qMNRurIDKmCHSb8F9Cuv5jTQZcI9pGk67bA7mEC90wrQJ3tMN5Lyz2sDT5T/KC/lAxMAAAAASUVORK5CYII='>"
 				, true, (Command)null);
-		final PopupPanel foreColorPickerPopPanel = new PopupPanel();
+		final PopupPanel foreColorPickerPopPanel = new PopupPanel(true);
 		foreColorPickerPopPanel.setAutoHideEnabled(true);
 		
 		foreColorPicker.setCommand(new Command(){
@@ -740,18 +629,15 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 							final Widget widget = invokingWidget;
 							final String prior = DOM.getStyleAttribute(widget.getElement(), "color");
 							final String color = event.getValue().getColor();
-							applyCommand(new Command(){
-								private final Command redoCommand = this;
+							UndoHelper.getInstance().doCommand(new Command(){
 								@Override
 								public void execute() {
 									DOM.setStyleAttribute(widget.getElement(), "color", color);
-									undoStack.push(new Command(){
+								}}, new Command(){
 										@Override
 										public void execute() {
 											DOM.setStyleAttribute(widget.getElement(), "color", prior);
-											redoStack.push(redoCommand);
 										}});
-							}});
 							foreColorPickerPopPanel.hide();
 						}
 					});
@@ -890,20 +776,16 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			public void onChange(ChangeEvent event) {
 				final Widget widget = invokingWidget;
 				final String prior = DOM.getStyleAttribute(invokingWidget.getElement(), attribute);
-				applyCommand(new Command(){
-					private final Command redoCommand = this;
+				UndoHelper.getInstance().doCommand(new Command(){
 					@Override
 					public void execute() {
 						DOM.setStyleAttribute(widget.getElement(), attribute, textBox.getText());
-						undoStack.push(new Command(){
+					}}, new Command(){
 							@Override
 							public void execute() {
 								DOM.setStyleAttribute(widget.getElement(), attribute, prior);
-								redoStack.push(redoCommand);
 							}});
-				}});
-			}
-		});
+			}});
 	}
 
 
@@ -916,7 +798,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 	}
 	
 	private void addAttributesList(final IVkWidget widget, MenuBar menu, String menuName) {
-		List<String> attributeList = VkDesignerUtil.getEngineMap().get(widget.getWidgetName()).getAttributesList((Widget) widget);
+		List<String> attributeList = VkStateHelper.getInstance().getEngineMap().get(widget.getWidgetName()).getAttributesList((Widget) widget);
 		if(attributeList != null && attributeList.size() > 0)	{
 			MenuBar attributesMenu = new MenuBar(true){
 				@Override
@@ -944,7 +826,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					@Override
 					public void execute() {
 						prepareMenu((IVkWidget)parent);
-						VkDesignerUtil.showToolbar((Widget) invokingWidget);
+						ToolbarHelper.getInstance().showToolbar((Widget) invokingWidget);
 					}});
 			}
 		}
@@ -996,25 +878,22 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 			public void execute() {
 				final Widget panelWidget = invokingWidget;
 				final String widgetName = selectedMenuItem.getText();
-				final Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName);
-				final int top = VkMenu.this.top	- panelWidget.getAbsoluteTop();
-				final int left = VkMenu.this.left - panelWidget.getAbsoluteLeft();
-				applyCommand(new Command(){
-					private final Command redoCommand = this;
+				final Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName);
+				//final int top = VkMenu.this.top	- panelWidget.getAbsoluteTop();
+				//final int left = VkMenu.this.left - panelWidget.getAbsoluteLeft();
+				UndoHelper.getInstance().doCommand(new Command(){
 					@Override
 					public void execute() {
 						if(widget != null)//cast is safe because the restriction on widgets,  if any, is placed by menu while it shows widget list
-							VkDesignerUtil.getEngine().addWidget(widget, (IVkPanel)panelWidget, top, left);
-						undoStack.push(new Command(){
+							VkStateHelper.getInstance().getEngine().addWidget(widget, (IVkPanel)panelWidget, 50, 50);
+					}}, new Command(){
 							@Override
 							public void execute() {
 								if(widget != null)
 									widget.removeFromParent();
-								redoStack.push(redoCommand);
 							}});
-				}});
 				if(panelWidget instanceof AbsolutePanel)
-					VkDesignerUtil.makeMovable(widget);
+					MoveHelper.getInstance().makeMovable(widget);
 				//moveMenu(widget);
 				//hideMenu();
 			};
@@ -1036,7 +915,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 				operationsMenu.addItem(IEngine.MOVE, new Command(){
 					@Override
 					public void execute() {
-						VkDesignerUtil.makeMovable(invokingWidget);
+						MoveHelper.getInstance().makeMovable(invokingWidget);
 					}});
 			else if(operationsList.get(i).equals(IEngine.RESIZE))
 				operationsMenu.addItem(operationsList.get(i) + "(Right Click)", getResizeCommand());
@@ -1082,12 +961,11 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					@Override
 					public void onClick(ClickEvent event) {
 						getClearCommand().execute();
-						VkDesignerUtil.isLoadRunning = true;
+						VkStateHelper.getInstance().setLoadRunning(true);
 						VkDesignerUtil.loadApplication(ta.getText());
 						loadDialog.hide();
-						undoStack.clear();
-						redoStack.clear();
-						VkDesignerUtil.isLoadRunning = false;
+						UndoHelper.getInstance().init();
+						VkStateHelper.getInstance().setLoadRunning(false);
 					}
 				});
 				Button cancel = new Button("Cancel");
@@ -1106,12 +984,13 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		return clearCommand = clearCommand != null ? clearCommand : new Command(){
 			@Override
 			public void execute() {
-				Iterator<Widget> iterator = VkDesignerUtil.getDrawingPanel().iterator();
+				Iterator<Widget> iterator = VkMainDrawingPanel.getInstance().iterator();
 				while(iterator.hasNext()) {	
 					Widget widget = iterator.next();
 					if(widget != VkMenu.this)
 						widget.removeFromParent();
 				}
+				SnapHelper.getInstance().init();
 			}
 		};
 	}
@@ -1177,28 +1056,25 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					final Widget panel = widget.getParent();
 					final int top = widget.getElement().getOffsetTop();
 					final int left = widget.getElement().getOffsetLeft();
-					applyCommand(new Command(){
-						private final Command redoCommand = this;
+					int index = -1;
+					Widget parent = widget.getParent();
+					if(parent instanceof IndexedPanel.ForIsWidget)
+						index = ((IndexedPanel.ForIsWidget)parent).getWidgetIndex(widget);
+					final int widgetIndex = index;
+					UndoHelper.getInstance().doCommand(new Command(){
 						@Override
 						public void execute() {
-							Widget parent = widget.getParent();
-							int index = -1;
-							if(parent instanceof IndexedPanel.ForIsWidget)
-								index = ((IndexedPanel.ForIsWidget)parent).getWidgetIndex(widget);
 							prepareMenu((IVkWidget) widget.getParent());
 							widget.removeFromParent();
-							final int widgetIndex = index;
-							undoStack.push(new Command(){
+						}}, new Command(){
 								@Override
 								public void execute() {
 									if(widgetIndex > -1)
-										VkDesignerUtil.getEngine().addWidget(widget, (IVkPanel)panel, top, left, widgetIndex);
+										VkStateHelper.getInstance().getEngine().addWidget(widget, (IVkPanel)panel, top, left, widgetIndex);
 									else
-										VkDesignerUtil.getEngine().addWidget(widget, (IVkPanel)panel, top, left);
-									redoStack.push(redoCommand);
+										VkStateHelper.getInstance().getEngine().addWidget(widget, (IVkPanel)panel, top, left);
 								}});
-					}});
-					VkDesignerUtil.hideMoveIcon();
+					ToolbarHelper.getInstance().hideToolbar();
 			}};
 		else
 			return null;
@@ -1208,94 +1084,7 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 		return new Command(){
 			@Override
 			public void execute() {
-				final HTML draggingWidget = new HTML("&nbsp;");
-				draggingWidget.addMouseDownHandler(new MouseDownHandler() {
-					@Override
-					public void onMouseDown(MouseDownEvent event) {
-						event.stopPropagation();
-					}
-				});
-				DOM.setStyleAttribute(draggingWidget.getElement(), "background", "blue");
-				DOM.setStyleAttribute(draggingWidget.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
-				draggingWidget.getElement().getStyle().setOpacity(0.2);
-				RootPanel.get().add(draggingWidget);
-				DOM.setStyleAttribute(draggingWidget.getElement(), "position", "absolute");
-				draggingWidget.setPixelSize(invokingWidget.getOffsetWidth(), invokingWidget.getOffsetHeight());
-				boolean isAttached = invokingWidget.isAttached();
-				boolean isPopUpMenuBar = invokingWidget instanceof VkMenuBarVertical;
-				//when menubars are added as submenus then on pressing resize they vanish which leads to top and left being evaluated to 0
-				final int top = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getTop() : 
-					(invokingWidget.getElement().getAbsoluteTop()/* - VkDesignerUtil.getDrawingPanel().getElement().getOffsetTop()*/);
-				final int left = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getLeft() : invokingWidget.getElement().getAbsoluteLeft();
-				DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
-				DOM.setStyleAttribute(draggingWidget.getElement(), "left", left + "px");
-				//DOM.setCapture(draggingWidget.getElement());
-				VkDesignerUtil.setCapture(draggingWidget);
-				if(invokingWidget instanceof Frame)
-					invokingWidget.setVisible(false);
-				draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
-					@Override
-					public void onMouseMove(MouseMoveEvent event) {
-						DOM.setStyleAttribute(draggingWidget.getElement(), "width"
-							, VkDesignerUtil.SNAP_TO_FIT_LEFT * ((event.getClientX() - left) / VkDesignerUtil.SNAP_TO_FIT_LEFT) + "px");
-						DOM.setStyleAttribute(draggingWidget.getElement()
-							, "height", VkDesignerUtil.SNAP_TO_FIT_TOP * ((event.getClientY() - top) / VkDesignerUtil.SNAP_TO_FIT_TOP) + "px");
-					}
-				});
-				draggingWidget.addMouseUpHandler(new MouseUpHandler() {
-					@Override
-					public void onMouseUp(MouseUpEvent event) {
-						if(invokingWidget instanceof VkFrame)
-							invokingWidget.setVisible(true);
-						//DOM.releaseCapture(draggingWidget.getElement());
-						final Widget widget = invokingWidget;
-						VkDesignerUtil.releaseCapture(draggingWidget);
-						final int initialHeight = invokingWidget.getOffsetHeight() - (int)VkDesignerUtil.getDecorationsWidth(widget);
-						final int initialWidth = invokingWidget.getOffsetWidth() - (int)VkDesignerUtil.getDecorationsHeight(widget);
-						
-						/*String borderTopWidth = DOM.getStyleAttribute(widget.getElement(), "borderTopWidth");
-						String borderBottomWidth = DOM.getStyleAttribute(widget.getElement(), "borderBottomWidth");
-						String borderLeftWidth = DOM.getStyleAttribute(widget.getElement(), "borderLeftWidth");
-						String borderRightWidth = DOM.getStyleAttribute(widget.getElement(), "borderRightWidth");
-						String padding = DOM.getStyleAttribute(widget.getElement(), "padding");
-						String margin = DOM.getStyleAttribute(widget.getElement(), "margin");
-						DOM.setStyleAttribute(widget.getElement(), "borderWidth", "0px");
-						DOM.setStyleAttribute(widget.getElement(), "padding", "0px");
-						DOM.setStyleAttribute(widget.getElement(), "margin", "0px");*/
-						//This is necessary because offsetWidth contains all the decorations but when width is set, the figure is assumed to be independent 
-						//of decorations
-						final int finalWidth = draggingWidget.getOffsetWidth() /*- initialWidth + widget.getOffsetWidth()*/ - (int)VkDesignerUtil.getDecorationsWidth(widget);
-						final int finalHeight = draggingWidget.getOffsetHeight() /*- initialHeight + widget.getOffsetHeight()*/ - (int)VkDesignerUtil.getDecorationsHeight(widget);
-						/*DOM.setStyleAttribute(widget.getElement(), "borderTopWidth", borderTopWidth);
-						DOM.setStyleAttribute(widget.getElement(), "borderBottomWidth", borderBottomWidth);
-						DOM.setStyleAttribute(widget.getElement(), "borderLeftWidth", borderLeftWidth);
-						DOM.setStyleAttribute(widget.getElement(), "borderRightWidth", borderRightWidth);
-						DOM.setStyleAttribute(widget.getElement(), "padding", padding);
-						DOM.setStyleAttribute(widget.getElement(), "margin", margin);*/
-						draggingWidget.removeFromParent();
-						if(finalWidth > 0)
-							widget.setWidth(finalWidth + "px");
-						if(finalHeight > 0)
-							widget.setHeight(finalHeight + "px");
-						VkDesignerUtil.showToolbar(invokingWidget);
-						applyCommand(new Command(){
-							final Command redoCommand = this;
-							@Override
-							public void execute() {
-								if(finalWidth > 0)
-									widget.setWidth(finalWidth + "px");
-								if(finalHeight > 0)
-									widget.setHeight(finalHeight + "px");
-								undoStack.push(new Command(){
-									@Override
-									public void execute() {
-										widget.setWidth(initialWidth + "px");
-										widget.setHeight(initialHeight + "px");
-										redoStack.push(redoCommand);
-									}});
-							}});
-					}
-				});
+				ResizeHelper.getInstance().resize(invokingWidget);
 			}};
 	}
 	Command getCopyCommand() {
@@ -1333,74 +1122,49 @@ public class VkMenu extends MenuBar implements HasBlurHandlers{
 					final Widget widget;						
 					if(tempExecuteCutsRemoveCommand)
 						widget = (Widget) tempCopyWidget;
-					else
-					{
-						boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
-						VkDesignerUtil.isDesignerMode = false;//imp because some widgets like VkFlextable pop up dialogs in constructors
-						widget = VkDesignerUtil.getEngine().getWidget((tempCopyWidget).getWidgetName());
-						VkDesignerUtil.isDesignerMode = isVkDesignerMode;
-						VkDesignerUtil.initDesignerEvents(widget, widgetEngine);//since this was not called during get Widget as then isDesignerMode = false 
-						VkDesignerUtil.getEngineMap().get(tempCopyWidget.getWidgetName()).deepClone((Widget)copyWidget, widget);
-						
+					else {
+						boolean isVkDesignerMode = VkStateHelper.getInstance().isDesignerMode();
+						VkStateHelper.getInstance().setDesignerMode(false);//imp because some widgets like VkFlextable pop up dialogs in constructors
+						widget = VkStateHelper.getInstance().getEngine().getWidget((tempCopyWidget).getWidgetName());
+						VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
+						InitializeHelper.getInstance().initDesignerEvents(widget, widgetEngine);//since this was not called during get Widget as then isDesignerMode = false 
+						VkStateHelper.getInstance().getEngineMap().get(tempCopyWidget.getWidgetName()).deepClone((Widget)copyWidget, widget);
 					}
-					applyCommand(new Command(){
-						@Override
-						public void execute() {
-							final Command redoCommand = this;
-							if(tempCopyWidget != null)
-							{					
-								if(tempInvokingWidget instanceof IVkPanel)
-								{
-									final int top = widget.getElement().getOffsetTop();
-									final int left = widget.getElement().getOffsetLeft();
+					if(tempCopyWidget != null) {
+						if(tempInvokingWidget instanceof IVkPanel) {
+							final int top = widget.getElement().getOffsetTop();
+							final int left = widget.getElement().getOffsetLeft();
+							UndoHelper.getInstance().doCommand(new Command(){
+								@Override
+								public void execute() {
 									widget.removeFromParent();
-									VkDesignerUtil.getEngine().addWidget(widget , ((IVkPanel)tempInvokingWidget), 8, 4);
-									undoStack.push(new Command(){
+									VkStateHelper.getInstance().getEngine().addWidget(widget , ((IVkPanel)tempInvokingWidget), 8, 4);
+								}}, new Command(){
 										@Override
 										public void execute() {
-											if(tempExecuteCutsRemoveCommand)
-											{
+											if(tempExecuteCutsRemoveCommand) {
 												widget.removeFromParent();
-												VkDesignerUtil.getEngine().addWidget(widget , (IVkPanel) prevParent, top, left);
-											}
-											else
-											{
+												VkStateHelper.getInstance().getEngine().addWidget(widget , (IVkPanel) prevParent, top, left);
+											} else {
 												invokingWidget = widget;
 												widget.removeFromParent();
-												VkDesignerUtil.hideMoveIcon();
+												ToolbarHelper.getInstance().hideToolbar();
 											}
-											redoStack.push(redoCommand);
 										}
 									});
-								}
-								else
-									Window.alert("Only a panel allows pasting a widget");
-							}
-					}});
+					}
 					executeCutsRemoveCommand = false;
-				}
-			};
+				}}};
 		} else
 			return null;
 	}
 	/*private void hideMenu() {
 		VkMenu.this.setVisible(false);
-	}*/
+	}
 	private void setPosition() {
 		this.top = getElement().getAbsoluteTop();
 		this.top = this.top - (this.top % VkDesignerUtil.SNAP_TO_FIT_TOP) + 200;
 		this.left = getElement().getAbsoluteLeft();
 		this.left = this.left - (this.left % VkDesignerUtil.SNAP_TO_FIT_LEFT) + 200;
-	}
-	
-	public Stack<Command> getUndoStack() {
-		return undoStack;
-	}
-	public Stack<Command> getRedoStack() {
-		return redoStack;
-	}
-	private void applyCommand(Command command) {
-		command.execute();
-		redoStack.clear();
-	}
+	}*/
 }

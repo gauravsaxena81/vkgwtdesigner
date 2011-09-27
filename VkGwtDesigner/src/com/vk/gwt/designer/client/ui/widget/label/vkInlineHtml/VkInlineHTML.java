@@ -38,7 +38,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.attributes.HasVkWordWrap;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.EventHelper;
 
 public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, HasVkHtml, HasVkAllMouseHandlers
 , HasVkWordWrap, HasVkDirection{
@@ -91,7 +91,7 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 			clickHandlerRegistration = addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					VkDesignerUtil.executeEvent(clickJs, event, true);
+					EventHelper.getInstance().executeEvent(clickJs, event, true);
 				}
 			});
 		}
@@ -107,7 +107,7 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 			doubleClickHandlerRegistration = addDoubleClickHandler(new DoubleClickHandler() {
 				@Override
 				public void onDoubleClick(DoubleClickEvent event) {
-					VkDesignerUtil.executeEvent(doubleClickJs, event, true);
+					EventHelper.getInstance().executeEvent(doubleClickJs, event, true);
 				}
 			});
 		}
@@ -123,7 +123,7 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 			mouseDownHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
-					VkDesignerUtil.executeEvent(mouseDownJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseDownJs, event, true);
 				}
 			});
 		}
@@ -139,7 +139,7 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 			mouseUpHandlerRegistration = addMouseUpHandler(new MouseUpHandler() {
 				@Override
 				public void onMouseUp(MouseUpEvent event) {
-					VkDesignerUtil.executeEvent(mouseUpJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseUpJs, event, true);
 				}
 			});
 		}
@@ -155,7 +155,7 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 			mouseMoveHandlerRegistration = addMouseMoveHandler(new MouseMoveHandler() {
 				@Override
 				public void onMouseMove(MouseMoveEvent event) {
-					VkDesignerUtil.executeEvent(mouseMoveJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseMoveJs, event, true);
 				}
 			});
 		}
@@ -171,7 +171,7 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 			mouseOverHandlerRegistration = addMouseOverHandler(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
-					VkDesignerUtil.executeEvent(mouseOverJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOverJs, event, true);
 				}
 			});
 		}
@@ -187,7 +187,7 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 			mouseOutHandlerRegistration = addMouseOutHandler(new MouseOutHandler() {
 				@Override
 				public void onMouseOut(MouseOutEvent event) {
-					VkDesignerUtil.executeEvent(mouseOutJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOutJs, event, true);
 				}
 			});
 		}
@@ -203,7 +203,7 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 			mouseWheelHandlerRegistration = addMouseWheelHandler(new MouseWheelHandler() {
 				@Override
 				public void onMouseWheel(MouseWheelEvent event) {
-					VkDesignerUtil.executeEvent(mouseWheelJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseWheelJs, event, true);
 				}
 			});
 		}

@@ -25,6 +25,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IVkPanel, HasVkHtml {
 	public static final String NAME = "Html Panel";
@@ -37,7 +38,7 @@ public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IVkPanel, Ha
 	}
 	public void add(Widget widget)
 	{
-		if(VkDesignerUtil.isDesignerMode)
+		if(VkStateHelper.getInstance().isDesignerMode())
 			showAddTextAttributeDialog(widget);	
 	}
 	private void showAddHTMLDialog(final VkHtmlPanel vkHtmlPanel) {

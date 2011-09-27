@@ -7,13 +7,13 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionText;
 import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkStackPanel extends StackPanel implements HasVkWidgets, IVkPanel, HasVkSwitchNumberedWidget, HasVkCaptionHtml, HasVkCaptionText {
 	public static final String NAME = "Stack Panel";
@@ -63,7 +63,7 @@ public class VkStackPanel extends StackPanel implements HasVkWidgets, IVkPanel, 
 	private boolean checkAccess(int index) {
 		if(index >=0 && index < super.getWidgetCount())
 			return true;
-		else if(VkDesignerUtil.isDesignerMode)
+		else if(VkStateHelper.getInstance().isDesignerMode())
 			Window.alert("None of the stack panels are selected");
 		return false;
 	}
