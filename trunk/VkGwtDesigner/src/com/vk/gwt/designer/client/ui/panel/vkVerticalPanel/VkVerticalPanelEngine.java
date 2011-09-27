@@ -29,6 +29,7 @@ import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkVerticalPanelEngine extends VkAbstractWidgetEngine<VkVerticalPanel>{
 	private static final String CHANGE_CELL_HEIGHT = "Change Cell Height";
@@ -39,9 +40,8 @@ public class VkVerticalPanelEngine extends VkAbstractWidgetEngine<VkVerticalPane
 		return widget;
 	}
 	@Override
-	public List<String> getAttributesList(Widget invokingWidget)
-	{
-		List<String> attributesList = VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
+	public List<String> getAttributesList(Widget invokingWidget) {
+		List<String> attributesList = VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget);
 		attributesList.add(CHANGE_CELL_HEIGHT);
 		return attributesList;
 	}
@@ -54,7 +54,7 @@ public class VkVerticalPanelEngine extends VkAbstractWidgetEngine<VkVerticalPane
 		else if(attributeName.equals(CHANGE_CELL_HEIGHT))
 			showChangeHeightDialog((VkVerticalPanel) invokingWidget);
 		else
-			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	private void showChangeHeightDialog(final VkVerticalPanel invokingWidget) {
 		final DialogBox origDialog = new DialogBox();
@@ -99,12 +99,12 @@ public class VkVerticalPanelEngine extends VkAbstractWidgetEngine<VkVerticalPane
 	}
 	@Override
 	public Widget deepClone(Widget sourceWidget, Widget targetWidget) {
-		boolean isVkDesignerMode = VkDesignerUtil.isDesignerMode;
-		VkDesignerUtil.isDesignerMode = false;
+		boolean isVkDesignerMode = VkStateHelper.getInstance().isDesignerMode();
+		VkStateHelper.getInstance().setDesignerMode(false);
 		((IVkWidget)sourceWidget).clone(targetWidget);
-//		VkDesignerUtil.getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
+//		VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
 		copyAttributes(sourceWidget, targetWidget);
-		VkDesignerUtil.isDesignerMode = isVkDesignerMode;
+		VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 		if(sourceWidget instanceof IVkPanel && targetWidget instanceof IVkPanel)
 		{
 			Iterator<Widget> widgets = ((IVkPanel)sourceWidget).iterator();
@@ -115,8 +115,8 @@ public class VkVerticalPanelEngine extends VkAbstractWidgetEngine<VkVerticalPane
 					Element tdParentElement = currentWidget.getElement().getParentElement();
 					setHorizontalAlignment(tdParentElement, (VkVerticalPanel) targetWidget, DOM.getElementAttribute((com.google.gwt.user.client.Element) tdParentElement, "align"));
 					setVerticalAlignment(tdParentElement, (VkVerticalPanel) targetWidget, DOM.getStyleAttribute((com.google.gwt.user.client.Element) tdParentElement, "verticalAlign"));
-					Widget tdWidget = VkDesignerUtil.getEngine().getWidget(((IVkWidget)currentWidget).getWidgetName());
-					VkDesignerUtil.getEngine().addWidget(VkDesignerUtil.getEngineMap().get(((IVkWidget) currentWidget).getWidgetName()).deepClone(currentWidget, tdWidget), (IVkPanel)targetWidget);
+					Widget tdWidget = VkStateHelper.getInstance().getEngine().getWidget(((IVkWidget)currentWidget).getWidgetName());
+					VkStateHelper.getInstance().getEngine().addWidget(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget) currentWidget).getWidgetName()).deepClone(currentWidget, tdWidget), (IVkPanel)targetWidget);
 					String height = DOM.getStyleAttribute((com.google.gwt.user.client.Element) tdParentElement, "height");
 					if(height != null && !height.isEmpty())
 						 DOM.setStyleAttribute((com.google.gwt.user.client.Element) tdWidget.getElement().getParentElement(), "height", height);
@@ -177,7 +177,7 @@ public class VkVerticalPanelEngine extends VkAbstractWidgetEngine<VkVerticalPane
 		{
 			Widget child = widgetList.next();
 			if(child instanceof IVkWidget)
-				buffer.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
+				buffer.append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
 		}
 		if(buffer.charAt(buffer.length() - 1) == ',')
 			buffer.deleteCharAt(buffer.length() - 1);
@@ -204,16 +204,16 @@ public class VkVerticalPanelEngine extends VkAbstractWidgetEngine<VkVerticalPane
 			if(childObj == null)
 				return;
 			JSONString widgetName = childObj.get("widgetName").isString();
-			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
+			Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
 			JSONObject attr = attrs.get(i).isObject();
 			setHorizontalAlignment(widget.getElement().getParentElement(), (VkVerticalPanel) parent, attr.get("align").isString().stringValue());
 			if(attr.get("vAlign").isNull() == null)
 				setVerticalAlignment(widget.getElement().getParentElement(), (VkVerticalPanel) parent, attr.get("vAlign").isString().stringValue());
 			else
 				setVerticalAlignment(widget.getElement().getParentElement(), (VkVerticalPanel) parent, "top");
-			VkDesignerUtil.getEngine().addWidget(widget, ((IVkPanel)parent));
+			VkStateHelper.getInstance().getEngine().addWidget(widget, ((IVkPanel)parent));
 			DOM.setStyleAttribute((com.google.gwt.user.client.Element) widget.getElement().getParentElement(), "height", attr.get("height").isString().stringValue());
-			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
+			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 		}
 	}
 	@Override

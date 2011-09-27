@@ -10,6 +10,7 @@ import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkVerticalSplitPanelEngine extends VkAbstractWidgetEngine<VkVerticalSplitPanel> {
 	@Override
@@ -33,7 +34,7 @@ public class VkVerticalSplitPanelEngine extends VkAbstractWidgetEngine<VkVertica
 			{
 				Widget child = widgetList.next();
 				if(child instanceof IVkWidget)
-					buffer.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
+					buffer.append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
 			}
 		}
 		if(buffer.charAt(buffer.length() - 1) == ',')
@@ -52,9 +53,9 @@ public class VkVerticalSplitPanelEngine extends VkAbstractWidgetEngine<VkVertica
 			if(childObj == null)
 				return;
 			JSONString widgetName = childObj.get("widgetName").isString();
-			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
-			VkDesignerUtil.getEngine().addWidget(widget, ((IVkPanel)parent));
-			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
+			Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
+			VkStateHelper.getInstance().getEngine().addWidget(widget, ((IVkPanel)parent));
+			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 		}
 	}
 }

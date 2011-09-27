@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDeckPanelEngine extends VkAbstractWidgetEngine<VkDeckPanel>{
 	@Override
@@ -24,9 +24,9 @@ public class VkDeckPanelEngine extends VkAbstractWidgetEngine<VkDeckPanel>{
 			if(childObj == null)
 				return;
 			JSONString widgetName = childObj.get("widgetName").isString();
-			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
-			VkDesignerUtil.getEngine().addWidget(widget, ((IVkPanel)parent));
-			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
+			Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
+			VkStateHelper.getInstance().getEngine().addWidget(widget, ((IVkPanel)parent));
+			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 		}
 		addAttributes(jsonObj, parent);
 	}

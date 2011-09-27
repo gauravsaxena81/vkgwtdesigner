@@ -12,13 +12,14 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DecoratedTabBar;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkBeforeSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderText;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
+import com.vk.gwt.designer.client.designer.EventHelper;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDecoratedTabBar extends DecoratedTabBar implements IVkWidget, HasVkBeforeSelectionHandler, HasVkSelectionHandler, HasVkTabHeaderText, HasVkTabHeaderHtml{
 	public static final String NAME = "Decorated Tab Bar";
@@ -39,7 +40,7 @@ public class VkDecoratedTabBar extends DecoratedTabBar implements IVkWidget, Has
 				public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
 					Map<String, String> eventproperties = new HashMap<String, String>();
 					eventproperties.put("item", event.getItem().toString());
-					VkDesignerUtil.executeEvent(beforeSelectionJs, eventproperties);
+					EventHelper.getInstance().executeEvent(beforeSelectionJs, eventproperties);
 				}
 			});
 		}
@@ -66,7 +67,7 @@ public class VkDecoratedTabBar extends DecoratedTabBar implements IVkWidget, Has
 				public void onSelection(SelectionEvent<Integer> event) {
 					Map<String, String> eventproperties = new HashMap<String, String>();
 					eventproperties.put("item", event.getSelectedItem().toString());
-					VkDesignerUtil.executeEvent(selectionJs, eventproperties);
+					EventHelper.getInstance().executeEvent(selectionJs, eventproperties);
 				}
 			});
 		}
@@ -81,7 +82,7 @@ public class VkDecoratedTabBar extends DecoratedTabBar implements IVkWidget, Has
 			return getTabHTML(getSelectedTab());
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Please select a tab before this operation");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -90,7 +91,7 @@ public class VkDecoratedTabBar extends DecoratedTabBar implements IVkWidget, Has
 	public void setTabText(String text) {
 		if(getSelectedTab() > -1)
 			setTabText(getSelectedTab(), text);
-		else if(VkDesignerUtil.isDesignerMode)
+		else if(VkStateHelper.getInstance().isDesignerMode())
 			Window.alert("Please select a tab before this operation");
 	}
 	@Override
@@ -99,7 +100,7 @@ public class VkDecoratedTabBar extends DecoratedTabBar implements IVkWidget, Has
 			return getTabHTML(getSelectedTab());
 		else
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Please select a tab before this operation");
 			throw new IllegalStateException("No Tab has been selected");
 		}
@@ -108,7 +109,7 @@ public class VkDecoratedTabBar extends DecoratedTabBar implements IVkWidget, Has
 	public void setTabHTML(String html) {
 		if(getSelectedTab() > -1)
 			setTabHTML(getSelectedTab(), html);
-		else if(VkDesignerUtil.isDesignerMode)
+		else if(VkStateHelper.getInstance().isDesignerMode())
 			Window.alert("Please select a tab before this operation");
 	}
 	@Override

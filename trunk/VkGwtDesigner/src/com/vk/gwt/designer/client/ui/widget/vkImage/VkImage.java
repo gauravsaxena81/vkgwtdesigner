@@ -26,6 +26,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAllMouseHandlers;
 import com.vk.gwt.designer.client.api.attributes.HasVkAlternateText;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
@@ -40,8 +41,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkUrl;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
+import com.vk.gwt.designer.client.designer.EventHelper;
 
 public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, HasVkLoadHandler, HasVkErrorHandler, HasVkAlternateText, HasVkUrl{
 	public static final String NAME = "Image";
@@ -78,7 +78,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 			clickHandlerRegistration = addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					VkDesignerUtil.executeEvent(clickJs, event, true);
+					EventHelper.getInstance().executeEvent(clickJs, event, true);
 				}
 			});
 		}
@@ -94,7 +94,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 			doubleClickHandlerRegistration = addDoubleClickHandler(new DoubleClickHandler() {
 				@Override
 				public void onDoubleClick(DoubleClickEvent event) {
-					VkDesignerUtil.executeEvent(doubleClickJs, event, true);
+					EventHelper.getInstance().executeEvent(doubleClickJs, event, true);
 				}
 			});
 		}
@@ -110,7 +110,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 			mouseDownHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
-					VkDesignerUtil.executeEvent(mouseDownJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseDownJs, event, true);
 				}
 			});
 		}
@@ -126,7 +126,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 			mouseUpHandlerRegistration = addMouseUpHandler(new MouseUpHandler() {
 				@Override
 				public void onMouseUp(MouseUpEvent event) {
-					VkDesignerUtil.executeEvent(mouseUpJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseUpJs, event, true);
 				}
 			});
 		}
@@ -142,7 +142,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 			mouseMoveHandlerRegistration = addMouseMoveHandler(new MouseMoveHandler() {
 				@Override
 				public void onMouseMove(MouseMoveEvent event) {
-					VkDesignerUtil.executeEvent(mouseMoveJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseMoveJs, event, true);
 				}
 			});
 		}
@@ -158,7 +158,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 			mouseOverHandlerRegistration = addMouseOverHandler(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
-					VkDesignerUtil.executeEvent(mouseOverJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOverJs, event, true);
 				}
 			});
 		}
@@ -174,7 +174,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 			mouseOutHandlerRegistration = addMouseOutHandler(new MouseOutHandler() {
 				@Override
 				public void onMouseOut(MouseOutEvent event) {
-					VkDesignerUtil.executeEvent(mouseOutJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOutJs, event, true);
 				}
 			});
 		}
@@ -190,7 +190,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 			mouseWheelHandlerRegistration = addMouseWheelHandler(new MouseWheelHandler() {
 				@Override
 				public void onMouseWheel(MouseWheelEvent event) {
-					VkDesignerUtil.executeEvent(mouseWheelJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseWheelJs, event, true);
 				}
 			});
 		}
@@ -206,7 +206,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 			loadHandlerRegistration = addLoadHandler(new LoadHandler() {
 				@Override
 				public void onLoad(LoadEvent event) {
-					VkDesignerUtil.executeEvent(loadJs, event, true);
+					EventHelper.getInstance().executeEvent(loadJs, event, true);
 				}
 			});
 		}
@@ -222,7 +222,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 			errorHandlerRegistration = addErrorHandler(new ErrorHandler() {
 				@Override
 				public void onError(ErrorEvent event) {
-					VkDesignerUtil.executeEvent(errorJs, event, true);
+					EventHelper.getInstance().executeEvent(errorJs, event, true);
 				}
 			});
 		}

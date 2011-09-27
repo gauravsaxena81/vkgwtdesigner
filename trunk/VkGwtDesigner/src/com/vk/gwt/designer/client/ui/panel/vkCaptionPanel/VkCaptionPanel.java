@@ -10,7 +10,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkCaptionHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionText;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkCaptionPanel extends CaptionPanel implements IVkPanel,HasVkWidgets, HasVkCaptionText, HasVkCaptionHtml{
 	public static final String NAME = "Caption Panel";
@@ -19,7 +19,7 @@ public class VkCaptionPanel extends CaptionPanel implements IVkPanel,HasVkWidget
 	{
 		if(getContentWidget() != null)
 		{
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Caption Panel can add only one Widget");
 		}
 		else

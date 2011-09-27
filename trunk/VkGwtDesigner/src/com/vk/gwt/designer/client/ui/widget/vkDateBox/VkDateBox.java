@@ -74,7 +74,8 @@ import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.attributes.HasVkValue;
 import com.vk.gwt.designer.client.api.attributes.HasVkValueChangeHandler;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.EventHelper;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler
 , HasVkChangeHandler, HasVkValueChangeHandler, HasVkHighlightHandlers, HasVkShowRangeHandler, HasVkDirection, HasVkAccessKey, HasVkTabIndex, HasVkEnabled
@@ -121,7 +122,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	
 	public VkDateBox()
 	{
-		if(VkDesignerUtil.isDesignerMode){
+		if(VkStateHelper.getInstance().isDesignerMode()){
 			super.getTextBox().addKeyDownHandler(new KeyDownHandler(){
 				@Override
 				public void onKeyDown(KeyDownEvent event) {
@@ -141,7 +142,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			clickHandlerRegistration = super.getTextBox().addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					VkDesignerUtil.executeEvent(clickJs, event, true);
+					EventHelper.getInstance().executeEvent(clickJs, event, true);
 				}
 			});
 		}
@@ -157,7 +158,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			doubleClickHandlerRegistration = super.getTextBox().addDoubleClickHandler(new DoubleClickHandler() {
 				@Override
 				public void onDoubleClick(DoubleClickEvent event) {
-					VkDesignerUtil.executeEvent(doubleClickJs, event, true);
+					EventHelper.getInstance().executeEvent(doubleClickJs, event, true);
 				}
 			});
 		}
@@ -173,7 +174,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			mouseDownHandlerRegistration = super.getTextBox().addMouseDownHandler(new MouseDownHandler() {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
-					VkDesignerUtil.executeEvent(mouseDownJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseDownJs, event, true);
 				}
 			});
 		}
@@ -189,7 +190,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			mouseUpHandlerRegistration = super.getTextBox().addMouseUpHandler(new MouseUpHandler() {
 				@Override
 				public void onMouseUp(MouseUpEvent event) {
-					VkDesignerUtil.executeEvent(mouseUpJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseUpJs, event, true);
 				}
 			});
 		}
@@ -205,7 +206,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			mouseMoveHandlerRegistration = super.getTextBox().addMouseMoveHandler(new MouseMoveHandler() {
 				@Override
 				public void onMouseMove(MouseMoveEvent event) {
-					VkDesignerUtil.executeEvent(mouseMoveJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseMoveJs, event, true);
 				}
 			});
 		}
@@ -221,7 +222,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			mouseOverHandlerRegistration = super.getTextBox().addMouseOverHandler(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
-					VkDesignerUtil.executeEvent(mouseOverJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOverJs, event, true);
 				}
 			});
 		}
@@ -237,7 +238,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			mouseOutHandlerRegistration = super.getTextBox().addMouseOutHandler(new MouseOutHandler() {
 				@Override
 				public void onMouseOut(MouseOutEvent event) {
-					VkDesignerUtil.executeEvent(mouseOutJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOutJs, event, true);
 				}
 			});
 		}
@@ -253,7 +254,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			mouseWheelHandlerRegistration = super.getTextBox().addMouseWheelHandler(new MouseWheelHandler() {
 				@Override
 				public void onMouseWheel(MouseWheelEvent event) {
-					VkDesignerUtil.executeEvent(mouseWheelJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseWheelJs, event, true);
 				}
 			});
 		}
@@ -269,7 +270,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			keyDownHandlerRegistration = super.getTextBox().addKeyDownHandler(new KeyDownHandler() {
 				@Override
 				public void onKeyDown(KeyDownEvent event) {
-					VkDesignerUtil.executeEvent(keyDownJs, event, true);
+					EventHelper.getInstance().executeEvent(keyDownJs, event, true);
 				}
 			});
 		}
@@ -285,7 +286,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			keyUpHandlerRegistration = super.getTextBox().addKeyUpHandler(new KeyUpHandler() {
 				@Override
 				public void onKeyUp(KeyUpEvent event) {
-					VkDesignerUtil.executeEvent(keyUpJs, event, true);
+					EventHelper.getInstance().executeEvent(keyUpJs, event, true);
 				}
 			});
 		}
@@ -301,7 +302,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			keyPressHandlerRegistration = super.getTextBox().addKeyPressHandler(new KeyPressHandler() {
 				@Override
 				public void onKeyPress(KeyPressEvent event) {
-					VkDesignerUtil.executeEvent(keyPressJs, event, true);
+					EventHelper.getInstance().executeEvent(keyPressJs, event, true);
 				}
 			});
 		}
@@ -317,7 +318,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			focusHandlerRegistration = super.getTextBox().addFocusHandler(new FocusHandler() {
 				@Override
 				public void onFocus(FocusEvent event) {
-					VkDesignerUtil.executeEvent(focusJs, event, true);
+					EventHelper.getInstance().executeEvent(focusJs, event, true);
 				}
 			});
 		}
@@ -333,7 +334,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			blurHandlerRegistration = super.getTextBox().addBlurHandler(new BlurHandler() {
 				@Override
 				public void onBlur(BlurEvent event) {
-					VkDesignerUtil.executeEvent(blurJs, event, true);
+					EventHelper.getInstance().executeEvent(blurJs, event, true);
 				}
 			});
 		}
@@ -349,7 +350,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 			changeHandlerRegistration = super.getTextBox().addChangeHandler(new ChangeHandler() {
 				@Override
 				public void onChange(ChangeEvent event) {
-					VkDesignerUtil.executeEvent(changeJs, event, true);
+					EventHelper.getInstance().executeEvent(changeJs, event, true);
 				}
 			});
 		}
@@ -367,7 +368,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 				public void onValueChange(ValueChangeEvent<Date> event) {
 					Map<String, String> eventProperties = new HashMap<String, String>();
 					eventProperties.put("date", Long.toString(event.getValue().getTime()));
-					VkDesignerUtil.executeEvent(valueChangeJs, eventProperties);
+					EventHelper.getInstance().executeEvent(valueChangeJs, eventProperties);
 				}
 			});
 		}
@@ -385,7 +386,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 				public void onHighlight(HighlightEvent<Date> event) {
 					Map<String, String> eventProperties = new HashMap<String, String>();
 					eventProperties.put("date", Long.toString(event.getHighlighted().getTime()));
-					VkDesignerUtil.executeEvent(highlightJs, eventProperties);
+					EventHelper.getInstance().executeEvent(highlightJs, eventProperties);
 				}
 			});
 		}
@@ -404,7 +405,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 					Map<String, String> eventProperties = new HashMap<String, String>();
 					eventProperties.put("startDate", Long.toString(event.getStart().getTime()));
 					eventProperties.put("endDate", Long.toString(event.getEnd().getTime()));
-					VkDesignerUtil.executeEvent(showRangeJs, eventProperties);
+					EventHelper.getInstance().executeEvent(showRangeJs, eventProperties);
 				}
 			});
 		}
@@ -558,7 +559,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	@Export
 	public void setEnabled(boolean enabled)
 	{
-		if(!VkDesignerUtil.isDesignerMode)
+		if(!VkStateHelper.getInstance().isDesignerMode())
 			super.setEnabled(enabled);
 		else if(!enabled)
 			Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");

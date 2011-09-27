@@ -73,6 +73,7 @@ import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 
@@ -89,7 +90,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 		else if(attributeName.equals(HasVkVerticalAlignment.NAME))
 			((VkDockPanel)invokingWidget).setVerticalAlignment(attributeName);
 		else
-			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	@Override
 	public String serialize(IVkWidget widget)
@@ -114,7 +115,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 					buffer.append("verticalAlignment:").append("'").append(verticalAlign).append("',");
 				buffer.append("child:");
 				if(child instanceof IVkWidget)
-					buffer.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append("},");
+					buffer.append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append("},");
 			}
 		}
 		if(buffer.charAt(buffer.length() - 1) == ',')
@@ -153,12 +154,12 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 			JSONObject childObj = childrenArray.get(i).isObject();
 			JSONObject childWidgetObj = childObj.get("child").isObject();
 			JSONString widgetName = childWidgetObj.get("widgetName").isString();
-			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
+			Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
 			dockPanel.add(widget, getDirectionConstant((int)childObj.get("direction").isNumber().doubleValue()));
 			dockPanel.setCellHorizontalAlignment(dockPanel.getWidgetCount() - 1, childObj.get("horizontalAlignment").isString().stringValue());
 			dockPanel.setCellVerticalAlignment(dockPanel.getWidgetCount() - 1, childObj.get("verticalAlignment").isString().stringValue());
 			//addAttributes(childWidgetObj, widget);
-			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
+			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
 		}
 	}
 	private DockLayoutConstant getDirectionConstant(int value) {

@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 	private final static String ADD_ITEM = "Add Item";
@@ -35,7 +36,7 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 	{
 		List<String> list = new ArrayList<String>();
 		list.add(ADD_ITEM);
-		list.addAll(VkDesignerUtil.getEngine().getAttributesList(invokingWidget));
+		list.addAll(VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget));
 		return list;
 	}
 	@Override
@@ -43,7 +44,7 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 		if(attributeName.equals(ADD_ITEM))
 			showAddItemDialog((VkListBox)invokingWidget);
 		else
-			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	private void showAddItemDialog(final VkListBox invokingWidget) {
 		final DialogBox origDialog = new DialogBox();

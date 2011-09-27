@@ -10,12 +10,12 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkScrollBarShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkScrollHandler;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
+import com.vk.gwt.designer.client.designer.EventHelper;
 
 public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IVkPanel, HasVkScrollHandler, HasVkScrollBarShowing {
 	public static final String NAME = "Scroll Panel";
@@ -53,7 +53,7 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IVkPanel
 			scrollHandlerRegistration = addScrollHandler(new ScrollHandler() {
 				@Override
 				public void onScroll(ScrollEvent event) {
-					VkDesignerUtil.executeEvent(scrollJs, event, true);
+					EventHelper.getInstance().executeEvent(scrollJs, event, true);
 				}
 			});
 		}
@@ -88,6 +88,10 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IVkPanel
 	public boolean isResizable() {
 		return true;
 	}
+	@Override
+	public List<Widget> getToolbarWidgets() {
+		return null;
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
@@ -99,7 +103,7 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IVkPanel
 	@Export
 	public int getScrollPosition() 
 	{
-		return super.getScrollPosition();
+		return super.getVerticalScrollPosition();
 	}
 	@Override
 	@Export
@@ -109,9 +113,9 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IVkPanel
 	}
 	@Override
 	@Export
-	public void setScrollPosition(int pos) 
+	public void setVerticalScrollPosition(int pos) 
 	{
-		super.setScrollPosition(pos);
+		super.setVerticalScrollPosition(pos);
 	}
 	@Override
 	@Export
@@ -160,10 +164,5 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IVkPanel
 	public void removeStyleName(String className)
 	{
 		super.removeStyleName(className);
-	}
-	@Override
-	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

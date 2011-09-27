@@ -16,6 +16,7 @@ import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 	private final String ADD_TAB = "Add a Tab";
@@ -33,7 +34,7 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget)
 	{
-		List<String> optionList = VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
+		List<String> optionList = VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget);
 		optionList.add(3, ADD_TAB);
 		optionList.add(4, EDIT_TAB);
 		optionList.add(5, REMOVE_TAB);
@@ -83,7 +84,7 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 			enableTab(tabbar, false);
 		else if(attributeName.equals(ENABLE_TAB))
 			enableTab(tabbar, true);
-		VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+		VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	private void enableTab(final VkTabBar tabbar, final boolean enable) {
 		if(tabbar.getTabCount() == 0)

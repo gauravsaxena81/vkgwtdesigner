@@ -14,6 +14,7 @@ import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 	private static final String ADD_SUGGESTION = "Add Suggestion";
@@ -90,7 +91,7 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 					}
 			});
 		}
-		VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+		VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget)
@@ -100,7 +101,7 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 		list.add(ADD_SUGGESTION);
 		list.add(EDIT_SUGGESTION);
 		list.add(REMOVE_SUGGESTION);
-		list.addAll(VkDesignerUtil.getEngine().getAttributesList(invokingWidget));
+		list.addAll(VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget));
 		return list;
 	}
 	@Override

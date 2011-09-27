@@ -15,6 +15,7 @@ import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 	private static final String SET_FORMAT = "Set Date Format";
@@ -103,12 +104,12 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 				});
 		}
 		else
-			VkDesignerUtil.getEngine().applyAttribute(attributeName, invokingWidget);
+			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget)
 	{
-		List<String> list = VkDesignerUtil.getEngine().getAttributesList(invokingWidget);
+		List<String> list = VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget);
 		list.add(3, SET_FORMAT);
 		return list;
 	}

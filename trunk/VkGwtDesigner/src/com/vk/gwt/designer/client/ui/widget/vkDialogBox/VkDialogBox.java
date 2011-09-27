@@ -25,7 +25,8 @@ import com.vk.gwt.designer.client.api.attributes.HasVkGlassStyle;
 import com.vk.gwt.designer.client.api.attributes.HasVkInitiallyShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkModal;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.EventHelper;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDialogBox extends DialogBox implements IVkPanel, HasVkCloseHandler, HasVkCaptionText, HasVkCaptionHtml, HasVkAutoHide, HasVkGlass
 , HasVkGlassStyle, HasVkModal, HasVkInitiallyShowing{
@@ -43,12 +44,12 @@ public class VkDialogBox extends DialogBox implements IVkPanel, HasVkCloseHandle
 	//to suppress its own dragging during designer mode
 	@Override
 	protected void beginDragging(MouseDownEvent event) {
-		if(!VkDesignerUtil.isDesignerMode)
+		if(!VkStateHelper.getInstance().isDesignerMode())
 			super.beginDragging(event);
 	}
 	@Override
 	protected void endDragging(MouseUpEvent event) {
-		if(!VkDesignerUtil.isDesignerMode)
+		if(!VkStateHelper.getInstance().isDesignerMode())
 			super.endDragging(event);
 	}
 	@Override
@@ -64,7 +65,7 @@ public class VkDialogBox extends DialogBox implements IVkPanel, HasVkCloseHandle
 				public void onClose(CloseEvent<PopupPanel> event) {
 					Map<String, String> map = new HashMap<String, String>();
 					map.put("autoClosed",Boolean.toString(event.isAutoClosed()));
-					VkDesignerUtil.executeEvent(closeJs, map);
+					EventHelper.getInstance().executeEvent(closeJs, map);
 				}
 			});
 		}

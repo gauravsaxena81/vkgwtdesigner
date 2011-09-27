@@ -14,7 +14,7 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkImageUrl;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkHorizontalSplitPanel extends Composite implements IVkPanel, HasVkWidgets, HasVkImageUrl{
 	public static final String NAME = "Horizontal Split Panel";
@@ -48,13 +48,13 @@ public class VkHorizontalSplitPanel extends Composite implements IVkPanel, HasVk
 		if(horizontalSplitPanel.getStartOfLineWidget() == null)
 		{
 			horizontalSplitPanel.setStartOfLineWidget(widget);
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as start line widget of Horizontal Split Panel");
 		}
 		else if(horizontalSplitPanel.getEndOfLineWidget() == null)
 		{
 			horizontalSplitPanel.setEndOfLineWidget(widget);
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as end line widget of Horizontal Split Panel");
 		}
 		else

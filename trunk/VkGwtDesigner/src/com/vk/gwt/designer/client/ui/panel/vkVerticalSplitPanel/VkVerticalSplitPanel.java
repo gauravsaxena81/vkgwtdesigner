@@ -14,7 +14,7 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkImageUrl;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkVerticalSplitPanel extends Composite implements IVkPanel, HasVkWidgets, HasVkImageUrl {
 	public static final String NAME = "Vertical Split Panel";
@@ -36,13 +36,13 @@ public class VkVerticalSplitPanel extends Composite implements IVkPanel, HasVkWi
 		if(verticalSplitPanel.getTopWidget() == null)
 		{
 			verticalSplitPanel.setTopWidget(widget);
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as top widget of Vertical Split Panel");
 		}
 		else if(verticalSplitPanel.getBottomWidget() == null)
 		{
 			verticalSplitPanel.setBottomWidget(widget);
-			if(VkDesignerUtil.isDesignerMode)
+			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as bottom widget of Vertical Split Panel");
 		}
 		else

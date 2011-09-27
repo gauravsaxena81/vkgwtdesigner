@@ -10,6 +10,7 @@ import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkHtmlPanelEngine extends VkAbstractWidgetEngine<VkHtmlPanel> {
 	@Override
@@ -35,7 +36,7 @@ public class VkHtmlPanelEngine extends VkAbstractWidgetEngine<VkHtmlPanel> {
 				Widget child = widgetList.next();
 				buffer.append("{parentId:'").append(child.getElement().getParentElement().getId()).append("',child:");
 				if(child instanceof IVkWidget)
-					buffer.append(VkDesignerUtil.getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append("},");
+					buffer.append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append("},");
 			}
 		}
 		if(buffer.charAt(buffer.length() - 1) == ',')
@@ -53,10 +54,10 @@ public class VkHtmlPanelEngine extends VkAbstractWidgetEngine<VkHtmlPanel> {
 			JSONObject childObj = childrenArray.get(i).isObject();
 			JSONObject childWidgetObj = childObj.get("child").isObject();
 			JSONString widgetName = childWidgetObj.get("widgetName").isString();
-			Widget widget = VkDesignerUtil.getEngine().getWidget(widgetName.stringValue());
+			Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
 			((VkHtmlPanel)parent).add(widget, childObj.get("parentId").isString().stringValue());
 			//addAttributes(childWidgetObj, widget);
-			VkDesignerUtil.getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
+			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
 		}
 	}
 }

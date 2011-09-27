@@ -22,7 +22,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkInitiallyShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkModal;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.EventHelper;
 
 public class VkPopUpPanel extends PopupPanel implements HasVkWidgets, IVkPanel, HasVkCloseHandler, HasVkAnimation, HasVkAutoHide, HasVkGlass, HasVkGlassStyle,
 HasVkModal, HasVkInitiallyShowing{
@@ -60,7 +60,7 @@ HasVkModal, HasVkInitiallyShowing{
 				public void onClose(CloseEvent<PopupPanel> event) {
 					Map<String, String> map = new HashMap<String, String>();
 					map.put("autoClosed",Boolean.toString(event.isAutoClosed()));
-					VkDesignerUtil.executeEvent(closeJs, map);
+					EventHelper.getInstance().executeEvent(closeJs, map);
 				}
 			});
 		}

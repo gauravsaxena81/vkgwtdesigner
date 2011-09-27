@@ -59,7 +59,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.EventHelper;
 
 public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers, HasVkFocusHandler, HasVkBlurHandler,HasVkSelectionHandler, HasVkOpenHandler
 , HasVkCloseHandler, HasVkMouseDownHandler, HasVkMouseMoveHandler, HasVkMouseOutHandler, HasVkMouseOverHandler, HasVkMouseUpHandler, HasVkMouseWheelHandler
@@ -157,7 +157,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			mouseDownHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
-					VkDesignerUtil.executeEvent(mouseDownJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseDownJs, event, true);
 				}
 			});
 		}
@@ -173,7 +173,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			mouseUpHandlerRegistration = addMouseUpHandler(new MouseUpHandler() {
 				@Override
 				public void onMouseUp(MouseUpEvent event) {
-					VkDesignerUtil.executeEvent(mouseUpJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseUpJs, event, true);
 				}
 			});
 		}
@@ -189,7 +189,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			mouseMoveHandlerRegistration = addMouseMoveHandler(new MouseMoveHandler() {
 				@Override
 				public void onMouseMove(MouseMoveEvent event) {
-					VkDesignerUtil.executeEvent(mouseMoveJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseMoveJs, event, true);
 				}
 			});
 		}
@@ -205,7 +205,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			mouseOverHandlerRegistration = addMouseOverHandler(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
-					VkDesignerUtil.executeEvent(mouseOverJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOverJs, event, true);
 				}
 			});
 		}
@@ -221,7 +221,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			mouseOutHandlerRegistration = addMouseOutHandler(new MouseOutHandler() {
 				@Override
 				public void onMouseOut(MouseOutEvent event) {
-					VkDesignerUtil.executeEvent(mouseOutJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOutJs, event, true);
 				}
 			});
 		}
@@ -237,7 +237,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			mouseWheelHandlerRegistration = addMouseWheelHandler(new MouseWheelHandler() {
 				@Override
 				public void onMouseWheel(MouseWheelEvent event) {
-					VkDesignerUtil.executeEvent(mouseWheelJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseWheelJs, event, true);
 				}
 			});
 		}
@@ -253,7 +253,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			keyDownHandlerRegistration = addKeyDownHandler(new KeyDownHandler() {
 				@Override
 				public void onKeyDown(KeyDownEvent event) {
-					VkDesignerUtil.executeEvent(keyDownJs, event, true);
+					EventHelper.getInstance().executeEvent(keyDownJs, event, true);
 				}
 			});
 		}
@@ -269,7 +269,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			keyUpHandlerRegistration = addKeyUpHandler(new KeyUpHandler() {
 				@Override
 				public void onKeyUp(KeyUpEvent event) {
-					VkDesignerUtil.executeEvent(keyUpJs, event, true);
+					EventHelper.getInstance().executeEvent(keyUpJs, event, true);
 				}
 			});
 		}
@@ -285,7 +285,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			keyPressHandlerRegistration = addKeyPressHandler(new KeyPressHandler() {
 				@Override
 				public void onKeyPress(KeyPressEvent event) {
-					VkDesignerUtil.executeEvent(keyPressJs, event, true);
+					EventHelper.getInstance().executeEvent(keyPressJs, event, true);
 				}
 			});
 		}
@@ -301,7 +301,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			focusHandlerRegistration = addFocusHandler(new FocusHandler() {
 				@Override
 				public void onFocus(FocusEvent event) {
-					VkDesignerUtil.executeEvent(focusJs, event, true);
+					EventHelper.getInstance().executeEvent(focusJs, event, true);
 				}
 			});
 		}
@@ -317,7 +317,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			blurHandlerRegistration = addBlurHandler(new BlurHandler() {
 				@Override
 				public void onBlur(BlurEvent event) {
-					VkDesignerUtil.executeEvent(blurJs, event, true);
+					EventHelper.getInstance().executeEvent(blurJs, event, true);
 				}
 			});
 		}
@@ -338,7 +338,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 					Map eventproperties = new HashMap();
 					TreeItem treeItem = event.getSelectedItem();
 					setUpTreeEvent(eventproperties, treeItem);
-					VkDesignerUtil.executeEvent(selectionJs, eventproperties);
+					EventHelper.getInstance().executeEvent(selectionJs, eventproperties);
 				}
 			});
 		}
@@ -359,7 +359,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 					Map eventproperties = new HashMap();
 					TreeItem treeItem = event.getTarget();
 					setUpTreeEvent(eventproperties, treeItem);
-					VkDesignerUtil.executeEvent(closeJs, eventproperties);
+					EventHelper.getInstance().executeEvent(closeJs, eventproperties);
 				}
 			});
 		}
@@ -380,7 +380,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 					Map eventproperties = new HashMap();
 					TreeItem treeItem = event.getTarget();
 					setUpTreeEvent(eventproperties, treeItem);
-					VkDesignerUtil.executeEvent(openJs, eventproperties);
+					EventHelper.getInstance().executeEvent(openJs, eventproperties);
 				}
 			});
 		}

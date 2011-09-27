@@ -13,7 +13,8 @@ import com.vk.gwt.designer.client.api.attributes.HasVkChangeHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEnabled;
 import com.vk.gwt.designer.client.api.attributes.HasVkName;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.EventHelper;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkFileUpload extends FileUpload implements IVkWidget, HasVkName, HasVkChangeHandler, HasVkEnabled{
 	public static final String NAME = "File Upload";
@@ -31,7 +32,7 @@ public class VkFileUpload extends FileUpload implements IVkWidget, HasVkName, Ha
 			changeHandlerRegistration = addChangeHandler(new ChangeHandler() {
 				@Override
 				public void onChange(ChangeEvent event) {
-					VkDesignerUtil.executeEvent(changeJs, event, true);
+					EventHelper.getInstance().executeEvent(changeJs, event, true);
 				}
 			});
 		}
@@ -82,7 +83,7 @@ public class VkFileUpload extends FileUpload implements IVkWidget, HasVkName, Ha
 	@Export
 	public void setEnabled(boolean enabled)
 	{
-		if(!VkDesignerUtil.isDesignerMode)
+		if(!VkStateHelper.getInstance().isDesignerMode())
 			super.setEnabled(enabled);
 		else if(!enabled)
 			Window.alert("Widget has been disabled and will appear so in preview \n but in designer mode i.e. now, it will appear enabled ");

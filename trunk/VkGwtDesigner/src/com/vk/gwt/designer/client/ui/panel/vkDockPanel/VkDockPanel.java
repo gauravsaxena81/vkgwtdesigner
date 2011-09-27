@@ -21,18 +21,18 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkHorizontalAlignment;
 import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
-import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalAlignment, HasVkVerticalAlignment,HasVkWidgets {
 	public static final String NAME = "Dock Panel";
 	@Override
-	public void add(Widget widget, DockLayoutConstant direction){
+	public void add(Widget widget, DockLayoutConstant direction) {
 		super.add(widget, direction);
 		//So that TD resizes with the widget inside
-		for(int i = 0; i < getWidgetCount(); i++)
-		{
+		for(int i = 0; i < getWidgetCount(); i++) {
 			Element td = (Element) getWidget(i).getElement().getParentElement();
 			if(DOM.getNextSibling(td) != null)
 				DOM.setElementAttribute(td, "width", "1px");
@@ -47,8 +47,7 @@ public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalA
 	}
 	@Override
 	public void setHorizontalAlignment(String horizontalAlignment) {
-		if(VkDesignerUtil.isDesignerMode)
-		{
+		if(VkStateHelper.getInstance().isDesignerMode()) {
 			final ListBox listBox = new ListBox(false);
 			listBox.addItem("Left", "left");
 			listBox.addItem("Center", "center");
@@ -64,8 +63,7 @@ public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalA
 	}
 	@Override
 	public void setVerticalAlignment(String verticalAlignment) {
-		if(VkDesignerUtil.isDesignerMode)
-		{
+		if(VkStateHelper.getInstance().isDesignerMode()) {
 			final ListBox listBox = new ListBox(false);
 			listBox.addItem("Top", "top");
 			listBox.addItem("Middle", "middle");
@@ -80,10 +78,8 @@ public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalA
 		}
 	}
 	@Override
-	public void add(Widget widget)
-	{
-		if(VkDesignerUtil.isDesignerMode)
-		{
+	public void add(Widget widget) {
+		if(VkStateHelper.getInstance().isDesignerMode()) {
 			final ListBox listBox = new ListBox(false);
 			listBox.addItem("Center", "1");
 			listBox.addItem("Line Start", "2");
@@ -104,14 +100,13 @@ public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalA
 		origDialog.setText("Please Select Direction below:");
 		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
 		
-		Timer t = new Timer(){
+		new Timer(){
 			@Override
 			public void run() {
 				VkDesignerUtil.centerDialog(dialog);
 				listBox.setFocus(true);
 			}
-		};
-		t.schedule(100);
+		}.schedule(100);
 		dialog.add(listBox);
 		HorizontalPanel buttonsPanel = new HorizontalPanel();
 		dialog.add(buttonsPanel);
@@ -121,13 +116,11 @@ public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalA
 			@Override
 			public void onClick(ClickEvent event) {
 				String option = listBox.getValue(listBox.getSelectedIndex());
-				if(option.equals("1"))
-				{
+				if(option.equals("1")) {
 					try{
 						VkDockPanel.this.add(widget, DockPanel.CENTER);
-					}catch(IllegalArgumentException e)
-					{
-						if(VkDesignerUtil.isDesignerMode)
+					}catch(IllegalArgumentException e) {
+						if(VkStateHelper.getInstance().isDesignerMode())
 							Window.alert("Center can contain only one widget");
 					}
 				}

@@ -52,7 +52,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.EventHelper;
 
 public class VkFocusPanel extends FocusPanel implements HasVkWidgets, IVkPanel, HasVkAllKeyHandlers, HasVkAllMouseHandlers, HasVkFocusHandler, HasVkBlurHandler,
 HasVkAccessKey, HasVkTabIndex
@@ -104,7 +104,7 @@ HasVkAccessKey, HasVkTabIndex
 			clickHandlerRegistration = addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					VkDesignerUtil.executeEvent(clickJs, event, true);
+					EventHelper.getInstance().executeEvent(clickJs, event, true);
 				}
 			});
 		}
@@ -120,7 +120,7 @@ HasVkAccessKey, HasVkTabIndex
 			doubleClickHandlerRegistration = addDoubleClickHandler(new DoubleClickHandler() {
 				@Override
 				public void onDoubleClick(DoubleClickEvent event) {
-					VkDesignerUtil.executeEvent(doubleClickJs, event, true);
+					EventHelper.getInstance().executeEvent(doubleClickJs, event, true);
 				}
 			});
 		}
@@ -136,7 +136,7 @@ HasVkAccessKey, HasVkTabIndex
 			mouseDownHandlerRegistration = addMouseDownHandler(new MouseDownHandler() {
 				@Override
 				public void onMouseDown(MouseDownEvent event) {
-					VkDesignerUtil.executeEvent(mouseDownJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseDownJs, event, true);
 				}
 			});
 		}
@@ -152,7 +152,7 @@ HasVkAccessKey, HasVkTabIndex
 			mouseUpHandlerRegistration = addMouseUpHandler(new MouseUpHandler() {
 				@Override
 				public void onMouseUp(MouseUpEvent event) {
-					VkDesignerUtil.executeEvent(mouseUpJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseUpJs, event, true);
 				}
 			});
 		}
@@ -168,7 +168,7 @@ HasVkAccessKey, HasVkTabIndex
 			mouseMoveHandlerRegistration = addMouseMoveHandler(new MouseMoveHandler() {
 				@Override
 				public void onMouseMove(MouseMoveEvent event) {
-					VkDesignerUtil.executeEvent(mouseMoveJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseMoveJs, event, true);
 				}
 			});
 		}
@@ -184,7 +184,7 @@ HasVkAccessKey, HasVkTabIndex
 			mouseOverHandlerRegistration = addMouseOverHandler(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
-					VkDesignerUtil.executeEvent(mouseOverJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOverJs, event, true);
 				}
 			});
 		}
@@ -200,7 +200,7 @@ HasVkAccessKey, HasVkTabIndex
 			mouseOutHandlerRegistration = addMouseOutHandler(new MouseOutHandler() {
 				@Override
 				public void onMouseOut(MouseOutEvent event) {
-					VkDesignerUtil.executeEvent(mouseOutJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseOutJs, event, true);
 				}
 			});
 		}
@@ -216,7 +216,7 @@ HasVkAccessKey, HasVkTabIndex
 			mouseWheelHandlerRegistration = addMouseWheelHandler(new MouseWheelHandler() {
 				@Override
 				public void onMouseWheel(MouseWheelEvent event) {
-					VkDesignerUtil.executeEvent(mouseWheelJs, event, true);
+					EventHelper.getInstance().executeEvent(mouseWheelJs, event, true);
 				}
 			});
 		}
@@ -232,7 +232,7 @@ HasVkAccessKey, HasVkTabIndex
 			keyDownHandlerRegistration = addKeyDownHandler(new KeyDownHandler() {
 				@Override
 				public void onKeyDown(KeyDownEvent event) {
-					VkDesignerUtil.executeEvent(keyDownJs, event, true);
+					EventHelper.getInstance().executeEvent(keyDownJs, event, true);
 				}
 			});
 		}
@@ -248,7 +248,7 @@ HasVkAccessKey, HasVkTabIndex
 			keyUpHandlerRegistration = addKeyUpHandler(new KeyUpHandler() {
 				@Override
 				public void onKeyUp(KeyUpEvent event) {
-					VkDesignerUtil.executeEvent(keyUpJs, event, true);
+					EventHelper.getInstance().executeEvent(keyUpJs, event, true);
 				}
 			});
 		}
@@ -264,7 +264,7 @@ HasVkAccessKey, HasVkTabIndex
 			keyPressHandlerRegistration = addKeyPressHandler(new KeyPressHandler() {
 				@Override
 				public void onKeyPress(KeyPressEvent event) {
-					VkDesignerUtil.executeEvent(keyPressJs, event, true);
+					EventHelper.getInstance().executeEvent(keyPressJs, event, true);
 				}
 			});
 		}
@@ -280,7 +280,7 @@ HasVkAccessKey, HasVkTabIndex
 			focusHandlerRegistration = addFocusHandler(new FocusHandler() {
 				@Override
 				public void onFocus(FocusEvent event) {
-					VkDesignerUtil.executeEvent(focusJs, event, true);
+					EventHelper.getInstance().executeEvent(focusJs, event, true);
 				}
 			});
 		}
@@ -296,7 +296,7 @@ HasVkAccessKey, HasVkTabIndex
 			blurHandlerRegistration = addBlurHandler(new BlurHandler() {
 				@Override
 				public void onBlur(BlurEvent event) {
-					VkDesignerUtil.executeEvent(blurJs, event, true);
+					EventHelper.getInstance().executeEvent(blurJs, event, true);
 				}
 			});
 		}
