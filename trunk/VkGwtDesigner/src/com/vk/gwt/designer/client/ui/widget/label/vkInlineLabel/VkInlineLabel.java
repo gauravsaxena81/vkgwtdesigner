@@ -60,6 +60,7 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 	private String mouseWheelJs = "";
 	private String clickJs = "";
 	private String doubleClickJs = "";
+	private IVkWidget vkParent;
 	
 	public VkInlineLabel() {
 		super.setDirectionEstimator(true);
@@ -318,5 +319,14 @@ public class VkInlineLabel extends InlineLabel implements IVkWidget, HasVkText, 
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

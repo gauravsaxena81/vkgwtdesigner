@@ -31,6 +31,7 @@ private static MoveHelper moveHelper = new MoveHelper();
 		DOM.setStyleAttribute(draggingWidget.getElement(), "top", invokingWidget.getAbsoluteTop() + "px");
 		DOM.setStyleAttribute(draggingWidget.getElement(), "left", invokingWidget.getAbsoluteLeft() + "px");
 		DOM.setCapture(draggingWidget.getElement());
+		SnapHelper.getInstance().setIgnoreWidget(invokingWidget);
 		//setCapture(draggingWidget);
 		draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
 			@Override
@@ -47,10 +48,11 @@ private static MoveHelper moveHelper = new MoveHelper();
 				final int initialLeft = invokingWidget.getElement().getOffsetLeft();
 				final int finalTop = draggingWidget.getElement().getAbsoluteTop() - invokingWidget.getElement().getOffsetParent().getAbsoluteTop() 
 				- VkDesignerUtil.getPixelValue((Element) invokingWidget.getElement().getOffsetParent(), "border-top-width") 
-				- VkDesignerUtil.getPixelValue((Element) invokingWidget.getElement().getOffsetParent(), "border-bottom-width");
+				/*- VkDesignerUtil.getPixelValue((Element) invokingWidget.getElement().getOffsetParent(), "border-bottom-width")*/;
 				final int finalLeft = draggingWidget.getElement().getOffsetLeft() - invokingWidget.getElement().getOffsetParent().getAbsoluteLeft()
 				- VkDesignerUtil.getPixelValue((Element) invokingWidget.getElement().getOffsetParent(), "border-left-width") 
 				/*- VkDesignerUtil.getPixelValue((Element) invokingWidget.getElement().getOffsetParent(), "border-right-width")*/;
+				SnapHelper.getInstance().setIgnoreWidget(null);
 				if(finalTop != initialTop - 1 || finalLeft != initialLeft - 1) {//-1 is hack for FF
 					UndoHelper.getInstance().doCommand(new Command(){
 						@Override

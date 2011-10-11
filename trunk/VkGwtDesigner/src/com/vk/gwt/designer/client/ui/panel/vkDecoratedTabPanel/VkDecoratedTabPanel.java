@@ -23,6 +23,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabHeaderText;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.EventHelper;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
@@ -34,11 +35,14 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 	private HandlerRegistration selectionHandler;
 	private String beforeSelectionJs = "";
 	private String selectionJs = "";
+	private IVkWidget vkParent;
 	@Override
-	public void add(Widget widget)
+	public void add(Widget w)
 	{
-		super.add(widget, "Untitled");
+		super.add(w, "Untitled");
 		selectTab(getWidgetCount() - 1);
+		if(w instanceof IVkWidget)
+			((IVkWidget)w).setVkParent(this);
 	}
 	@Override
 	public void setTabHTML(String html) {
@@ -261,7 +265,14 @@ public class VkDecoratedTabPanel extends DecoratedTabPanel implements HasVkWidge
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

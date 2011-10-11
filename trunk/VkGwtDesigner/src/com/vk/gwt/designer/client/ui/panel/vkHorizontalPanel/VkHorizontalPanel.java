@@ -26,14 +26,17 @@ import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, IVkPanel, HasVkVerticalAlignment, HasVkHorizontalAlignment {
 	public static final String NAME = "Horizontal Panel";
+	private IVkWidget vkParent;
 	@Override
-	protected void add(Widget child, Element container) 
+	protected void add(Widget widget, Element container) 
 	{
 		//So that TD resizes with the widget inside
 		if(getWidgetCount() > 0)
 			DOM.setElementAttribute((Element) getWidget(getWidgetCount() - 1).getElement().getParentElement(), "width", "1px");
-		super.add(child, container);
+		super.add(widget, container);
 		DOM.setElementAttribute(container, "width", "*");
+		if(widget instanceof IVkWidget)
+			((IVkWidget)widget).setVkParent(this);
 	}
 	@Override
 	public void insert(Widget w, int beforeIndex) {
@@ -191,7 +194,14 @@ public class VkHorizontalPanel extends HorizontalPanel implements HasVkWidgets, 
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

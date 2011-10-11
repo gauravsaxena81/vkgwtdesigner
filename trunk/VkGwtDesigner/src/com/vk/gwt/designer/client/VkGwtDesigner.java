@@ -13,18 +13,17 @@ import com.vk.gwt.designer.client.designer.VkStateHelper;
 public class VkGwtDesigner implements EntryPoint {
 	public final void onModuleLoad() {
 		init();
-		RootPanel.get().add(VkMainDrawingPanel.getInstance());
 		if(Window.Location.getParameter("isDesignerMode") != null && Window.Location.getParameter("isDesignerMode").equals("false")) {
 			VkStateHelper.getInstance().setDesignerMode(false);
 			VkDesignerUtil.loadApplication(getLoadString());
 		}
 		if(VkStateHelper.getInstance().isDesignerMode())
-			RootPanel.get().insert(VkStateHelper.getInstance().getMenu(), 0);
+			RootPanel.get().add(VkStateHelper.getInstance().getMenu());
+		RootPanel.get().add(VkMainDrawingPanel.getInstance());
 	}
 	protected void init() {
 		//VkDesignerUtil.setEngineMap();
 		//VkDesignerUtil.setEngine();
-		//VkDesignerUtil.setMenu(vkMenu);
 	}
 	private native String getLoadString() /*-{
 		return $wnd.opener.loadStr;

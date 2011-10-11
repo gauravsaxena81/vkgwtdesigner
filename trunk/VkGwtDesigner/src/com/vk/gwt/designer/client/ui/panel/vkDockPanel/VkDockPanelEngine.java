@@ -74,6 +74,7 @@ import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
+import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 
 public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 
@@ -115,7 +116,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 					buffer.append("verticalAlignment:").append("'").append(verticalAlign).append("',");
 				buffer.append("child:");
 				if(child instanceof IVkWidget)
-					buffer.append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append("},");
+					buffer.append(WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append("},");
 			}
 		}
 		if(buffer.charAt(buffer.length() - 1) == ',')
@@ -159,7 +160,7 @@ public class VkDockPanelEngine extends VkAbstractWidgetEngine<VkDockPanel>{
 			dockPanel.setCellHorizontalAlignment(dockPanel.getWidgetCount() - 1, childObj.get("horizontalAlignment").isString().stringValue());
 			dockPanel.setCellVerticalAlignment(dockPanel.getWidgetCount() - 1, childObj.get("verticalAlignment").isString().stringValue());
 			//addAttributes(childWidgetObj, widget);
-			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
+			WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
 		}
 	}
 	private DockLayoutConstant getDirectionConstant(int value) {

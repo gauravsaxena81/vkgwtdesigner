@@ -59,6 +59,7 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 	private String mouseWheelJs = "";
 	private String clickJs = "";
 	private String doubleClickJs = "";
+	private IVkWidget vkParent;
 	
 	@Override
 	public String getPriorJs(String eventName) {
@@ -306,5 +307,12 @@ public class VkInlineHTML extends InlineHTML implements IVkWidget, HasVkText, Ha
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
+	}
 }

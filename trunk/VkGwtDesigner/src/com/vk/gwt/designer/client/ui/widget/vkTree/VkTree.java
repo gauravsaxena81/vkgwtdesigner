@@ -58,6 +58,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkOpenHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.EventHelper;
 
@@ -94,6 +95,7 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 	private String closeJs = "";
 	private String openJs = "";
 	private char accessKey;
+	private IVkWidget vkParent;
 	
 	public VkTree()
 	{
@@ -112,6 +114,8 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 			super.addItem(widget);
 		else
 			super.getSelectedItem().addItem(widget);
+		if(widget instanceof IVkWidget)
+			((IVkWidget)widget).setVkParent(this);
 	}
 	
 	@Override
@@ -505,7 +509,14 @@ public class VkTree extends Tree implements HasVkAnimation, HasVkAllKeyHandlers,
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

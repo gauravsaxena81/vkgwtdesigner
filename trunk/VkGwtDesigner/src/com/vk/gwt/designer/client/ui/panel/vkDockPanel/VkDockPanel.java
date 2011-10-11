@@ -28,9 +28,10 @@ import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalAlignment, HasVkVerticalAlignment,HasVkWidgets {
 	public static final String NAME = "Dock Panel";
+	private IVkWidget vkParent;
 	@Override
-	public void add(Widget widget, DockLayoutConstant direction) {
-		super.add(widget, direction);
+	public void add(Widget w, DockLayoutConstant direction) {
+		super.add(w, direction);
 		//So that TD resizes with the widget inside
 		for(int i = 0; i < getWidgetCount(); i++) {
 			Element td = (Element) getWidget(i).getElement().getParentElement();
@@ -44,6 +45,8 @@ public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalA
 			else
 				DOM.setElementAttribute(td, "height", "*");
 		}
+		if(w instanceof IVkWidget)
+			((IVkWidget)w).setVkParent(this);
 	}
 	@Override
 	public void setHorizontalAlignment(String horizontalAlignment) {
@@ -124,18 +127,20 @@ public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalA
 							Window.alert("Center can contain only one widget");
 					}
 				}
-				if(option.equals("2"))
+				else if(option.equals("2"))
 					VkDockPanel.this.add(widget, DockPanel.LINE_START);
-				if(option.equals("3"))
+				else if(option.equals("3"))
 					VkDockPanel.this.add(widget, DockPanel.LINE_END);
-				if(option.equals("4"))
+				else if(option.equals("4"))
 					VkDockPanel.this.add(widget, DockPanel.EAST);
-				if(option.equals("5"))
+				else if(option.equals("5"))
 					VkDockPanel.this.add(widget, DockPanel.SOUTH);
-				if(option.equals("6"))
+				else if(option.equals("6"))
 					VkDockPanel.this.add(widget, DockPanel.NORTH);
-				if(option.equals("7"))
+				else if(option.equals("7"))
 					VkDockPanel.this.add(widget, DockPanel.WEST);
+				if(widget instanceof IVkWidget)
+					((IVkWidget)widget).setVkParent(VkDockPanel.this);
 				origDialog.hide();
 			}
 		});
@@ -301,7 +306,14 @@ public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalA
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

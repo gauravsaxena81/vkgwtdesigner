@@ -95,6 +95,8 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkEnabled,
 	private char accessKey;
 	private boolean allowHoldDown = false;
 	private boolean isEnabled = true;
+
+	private IVkWidget vkParent;
 	
 	public VkPushButton()
 	{
@@ -641,5 +643,14 @@ public class VkPushButton extends PushButton implements IVkWidget, HasVkEnabled,
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

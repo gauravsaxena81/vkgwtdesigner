@@ -21,6 +21,7 @@ public class VkFileUpload extends FileUpload implements IVkWidget, HasVkName, Ha
 	private HandlerRegistration changeHandlerRegistration;
 	private String changeJs;
 	private boolean isEnabled = true;
+	private IVkWidget vkParent;
 	@Override
 	public void addChangeHandler(String js) {
 		if(changeHandlerRegistration != null)
@@ -124,5 +125,14 @@ public class VkFileUpload extends FileUpload implements IVkWidget, HasVkName, Ha
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

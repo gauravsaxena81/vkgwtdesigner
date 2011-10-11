@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
@@ -169,7 +170,7 @@ public class VkEngine implements IEngine{
 	private int widgetCount = 0;
 	
 	public Widget getWidget(String widgetName) {
-		IWidgetEngine<? extends Widget> widgetEngine = VkStateHelper.getInstance().getEngineMap().get(widgetName);
+		IWidgetEngine<? extends Widget> widgetEngine = WidgetEngineMapping.getInstance().getEngineMap().get(widgetName);
 		Widget widget= widgetEngine.getWidget();
 		if(widget != null)
 			prepareWidget(widget, widgetEngine);
@@ -853,8 +854,17 @@ public class VkEngine implements IEngine{
 		addTextTb.setText(invokingWidget.getText());
 		VkDesignerUtil.showAddTextAttributeDialog("Please add text below", addTextTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setText(text);
+			public void registerEvent(final String text) {
+				final String prior = invokingWidget.getText();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setText(text);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setText(prior);						
+					}});
 			}
 		});
 	}
@@ -864,8 +874,17 @@ public class VkEngine implements IEngine{
 		addTextTa.setText(invokingWidget.getHTML());
 		VkDesignerUtil.showAddTextAttributeDialog("Please add html below", addTextTa, new IEventRegister() {
 			@Override
-			public void registerEvent(String html) {
-				invokingWidget.setHTML(html);
+			public void registerEvent(final String html) {
+				final String prior = invokingWidget.getHTML();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setHTML(html);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setHTML(prior);				
+					}});
 			}
 		});
 	}
@@ -878,7 +897,7 @@ public class VkEngine implements IEngine{
 		VkDesignerUtil.showAddTextAttributeDialog("Please add access key below", addTextTb, new IEventRegister() {
 			@Override
 			public void registerEvent(String text) {
-				String charString = addTextTb.getText().trim();
+				String charString = text.trim();
 				if(charString.length() > 0)
 					invokingWidget.setAccessKey(charString.charAt(0));
 			}
@@ -890,14 +909,21 @@ public class VkEngine implements IEngine{
 		addTextTb.setText(Integer.toString(invokingWidget.getTabIndex()));
 		VkDesignerUtil.showAddTextAttributeDialog("Please add tabindex below", addTextTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				try{
-					invokingWidget.setTabIndex(Integer.parseInt(addTextTb.getText()));
-				}
-				catch(NumberFormatException e)
-				{
-					Window.alert("TabIndex cannot be non-numeric");
-				}
+			public void registerEvent(final String text) {
+				final int prior = invokingWidget.getTabIndex();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						try{
+							invokingWidget.setTabIndex(Integer.parseInt(text));
+						} catch(NumberFormatException e) {
+							Window.alert("TabIndex cannot be non-numeric");
+						}
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setTabIndex(prior);
+					}});
 			}
 		});
 	}
@@ -912,8 +938,18 @@ public class VkEngine implements IEngine{
 			listBox.setSelectedIndex(1);
 		VkDesignerUtil.showAddListDialog("Please choose true to make widget enabled", listBox, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setEnabled(Boolean.valueOf(text));
+			public void registerEvent(final String text) {
+				final boolean prior = invokingWidget.isEnabled();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setEnabled(Boolean.valueOf(text));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						
+						invokingWidget.setEnabled(prior);
+					}});
 			}
 		});
 	}
@@ -925,8 +961,18 @@ public class VkEngine implements IEngine{
 		listBox.setSelectedIndex(invokingWidget.getWordWrap() ? 0 : 1);
 		VkDesignerUtil.showAddListDialog("Please choose true to make text wrap", listBox, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setWordWrap(Boolean.valueOf(text));
+			public void registerEvent(final String text) {
+				final boolean prior = invokingWidget.getWordWrap();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setWordWrap(Boolean.valueOf(text));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						
+						invokingWidget.setWordWrap(prior);
+					}});
 			}
 		});
 	}
@@ -945,8 +991,18 @@ public class VkEngine implements IEngine{
 			listBox.setSelectedIndex(2);
 		VkDesignerUtil.showAddListDialog("Please set text direction", listBox, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setDirection(text);
+			public void registerEvent(final String text) {
+				final String prior = invokingWidget.getDirectionString();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setDirection(text);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						
+						invokingWidget.setDirection(prior);
+					}});
 			}
 		});
 	}
@@ -956,18 +1012,28 @@ public class VkEngine implements IEngine{
 		addTextTb.setText(Integer.toString(invokingWidget.getMaxLength()));
 		VkDesignerUtil.showAddTextAttributeDialog("Please add maxlength below (-1 to remove)", addTextTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				try{
-					int maxLength = Integer.parseInt(addTextTb.getText());
-					if(maxLength >= 0)
-						invokingWidget.setMaxLength(maxLength);
-					else
-						invokingWidget.removeMaxLength();
-				}
-				catch(NumberFormatException e)
-				{
-					Window.alert("MaxLength cannot be non-numeric");
-				}
+			public void registerEvent(final String text) {
+				final int prior = invokingWidget.getMaxLength();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						try{
+							int maxLength = Integer.parseInt(text);
+							if(maxLength >= 0)
+								invokingWidget.setMaxLength(maxLength);
+							else
+								invokingWidget.removeMaxLength();
+						} catch(NumberFormatException e) {
+							Window.alert("MaxLength cannot be non-numeric");
+						}
+					}}, new Command(){
+					@Override
+					public void execute() {
+						if(prior >= 0)
+							invokingWidget.setMaxLength(prior);
+						else
+							invokingWidget.removeMaxLength();
+					}});
 			}
 		});
 	}
@@ -987,8 +1053,17 @@ public class VkEngine implements IEngine{
 		}
 		VkDesignerUtil.showAddListDialog("Please choose widget's horizontal alignment", listBox, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setHorizontalAlignment(text);
+			public void registerEvent(final String text) {
+				final String prior = invokingWidget.getHorizontalAlignmentString();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setHorizontalAlignment(text);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setHorizontalAlignment(prior);
+					}});
 			}
 		});
 	}
@@ -1003,8 +1078,17 @@ public class VkEngine implements IEngine{
 		listBox.setWidth("200px");
 		VkDesignerUtil.showAddListDialog("Please choose true make widget animated", listBox, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setAnimationEnabled(Boolean.valueOf(text));
+			public void registerEvent(final String text) {
+				final boolean prior = invokingWidget.isAnimationEnabled();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setAnimationEnabled(Boolean.valueOf(text));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setAnimationEnabled(prior);
+					}});
 			}
 		});
 	}
@@ -1024,8 +1108,17 @@ public class VkEngine implements IEngine{
 		}
 		VkDesignerUtil.showAddListDialog("Please choose widget's vertical alignment", listBox, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setVerticalAlignment(text);
+			public void registerEvent(final String text) {
+				final String prior = invokingWidget.getVerticalAlignmentString();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setVerticalAlignment(text);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setVerticalAlignment(prior);
+					}});
 			}
 		});
 	}
@@ -1040,8 +1133,17 @@ public class VkEngine implements IEngine{
 		methodLb.setWidth("200px");
 		VkDesignerUtil.showAddListDialog("Please choose form method", methodLb, new IEventRegister() {
 			@Override
-			public void registerEvent(String method) {
-				invokingWidget.setMethod(method);
+			public void registerEvent(final String method) {
+				final String prior = invokingWidget.getMethod();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setMethod(method);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setMethod(prior);
+					}});
 			}
 		});
 	}
@@ -1052,8 +1154,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getUrl());
 		VkDesignerUtil.showAddTextAttributeDialog("Please add url below", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String action) {
-				invokingWidget.setUrl(action);
+			public void registerEvent(final String action) {
+				final String prior = invokingWidget.getUrl();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setUrl(action);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setUrl(prior);
+					}});
 			}
 		});
 	}
@@ -1064,8 +1175,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getImageUrl());
 		VkDesignerUtil.showAddTextAttributeDialog("Please add url below", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String action) {
-				invokingWidget.setImageUrl(action);
+			public void registerEvent(final String action) {
+				final String prior = invokingWidget.getImageUrl();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setImageUrl(action);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setImageUrl(prior);
+					}});
 			}
 		});
 	}
@@ -1080,8 +1200,17 @@ public class VkEngine implements IEngine{
 		scrollLb.setWidth("200px");
 		VkDesignerUtil.showAddListDialog("Please choose form method", scrollLb, new IEventRegister() {
 			@Override
-			public void registerEvent(String method) {
-				invokingWidget.setAlwaysShowScrollBars(Boolean.valueOf(method));
+			public void registerEvent(final String text) {
+				final boolean prior = invokingWidget.isAlwaysShowScrollBars();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setAlwaysShowScrollBars(Boolean.valueOf(text));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setAlwaysShowScrollBars(prior);
+					}});
 			}
 		});
 	}
@@ -1097,8 +1226,17 @@ public class VkEngine implements IEngine{
 		targetTb.setSuggestionWidth(100);
 		VkDesignerUtil.showAddAutoCompleteTextDialog("Please provide Form Target", targetTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String target) {
-				invokingWidget.setTarget(target);
+			public void registerEvent(final String target) {
+				final String prior = invokingWidget.getTarget();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setTarget(target);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setTarget(prior);
+					}});
 			}
 		});
 	}
@@ -1109,8 +1247,17 @@ public class VkEngine implements IEngine{
 			scrollLb.addItem(Integer.toString(i), Integer.toString(i));
 		VkDesignerUtil.showAddListDialog("Please select widget number to show below", scrollLb, new IEventRegister() {
 			@Override
-			public void registerEvent(String number) {
-				invokingWidget.showWidget(Integer.parseInt(number));
+			public void registerEvent(final String number) {
+				final int prior = invokingWidget.getCurrentlyShowingWidget();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.showWidget(Integer.parseInt(number));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.showWidget(prior);
+					}});
 			}
 		});
 	}
@@ -1120,8 +1267,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getName());
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide name of widget", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String name) {
-				invokingWidget.setName(name);
+			public void registerEvent(final String name) {
+				final String prior = invokingWidget.getName();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setName(name);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setName(prior);
+					}});
 			}
 		});
 	}
@@ -1131,8 +1287,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getCaptionText());
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setCaptionText(text);
+			public void registerEvent(final String text) {
+				final String prior = invokingWidget.getCaptionText();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setCaptionText(text);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setCaptionText(prior);
+					}});
 			}
 		});
 	}
@@ -1142,8 +1307,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getCaptionHtml());
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String html) {
-				invokingWidget.setCaptionHtml(html);
+			public void registerEvent(final String html) {
+				final String prior = invokingWidget.getCaptionHtml();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setCaptionHtml(html);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setCaptionHtml(prior);
+					}});
 			}
 		});
 	}
@@ -1158,8 +1332,17 @@ public class VkEngine implements IEngine{
 		scrollLb.setWidth("200px");
 		VkDesignerUtil.showAddListDialog("Please choose Auto Hide Setting", scrollLb, new IEventRegister() {
 			@Override
-			public void registerEvent(String method) {
-				invokingWidget.setAutoHideEnabled(Boolean.valueOf(method));
+			public void registerEvent(final String text) {
+				final boolean prior = invokingWidget.isAutoHideEnabled();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setAutoHideEnabled(Boolean.valueOf(text));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setAutoHideEnabled(prior);
+					}});
 			}
 		});
 	}
@@ -1174,8 +1357,17 @@ public class VkEngine implements IEngine{
 		scrollLb.setWidth("200px");
 		VkDesignerUtil.showAddListDialog("Please choose form method", scrollLb, new IEventRegister() {
 			@Override
-			public void registerEvent(String method) {
-				invokingWidget.setGlassEnabled(Boolean.valueOf(method));
+			public void registerEvent(final String text) {
+				final boolean prior = invokingWidget.isGlassEnabled();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setGlassEnabled(Boolean.valueOf(text));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setGlassEnabled(prior);
+					}});
 			}
 		});
 	}
@@ -1185,8 +1377,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getGlassStyleName());
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide stylename of the glass", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String name) {
-				invokingWidget.setGlassStyleName(name);
+			public void registerEvent(final String name) {
+				final String prior = invokingWidget.getGlassStyleName();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setGlassStyleName(name);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setGlassStyleName(prior);
+					}});
 			}
 		});
 	}
@@ -1201,8 +1402,17 @@ public class VkEngine implements IEngine{
 		scrollLb.setWidth("200px");
 		VkDesignerUtil.showAddListDialog("Please choose form method", scrollLb, new IEventRegister() {
 			@Override
-			public void registerEvent(String value) {
-				invokingWidget.setModal(Boolean.valueOf(value));
+			public void registerEvent(final String value) {
+				final boolean prior = invokingWidget.isModal();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setModal(Boolean.valueOf(value));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setModal(prior);
+					}});
 			}
 		});
 	}
@@ -1212,8 +1422,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getEncoding());
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide Form encoding", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String encoding) {
-				invokingWidget.setEncoding(encoding);
+			public void registerEvent(final String encoding) {
+				final String prior = invokingWidget.getEncoding();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setEncoding(encoding);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setEncoding(prior);
+					}});
 			}
 		});
 	}
@@ -1223,8 +1442,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getTargetHistoryToken());
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide history token", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String token) {
-				invokingWidget.setTargetHistoryToken(token);
+			public void registerEvent(final String token) {
+				final String prior = invokingWidget.getTargetHistoryToken();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setTargetHistoryToken(token);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setTargetHistoryToken(prior);
+					}});
 			}
 		});
 	}
@@ -1234,8 +1462,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getAlt());
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide caption of widget", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setAlt(text);
+			public void registerEvent(final String text) {
+				final String prior = invokingWidget.getAlt();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setAlt(text);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setAlt(prior);
+					}});
 			}
 		});
 	}
@@ -1250,8 +1487,17 @@ public class VkEngine implements IEngine{
 		scrollLb.setWidth("200px");
 		VkDesignerUtil.showAddListDialog("Please choose form method", scrollLb, new IEventRegister() {
 			@Override
-			public void registerEvent(String value) {
-				invokingWidget.setMultipleEnabled(Boolean.valueOf(value));
+			public void registerEvent(final String value) {
+				final boolean prior = invokingWidget.isMultipleEnabled();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setMultipleEnabled(Boolean.valueOf(value));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setMultipleEnabled(prior);
+					}});
 			}
 		});
 	}
@@ -1259,15 +1505,24 @@ public class VkEngine implements IEngine{
 		ListBox scrollLb = new ListBox();
 		scrollLb.addItem("True", "true");
 		scrollLb.addItem("False", "false");
-		if(invokingWidget.getAutoOpen())
+		if(invokingWidget.isAutoOpen())
 			scrollLb.setSelectedIndex(0);
 		else
 			scrollLb.setSelectedIndex(1);
 		scrollLb.setWidth("200px");
 		VkDesignerUtil.showAddListDialog("Please choose auto open option", scrollLb, new IEventRegister() {
 			@Override
-			public void registerEvent(String value) {
-				invokingWidget.setAutoOpen(Boolean.valueOf(value));
+			public void registerEvent(final String value) {
+				final boolean prior = invokingWidget.isAutoOpen();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setAutoOpen(Boolean.valueOf(value));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setAutoOpen(prior);
+					}});
 			}
 		});
 	}
@@ -1282,8 +1537,17 @@ public class VkEngine implements IEngine{
 		scrollLb.setWidth("200px");
 		VkDesignerUtil.showAddListDialog("Please choose if initially dialog is showing", scrollLb, new IEventRegister() {
 			@Override
-			public void registerEvent(String value) {
-				invokingWidget.setInitiallyShowing(Boolean.valueOf(value));
+			public void registerEvent(final String value) {
+				final boolean prior = invokingWidget.isInitiallyShowing();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setInitiallyShowing(Boolean.valueOf(value));
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setInitiallyShowing(prior);
+					}});
 			}
 		});
 	}
@@ -1293,8 +1557,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getTabText());
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide text for tab header", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setTabText(text);
+			public void registerEvent(final String text) {
+				final String prior = invokingWidget.getTabText();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setTabText(text);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setTabText(prior);
+					}});
 			}
 		});
 	}
@@ -1305,8 +1578,17 @@ public class VkEngine implements IEngine{
 		actionTb.setText(invokingWidget.getTabHTML());
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide html for tab header", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String html) {
-				invokingWidget.setTabHTML(html);
+			public void registerEvent(final String html) {
+				final String prior = invokingWidget.getTabHTML();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setTabHTML(html);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setTabHTML(prior);
+					}});
 			}
 		});
 	}
@@ -1316,10 +1598,20 @@ public class VkEngine implements IEngine{
 		actionTb.setWidth("300px");
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide value of widget", actionTb, new IEventRegister() {
 			@Override
-			public void registerEvent(String text) {
-				invokingWidget.setValue(text);
+			public void registerEvent(final String text) {
+				final String prior = invokingWidget.getValue().toString();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setValue(text);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						invokingWidget.setValue(prior);
+					}});
 			}
 		});
+		
 	}
 	private void showChoseListboxRenderModeDialog(final HasVkListBoxRenderMode invokingWidget) {
 		final ListBox listBox = new ListBox();
@@ -1328,8 +1620,17 @@ public class VkEngine implements IEngine{
 		listBox.setWidth("200px");
 		VkDesignerUtil.showAddListDialog("Pick a render mode", listBox, new IEventRegister() {
 				@Override
-				public void registerEvent(String value) {
-					invokingWidget.setDropDown(Boolean.parseBoolean(value));
+				public void registerEvent(final String value) {
+					final boolean prior = invokingWidget.isDropDown();
+					UndoHelper.getInstance().doCommand(new Command(){
+						@Override
+						public void execute() {
+							invokingWidget.setDropDown(Boolean.parseBoolean(value));
+						}}, new Command(){
+						@Override
+						public void execute() {
+							invokingWidget.setDropDown(prior);
+						}});
 				}
 			});
 	}

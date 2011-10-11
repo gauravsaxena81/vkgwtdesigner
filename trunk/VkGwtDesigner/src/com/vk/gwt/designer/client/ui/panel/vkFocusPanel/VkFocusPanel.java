@@ -51,6 +51,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkMouseUpHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkMouseWheelHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTabIndex;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.EventHelper;
 
@@ -85,13 +86,17 @@ HasVkAccessKey, HasVkTabIndex
 	private String clickJs = "";
 	private String doubleClickJs = "";
 	private char accessKey;
+	private IVkWidget vkParent;
 	@Override
 	public void add(Widget widget)
 	{
 		if(getWidget() != null)
 			Window.alert("Focus Panel can contain only one widget");
-		else
+		else {
 			super.add(widget);
+			if(widget instanceof IVkWidget)
+				((IVkWidget)widget).setVkParent(this);
+		}
 	}
 	@Override
 	public void addClickHandler(final String js) {
@@ -403,7 +408,14 @@ HasVkAccessKey, HasVkTabIndex
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

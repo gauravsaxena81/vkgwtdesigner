@@ -30,16 +30,19 @@ import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkVerticalPanel extends VerticalPanel implements IVkPanel, HasVkWidgets, HasVkHorizontalAlignment, HasVkVerticalAlignment {
 	public static final String NAME = "Vertical Panel";
+	private IVkWidget vkParent;
 	
 	public VkVerticalPanel(){
 		getBody().setInnerHTML("<tr></tr>");
 	}
 	
 	@Override
-	public void add(Widget child) {
+	public void add(Widget widget) {
 		if (getWidgetCount() == 0)
 			getBody().setInnerHTML("");
-		super.add(child);
+		super.add(widget);
+		if(widget instanceof IVkWidget)
+			((IVkWidget)widget).setVkParent(this);
 	}
 	@Override
 	public void add(IsWidget child) {
@@ -265,5 +268,13 @@ public class VkVerticalPanel extends VerticalPanel implements IVkPanel, HasVkWid
 	@Export
 	public void removeStyleName(String className) {
 		super.removeStyleName(className);
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

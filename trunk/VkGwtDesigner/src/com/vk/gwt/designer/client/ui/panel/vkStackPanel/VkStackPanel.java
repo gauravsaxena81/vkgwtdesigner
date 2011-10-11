@@ -12,14 +12,18 @@ import com.vk.gwt.designer.client.api.attributes.HasVkCaptionHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionText;
 import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkStackPanel extends StackPanel implements HasVkWidgets, IVkPanel, HasVkSwitchNumberedWidget, HasVkCaptionHtml, HasVkCaptionText {
 	public static final String NAME = "Stack Panel";
+	private IVkWidget vkParent;
 	 @Override
 	 public void add(Widget w) {
 		super.add(w);
+		if(w instanceof IVkWidget)
+			((IVkWidget)w).setVkParent(this);
 		setHeaderHtml(getWidgetCount()- 1, "Untitled");
 	 }
 	@Override
@@ -159,7 +163,14 @@ public class VkStackPanel extends StackPanel implements HasVkWidgets, IVkPanel, 
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

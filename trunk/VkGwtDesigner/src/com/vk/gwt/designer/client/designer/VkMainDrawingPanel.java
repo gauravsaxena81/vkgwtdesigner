@@ -1,19 +1,16 @@
 package com.vk.gwt.designer.client.designer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkLoadHandler;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
+import com.vk.gwt.designer.client.ui.panel.vkAbsolutePanel.VkAbsolutePanel;
 
-public class VkMainDrawingPanel extends AbsolutePanel implements IVkPanel, HasVkLoadHandler, HasVkWidgets{
+public class VkMainDrawingPanel extends VkAbsolutePanel implements IVkPanel, HasVkLoadHandler, HasVkWidgets{
 	public static String NAME = "Drawing Panel";
 	private String loadHandlerJs = "";
 	private static VkMainDrawingPanel drawingPanel = new VkMainDrawingPanel();
@@ -23,7 +20,7 @@ public class VkMainDrawingPanel extends AbsolutePanel implements IVkPanel, HasVk
 		DOM.setStyleAttribute(getElement(), "border", "solid 1px gray");
 		DOM.setStyleAttribute(getElement(), "position", "relative");
 		if(VkStateHelper.getInstance().isDesignerMode()) {
-			InitializeHelper.getInstance().initDesignerEvents(this, VkStateHelper.getInstance().getEngineMap().get(VkMainDrawingPanel.NAME));
+			InitializeHelper.getInstance().initDesignerEvents(this, WidgetEngineMapping.getInstance().getEngineMap().get(VkMainDrawingPanel.NAME));
 			VkStateHelper.getInstance().getMenu().prepareMenu(this);
 		}
 	}
@@ -52,23 +49,14 @@ public class VkMainDrawingPanel extends AbsolutePanel implements IVkPanel, HasVk
 		else
 			return "";
 	}
-	@Override
-	public Iterator<Widget> iterator()
-	{
+	/*@Override
+	public Iterator<Widget> iterator()	{
 		List<Widget> list = new ArrayList<Widget>();
 		Iterator<Widget> widgetIterator = super.iterator();
 		while(widgetIterator.hasNext())
 			list.add(widgetIterator.next());
-		Panel parent = (Panel) getParent();
-		Iterator<Widget> popUpWidgets = parent.iterator();
-		while(popUpWidgets.hasNext())
-		{
-			Widget popup = popUpWidgets.next();
-			if(popup != this)
-				list.add(popup);
-		}
 		return list.iterator();
-	}
+	}*/
 	@Override
 	public boolean showMenu() {
 		return true;

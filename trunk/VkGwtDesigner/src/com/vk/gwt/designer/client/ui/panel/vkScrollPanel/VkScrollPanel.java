@@ -14,6 +14,7 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkScrollBarShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkScrollHandler;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.EventHelper;
 
@@ -21,6 +22,7 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IVkPanel
 	public static final String NAME = "Scroll Panel";
 	private HandlerRegistration scrollHandlerRegistration;
 	private String scrollJs = "";
+	private IVkWidget vkParent;
 	public VkScrollPanel(){
 		sinkEvents(Event.ONMOUSEDOWN);
 	}
@@ -37,8 +39,11 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IVkPanel
 	@Override
 	public void add(Widget widget)
 	{
-		if(getWidget() == null)
+		if(getWidget() == null) {
 			setWidget(widget);
+			if(widget instanceof IVkWidget)
+				((IVkWidget)widget).setVkParent(this);
+		}
 		else
 			Window.alert("Scroll Panel can add only one Widget");
 	}
@@ -161,8 +166,15 @@ public class VkScrollPanel extends ScrollPanel implements HasVkWidgets, IVkPanel
 	}
 	@Override
 	@Export
-	public void removeStyleName(String className)
-	{
+	public void removeStyleName(String className) {
 		super.removeStyleName(className);
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

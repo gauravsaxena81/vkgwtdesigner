@@ -13,12 +13,14 @@ import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkImageUrl;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkVerticalSplitPanel extends Composite implements IVkPanel, HasVkWidgets, HasVkImageUrl {
 	public static final String NAME = "Vertical Split Panel";
 	private VerticalSplitPanel verticalSplitPanel;
+	private IVkWidget vkParent;
 	public VkVerticalSplitPanel()
 	{
 		verticalSplitPanel = new VerticalSplitPanel();
@@ -33,17 +35,19 @@ public class VkVerticalSplitPanel extends Composite implements IVkPanel, HasVkWi
 	@Override
 	public void add(Widget widget)
 	{
-		if(verticalSplitPanel.getTopWidget() == null)
-		{
+		if(verticalSplitPanel.getTopWidget() == null) {
 			verticalSplitPanel.setTopWidget(widget);
 			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as top widget of Vertical Split Panel");
+			if(widget instanceof IVkWidget)
+				((IVkWidget)widget).setVkParent(this);
 		}
-		else if(verticalSplitPanel.getBottomWidget() == null)
-		{
+		else if(verticalSplitPanel.getBottomWidget() == null) {
 			verticalSplitPanel.setBottomWidget(widget);
 			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as bottom widget of Vertical Split Panel");
+			if(widget instanceof IVkWidget)
+				((IVkWidget)widget).setVkParent(this);
 		}
 		else
 			Window.alert("Vertical Split Panel can add only two widgets");
@@ -123,7 +127,14 @@ public class VkVerticalSplitPanel extends Composite implements IVkPanel, HasVkWi
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

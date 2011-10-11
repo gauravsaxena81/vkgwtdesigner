@@ -119,6 +119,7 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	private char accessKey;
 	private String pattern = "";
 	private boolean isEnabled = true;
+	private IVkWidget vkParent;
 	
 	public VkDateBox()
 	{
@@ -680,5 +681,14 @@ public class VkDateBox extends DateBox implements IVkWidget, HasVkText, HasVkAll
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
-	}	
+	}
+
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
+	}
 }

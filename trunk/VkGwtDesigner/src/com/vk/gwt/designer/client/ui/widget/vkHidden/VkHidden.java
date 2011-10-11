@@ -13,6 +13,7 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 public class VkHidden extends SimplePanel implements IVkWidget, HasVkName, HasVkValue<String>{
 	public static final String NAME = "Hidden";
 	private Hidden hidden = new Hidden();
+	private IVkWidget vkParent;
 	public VkHidden()
 	{
 		add(hidden);
@@ -61,5 +62,13 @@ public class VkHidden extends SimplePanel implements IVkWidget, HasVkName, HasVk
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

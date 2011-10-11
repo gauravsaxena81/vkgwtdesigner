@@ -90,6 +90,8 @@ public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers
 	private String doubleClickJs = "";
 	private char accessKey;
 	private boolean isEnabled = true;
+
+	private IVkWidget vkParent;
 	
 	@Override
 	public String getPriorJs(String eventName) {
@@ -443,5 +445,13 @@ public class VkButton extends Button implements HasVkText, HasVkAllMouseHandlers
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

@@ -10,7 +10,7 @@ public class UndoHelper {
 		private Command undoCommand;
 		private Command redoCommand;
 		
-		public UndoAbleCommand(Command undoCommand, Command redoCommand) {
+		public UndoAbleCommand(Command redoCommand, Command undoCommand) {
 			this.undoCommand = undoCommand;
 			this.redoCommand = redoCommand;
 		}
@@ -23,7 +23,7 @@ public class UndoHelper {
 		@Override
 		public UndoAbleCommand push(UndoAbleCommand c) {
 			if(size() == 10)
-				remove(0);
+				remove(9);
 			UndoAbleCommand push = super.push(c);
 			return push;
 		}
@@ -41,7 +41,7 @@ public class UndoHelper {
 		@Override
 		public UndoAbleCommand push(UndoAbleCommand c) {
 			if(size() == 10)
-				remove(0);
+				remove(9);
 			UndoAbleCommand push = super.push(c);
 			return push;
 		}
@@ -67,9 +67,9 @@ public class UndoHelper {
 	public boolean isRedoStackEmpty(){
 		return redoStack.isEmpty();
 	}
-	public void doCommand(Command undoCommand, Command redoCommand) {
-		undoCommand.execute();
-		undoStack.push(new UndoAbleCommand(undoCommand, redoCommand));
+	public void doCommand(Command redoCommand, Command undoCommand) {
+		redoCommand.execute();
+		undoStack.push(new UndoAbleCommand(redoCommand, undoCommand));
 		redoStack.clear();
 	}
 	public boolean undo(){

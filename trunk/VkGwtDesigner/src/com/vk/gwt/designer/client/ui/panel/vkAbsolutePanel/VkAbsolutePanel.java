@@ -9,11 +9,19 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 
 public class VkAbsolutePanel extends AbsolutePanel implements IVkPanel,HasVkWidgets
 {
 	final public static String NAME = "Absolute Panel";
+	private IVkWidget vkParent;
+	@Override
+	public void add(Widget widget){
+		super.add(widget);
+		if(widget instanceof IVkWidget)
+			((IVkWidget)widget).setVkParent(this);
+	}
 	@Override
 	public String getWidgetName() {
 		return NAME;
@@ -85,7 +93,14 @@ public class VkAbsolutePanel extends AbsolutePanel implements IVkPanel,HasVkWidg
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

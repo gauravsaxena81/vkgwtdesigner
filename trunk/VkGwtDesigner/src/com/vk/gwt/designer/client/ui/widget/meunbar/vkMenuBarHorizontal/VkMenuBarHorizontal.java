@@ -33,6 +33,7 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 	private HashMap<Integer, String> commandJs = new HashMap<Integer, String>();
 	private List<Integer> seperatorIndices = new ArrayList<Integer>();
 	private HashMap<Integer, Widget> widgets = new HashMap<Integer, Widget>();
+	private IVkWidget vkParent;
 	public VkMenuBarHorizontal(){}
 	public VkMenuBarHorizontal(boolean b) {
 		super(b);
@@ -56,6 +57,8 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 		this.addItem(menuItem);
 		final PopupPanel popupPanel = new PopupPanel();
 		popupPanel.add(widget);
+		if(widget instanceof IVkWidget)
+			((IVkWidget)widget).setVkParent(this);
 		popupPanel.setAutoHideEnabled(true);
 		popupPanel.addAutoHidePartner(menuItem.getElement());
 		menuItem.setCommand(new Command(){
@@ -155,6 +158,22 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 	public boolean isResizable() {
 		return true;
 	}
+	@Override
+	public List<Widget> getToolbarWidgets() {
+		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
+	}
+	@Override
+	public boolean isAutoOpen() {
+		return super.getAutoOpen();
+	}
 	/**************************Export attribute Methods********************************/
 	@Override
 	@Export
@@ -179,10 +198,5 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 	public void removeStyleName(String className)
 	{
 		super.removeStyleName(className);
-	}
-	@Override
-	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

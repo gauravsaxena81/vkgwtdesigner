@@ -106,6 +106,7 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 	private String initializeJs = "";
 	private char accessKey;
 	private boolean enabled = true;
+	private IVkWidget vkParent;
 	public VkRichTextArea()
 	{
 		super(2,1);
@@ -669,5 +670,13 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

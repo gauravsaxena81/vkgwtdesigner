@@ -8,6 +8,7 @@ import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
+import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 
 public class VkDeckPanelEngine extends VkAbstractWidgetEngine<VkDeckPanel>{
 	@Override
@@ -26,7 +27,7 @@ public class VkDeckPanelEngine extends VkAbstractWidgetEngine<VkDeckPanel>{
 			JSONString widgetName = childObj.get("widgetName").isString();
 			Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
 			VkStateHelper.getInstance().getEngine().addWidget(widget, ((IVkPanel)parent));
-			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
+			WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 		}
 		addAttributes(jsonObj, parent);
 	}

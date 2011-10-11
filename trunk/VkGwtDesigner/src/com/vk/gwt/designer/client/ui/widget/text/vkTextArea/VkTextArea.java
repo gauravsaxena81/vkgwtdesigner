@@ -98,6 +98,7 @@ public class VkTextArea extends TextArea implements IVkWidget, HasVkText, HasVkA
 	private String doubleClickJs = "";
 	private char accessKey;
 	private boolean isEnabled = true;
+	private IVkWidget vkParent;
 	
 	public VkTextArea(){
 		if(VkStateHelper.getInstance().isDesignerMode()){
@@ -529,4 +530,12 @@ public class VkTextArea extends TextArea implements IVkWidget, HasVkText, HasVkA
 		return null;
 	}
 
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
+	}
 }

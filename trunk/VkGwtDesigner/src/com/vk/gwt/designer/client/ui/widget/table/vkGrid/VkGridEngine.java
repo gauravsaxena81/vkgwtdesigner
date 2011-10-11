@@ -6,7 +6,6 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
@@ -14,8 +13,9 @@ import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
+import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 
-public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
+public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 
 	private static final String ADD_NEW_ROW = "Add New Row";
 	private static final String ADD_NEW_COLUMN = "Add New Column";
@@ -24,9 +24,11 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 	private static final String ADD_CELLSPACING = "Add Cell Spacing";
 	private static final String ADD_CELLPADDING = "Add Cell Padding";
 	@Override
-	public Grid getWidget() {
+	public VkGrid getWidget() {
 		VkGrid widget = new VkGrid();
 		init(widget);
+		DOM.setStyleAttribute(widget.getElement(), "width", "100px");
+		DOM.setStyleAttribute(widget.getElement(), "height", "20px");
 		return widget;
 	}
 	@Override
@@ -217,7 +219,7 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 			int colCount = table.getCellCount(i);
 			for(int j = 0; j < colCount; j++)
 				buffer.append("{row:").append(i).append(",col:").append(j)
-				.append(",child:").append(VkStateHelper.getInstance().getEngineMap()
+				.append(",child:").append(WidgetEngineMapping.getInstance().getEngineMap()
 						.get(((IVkWidget)table.getWidget(i,j)).getWidgetName())
 							.serialize((IVkWidget) table.getWidget(i,j)))
 				.append("},");
@@ -263,7 +265,7 @@ public class VkGridEngine extends VkAbstractWidgetEngine<Grid> {
 			Widget widget = table.getWidget(row, col);
 			JSONObject child = cellsArray.get(i).isObject().get("child").isObject();
 			//addAttributes(child, widget);
-			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(child, widget);
+			WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(child, widget);
 		}
 		JSONArray widthArray = jsonObj.get("widths").isArray();
 		for(int i = 0; i < widthArray.size(); i++)

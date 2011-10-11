@@ -28,6 +28,7 @@ public class VkTabBar extends TabBar implements IVkWidget, HasVkBeforeSelectionH
 	private HandlerRegistration selectionHandler;
 	private String beforeSelectionJs = "";
 	private String selectionJs = "";
+	private IVkWidget vkParent;
 	
 	@Override
 	public String getPriorJs(String eventName) {
@@ -186,5 +187,13 @@ public class VkTabBar extends TabBar implements IVkWidget, HasVkBeforeSelectionH
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

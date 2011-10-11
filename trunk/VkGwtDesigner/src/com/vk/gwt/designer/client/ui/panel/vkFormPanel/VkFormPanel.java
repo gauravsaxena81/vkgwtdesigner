@@ -17,6 +17,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkSubmitHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkTarget;
 import com.vk.gwt.designer.client.api.attributes.HasVkUrl;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.EventHelper;
 
@@ -30,13 +31,17 @@ HasVkUrl, HasVkFormEncoding{
 	private HandlerRegistration submitCompleteHandler;
 	private String submitCompleteJs = "";
 	private String submitJs = "";
+	private IVkWidget vkParent;
 	@Override
 	public void add(Widget widget)
 	{
 		if(getWidget() != null)
 			Window.alert("Form Panel can contain only one widget");
-		else
+		else {
 			super.add(widget);
+			if(widget instanceof IVkWidget)
+				((IVkWidget)widget).setVkParent(this);
+		}
 	}
 	@Override
 	public void addSubmitCompleteHandler(String js) {
@@ -164,7 +169,14 @@ HasVkUrl, HasVkFormEncoding{
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

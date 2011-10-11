@@ -67,7 +67,7 @@ public class VkDesignerUtil {
 	    }
 	}-*/;
 	public static void loadApplication(String text) {
-		VkStateHelper.getInstance().getEngineMap().get(VkMainDrawingPanel.NAME).deserialize((IVkWidget) VkMainDrawingPanel.getInstance(), text);
+		WidgetEngineMapping.getInstance().getEngineMap().get(VkMainDrawingPanel.NAME).deserialize((IVkWidget) VkMainDrawingPanel.getInstance(), text);
 		EventHelper.getInstance().executeEvent(VkMainDrawingPanel.getInstance().getPriorJs(HasVkLoadHandler.NAME), (Map<String, String>)null);
 	}
 	public native static void setLoadString(String str) /*-{
@@ -106,23 +106,24 @@ public class VkDesignerUtil {
 	public static double getDecorationsWidth(Element elem) {
 		if(elem.getTagName().equalsIgnoreCase("button"))
 			return 0;
+		else if(elem.getTagName().equalsIgnoreCase("input") && (elem.getAttribute("type").isEmpty() || elem.getAttribute("type").equals("text")))
+			return 0;
 		int width = VkDesignerUtil.getPixelValue(elem, "border-left-width");
 		width += VkDesignerUtil.getPixelValue(elem, "border-right-width");
 		width += VkDesignerUtil.getPixelValue(elem, "padding-left");
 		width += VkDesignerUtil.getPixelValue(elem, "padding-right");
-		/*width += VkDesignerUtil.getPixelValue(widget, "margin-left");
-		width += VkDesignerUtil.getPixelValue(widget, "margin-right");*/
 		return width;
 	}
 	public static double getDecorationsHeight(Element elem) {
+		//Textbox and buttons are assigned width and height irrespective of the decorations i.e. if 100px is assigned then, this value is inclusive of all decorations
 		if(elem.getTagName().equalsIgnoreCase("button"))
+			return 0;
+		else if(elem.getTagName().equalsIgnoreCase("input") && (elem.getAttribute("type").isEmpty() || elem.getAttribute("type").equals("text")))
 			return 0;
 		int height = VkDesignerUtil.getPixelValue(elem, "border-top-width");
 		height += VkDesignerUtil.getPixelValue(elem, "border-bottom-width");
 		height += VkDesignerUtil.getPixelValue(elem, "padding-bottom");
 		height += VkDesignerUtil.getPixelValue(elem, "padding-top");
-		/*height += VkDesignerUtil.getPixelValue(widget, "margin-bottom");
-		height += VkDesignerUtil.getPixelValue(widget, "margin-top");*/
 		return height;
 	}
 	public static void showAddListDialog(String heading, final ListBox listBox, final IEventRegister eventRegister) {

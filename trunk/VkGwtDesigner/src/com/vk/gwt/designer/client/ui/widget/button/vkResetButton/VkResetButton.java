@@ -90,6 +90,8 @@ public class VkResetButton extends ResetButton implements HasVkText, HasVkAllMou
 		private String doubleClickJs = "";
 		private char accessKey;
 		private boolean isEnabled = true;
+
+		private IVkWidget vkParent;
 		
 		
 		@Override
@@ -444,5 +446,13 @@ public class VkResetButton extends ResetButton implements HasVkText, HasVkAllMou
 		public List<Widget> getToolbarWidgets() {
 			// TODO Auto-generated method stub
 			return null;
+		}
+		@Override
+		public IVkWidget getVkParent() {
+			return vkParent;
+		}
+		@Override
+		public void setVkParent(IVkWidget panel) {
+			this.vkParent = panel;
 		}
 }
