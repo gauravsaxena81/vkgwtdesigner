@@ -102,7 +102,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		//TODO: applying attribute is best done after all the children are added, because some widgets apply attributes to their widget holders e.g. stackpanel
 		VkStateHelper.getInstance().setDesignerMode(false);
 		((IVkWidget)sourceWidget).clone(targetWidget);
-		//VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
+		//WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
 		copyAttributes(sourceWidget, targetWidget);
 		VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 		if(sourceWidget instanceof IVkPanel && targetWidget instanceof IVkPanel) {
@@ -112,7 +112,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 				Widget newWidget = VkStateHelper.getInstance().getEngine().getWidget(((IVkWidget)currentWidget).getWidgetName());
 				VkStateHelper.getInstance().setDesignerMode(false);
 				if(currentWidget instanceof IVkWidget)
-					VkStateHelper.getInstance().getEngine().addWidget(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)currentWidget).getWidgetName()).deepClone(currentWidget, newWidget), (IVkPanel)targetWidget);
+					VkStateHelper.getInstance().getEngine().addWidget(WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)currentWidget).getWidgetName()).deepClone(currentWidget, newWidget), (IVkPanel)targetWidget);
 				VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 			}
 		}
@@ -181,7 +181,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		if(widgetSource instanceof HasVkListBoxRenderMode)
 			((HasVkListBoxRenderMode)widgetTarget).setDropDown(((HasVkListBoxRenderMode)widgetSource).isDropDown());
 		if(widgetSource instanceof HasVkAutoOpen)
-			((HasVkAutoOpen)widgetTarget).setAutoOpen(((HasVkAutoOpen)widgetSource).getAutoOpen());
+			((HasVkAutoOpen)widgetTarget).setAutoOpen(((HasVkAutoOpen)widgetSource).isAutoOpen());
 		if(widgetSource instanceof HasVkModal)
 			((HasVkInitiallyShowing)widgetTarget).setInitiallyShowing(((HasVkInitiallyShowing)widgetSource).isInitiallyShowing());
 		if(widgetSource instanceof HasVkTabHeaderText)
@@ -201,7 +201,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			while(widgetList.hasNext())	{
 				Widget child = widgetList.next();
 				if(child instanceof IVkWidget)
-					buffer.append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
+					buffer.append(WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append(",");
 			}
 		}
 		if(buffer.charAt(buffer.length() - 1) == ',')
@@ -280,7 +280,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		if(widgetSource instanceof HasVkListBoxRenderMode)
 			buffer.append(",'" ).append(HasVkListBoxRenderMode.NAME).append("':").append(((HasVkListBoxRenderMode)widgetSource).isDropDown());
 		if(widgetSource instanceof HasVkAutoOpen)
-			buffer.append(",'" ).append(HasVkAutoOpen.NAME).append("':").append(((HasVkAutoOpen)widgetSource).getAutoOpen());
+			buffer.append(",'" ).append(HasVkAutoOpen.NAME).append("':").append(((HasVkAutoOpen)widgetSource).isAutoOpen());
 		if(widgetSource instanceof HasVkInitiallyShowing)
 			buffer.append(",'" ).append(HasVkInitiallyShowing.NAME).append("':").append(((HasVkInitiallyShowing)widgetSource).isInitiallyShowing());
 		if(widgetSource instanceof HasVkTabHeaderText && !((HasVkTabHeaderText)widgetSource).getTabText().isEmpty())
@@ -352,7 +352,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 		VkStateHelper.getInstance().setDesignerMode(false);
 		((Panel)invokingWidget).clear();//for LOAD command
 		try{
-			VkStateHelper.getInstance().getEngineMap().get(invokingWidget.getWidgetName()).buildWidget(jsonObj, (Widget) invokingWidget);//cast is safe because root of DOM is drawingPanel
+			WidgetEngineMapping.getInstance().getEngineMap().get(invokingWidget.getWidgetName()).buildWidget(jsonObj, (Widget) invokingWidget);//cast is safe because root of DOM is drawingPanel
 		}catch(Exception e)	{
 			Window.alert("JSON String is not well-formed. Application cannot be built.");	
 			e.printStackTrace();
@@ -363,7 +363,6 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 	//work is being done by the child
 	public void buildWidget(JSONObject jsonObj, Widget parent) {
 		JSONArray childrenArray = jsonObj.put("children", null).isArray();
-		addAttributes(jsonObj, parent);
 		for(int i = 0; i < childrenArray.size(); i++)
 		{
 			JSONObject childObj = childrenArray.get(i).isObject();
@@ -372,8 +371,9 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 			JSONString widgetName = childObj.get("widgetName").isString();
 			Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
 			VkStateHelper.getInstance().getEngine().addWidget(widget, ((IVkPanel)parent));
-			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
+			WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 		}
+		addAttributes(jsonObj, parent);//apply attribute when the widget hierarchy is ready
 	}
 	protected void addAttributes(JSONObject childObj, Widget widget) {
 		JSONString attributeStringObj;

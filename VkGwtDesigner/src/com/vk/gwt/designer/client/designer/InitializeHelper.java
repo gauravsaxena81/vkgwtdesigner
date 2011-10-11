@@ -8,6 +8,7 @@ import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -28,7 +29,7 @@ public class InitializeHelper {
 		allWidgetEvents(widget, widgetEngine);
 		automaticTextAddition(widget);
 	};
-	private static void automaticTextAddition(final Widget widget) {
+	private void automaticTextAddition(final Widget widget) {
 		if(widget instanceof HasVkText) {
 			if(widget instanceof HasDoubleClickHandlers) {
 				((HasDoubleClickHandlers)widget).addDoubleClickHandler(new DoubleClickHandler() {
@@ -41,17 +42,17 @@ public class InitializeHelper {
 				addNativeDoubleClickHandler(widget);
 		}
 	}
-	private native static void addNativeDoubleClickHandler(Widget widget) /*-{
+	private native void addNativeDoubleClickHandler(Widget widget) /*-{
 		var element = widget.@com.google.gwt.user.client.ui.Widget::getElement()();
 		function dblClickHandler(){
-			@com.vk.gwt.designer.client.designer.InitializeHelper::addTextBox(Lcom/google/gwt/user/client/ui/Widget;)(widget);
+			this.@com.vk.gwt.designer.client.designer.InitializeHelper::addTextBox(Lcom/google/gwt/user/client/ui/Widget;)(widget);
 		}
 		if(element.addEventListener)
 				element.addEventListener("dblclick", dblClickHandler, false);
 		else if(element.attachEvent)
 			element.attachEvent("ondblclick", dblClickHandler);
 	}-*/;
-	private static void addTextBox(final Widget widget) {
+	private void addTextBox(final Widget widget) {
 		final TextBox tb = new TextBox();
 		tb.setText(((HasVkText) widget).getText());
 		tb.setPixelSize(widget.getOffsetWidth(), Math.max(30, widget.getOffsetHeight()));
@@ -64,7 +65,7 @@ public class InitializeHelper {
 		tb.addBlurHandler(new BlurHandler() {
 			@Override
 			public void onBlur(BlurEvent event) {
-				((HasVkText) widget).setText(tb.getText());
+				applyText(tb.getText(), (HasVkText) widget);
 				tb.removeFromParent();
 			}
 		});
@@ -73,7 +74,7 @@ public class InitializeHelper {
 			public void onKeyDown(KeyDownEvent event) {
 				switch(event.getNativeKeyCode()){
 					case KeyCodes.KEY_ENTER :
-						((HasVkText) widget).setText(tb.getText());
+						applyText(tb.getText(), (HasVkText) widget);
 						tb.removeFromParent();
 					break;
 					case KeyCodes.KEY_ESCAPE:
@@ -86,7 +87,19 @@ public class InitializeHelper {
 			}
 		});
 	}
-	private native static void allWidgetEvents(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) /*-{
+	private void applyText(final String text, final HasVkText widget){
+		final String prior = widget.getText();
+		UndoHelper.getInstance().doCommand(new Command(){
+			@Override
+			public void execute() {
+				widget.setText(text);
+			}}, new Command(){
+			@Override
+			public void execute() {
+				widget.setText(prior);
+			}});
+	}
+	private native void allWidgetEvents(Widget widget, IWidgetEngine<? extends Widget> widgetEngine) /*-{
 		var element = widget.@com.google.gwt.user.client.ui.Widget::getElement()();
 		setTimeout(createMouseDownEvent, 200);//widgets(like images) may take time to load, thus event is not attached successfully if not waited for it
 		function isChild(target, parent) {

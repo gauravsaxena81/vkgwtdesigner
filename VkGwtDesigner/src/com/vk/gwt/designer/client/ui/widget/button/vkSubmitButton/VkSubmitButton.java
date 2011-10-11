@@ -90,6 +90,8 @@ public class VkSubmitButton extends SubmitButton implements HasVkText, HasVkAllM
 	private String doubleClickJs = "";
 	private char accessKey;
 	private boolean isEnabled = true;
+
+	private IVkWidget vkParent;
 	
 	@Override
 	public String getPriorJs(String eventName) {
@@ -444,5 +446,12 @@ public class VkSubmitButton extends SubmitButton implements HasVkText, HasVkAllM
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
+	}
 }

@@ -6,18 +6,23 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 
 public class VkSimplePanel extends SimplePanel implements HasVkWidgets, IVkPanel {
 	public static final String NAME = "Simple Panel";
+	private IVkWidget vkParent;
 
 	@Override
 	public void add(Widget w) {
 		if(getWidget() != null)
 			Window.alert("VkSimplePanel can add only one widget");
-		else
+		else {
 			super.add(w);
+			if(w instanceof IVkWidget)
+				((IVkWidget)w).setVkParent(this);
+		}
 	}
 	@Override
 	public String getWidgetName() {
@@ -64,7 +69,14 @@ public class VkSimplePanel extends SimplePanel implements HasVkWidgets, IVkPanel
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

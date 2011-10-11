@@ -20,6 +20,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkCloseHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkOpenHandler;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.EventHelper;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
@@ -32,6 +33,7 @@ public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidge
 	private HandlerRegistration openHandlerRegistration;
 	private String closeJs = "";
 	private String openJs = "";
+	private IVkWidget vkParent;
 	
 	public VkDisclosurePanel(){
 		dp = new DisclosurePanel();
@@ -47,6 +49,8 @@ public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidge
 			w.setWidth(VkDesignerUtil.getPixelValue(dp.getElement(), "width") + "px");
 			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as header of Disclosure Panel");
+			if(w instanceof IVkWidget)
+				((IVkWidget)w).setVkParent(this);
 		}
 		else if(dp.getContent() == null)
 		{
@@ -55,6 +59,8 @@ public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidge
 			DOM.setStyleAttribute(w.getElement(), "margin", "0px");
 			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as content of Disclosure Panel");
+			if(w instanceof IVkWidget)
+				((IVkWidget)w).setVkParent(this);
 		}
 		else
 			Window.alert("Disclosure Panel can add only two widgets");
@@ -191,7 +197,14 @@ public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidge
 
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

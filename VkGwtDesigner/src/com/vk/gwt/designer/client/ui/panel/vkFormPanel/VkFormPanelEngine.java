@@ -1,11 +1,10 @@
 package com.vk.gwt.designer.client.ui.panel.vkFormPanel;
 
-import com.google.gwt.user.client.ui.FormPanel;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 
-public class VkFormPanelEngine extends VkAbstractWidgetEngine<FormPanel> {
+public class VkFormPanelEngine extends VkAbstractWidgetEngine<VkFormPanel> {
 	@Override
-	public FormPanel getWidget() {
+	public VkFormPanel getWidget() {
 		VkFormPanel widget = new VkFormPanel();
 		init(widget);
 		return widget;

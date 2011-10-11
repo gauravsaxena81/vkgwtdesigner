@@ -37,7 +37,6 @@ class ResizeHelper {
 		draggingWidget.getElement().getStyle().setOpacity(0.2);
 		RootPanel.get().add(draggingWidget);
 		DOM.setStyleAttribute(draggingWidget.getElement(), "position", "absolute");
-		draggingWidget.setPixelSize(invokingWidget.getOffsetWidth(), invokingWidget.getOffsetHeight());
 		boolean isAttached = invokingWidget.isAttached();
 		boolean isPopUpMenuBar = invokingWidget instanceof VkMenuBarVertical;
 		//when menubars are added as submenus then on pressing resize they vanish which leads to top and left being evaluated to 0
@@ -46,10 +45,12 @@ class ResizeHelper {
 		final int left = isPopUpMenuBar && !isAttached ? ((VkMenuBarVertical)invokingWidget).getLeft() : invokingWidget.getElement().getAbsoluteLeft();
 		DOM.setStyleAttribute(draggingWidget.getElement(), "top", top + "px");
 		DOM.setStyleAttribute(draggingWidget.getElement(), "left", left + "px");
+		draggingWidget.setPixelSize(SnapHelper.getInstance().getSnappedWidth(left, invokingWidget.getOffsetWidth()), SnapHelper.getInstance().getSnappedHeight(top,invokingWidget.getOffsetHeight()));
 		//DOM.setCapture(draggingWidget.getElement());
 		VkDesignerUtil.setCapture(draggingWidget);
 		if(invokingWidget instanceof Frame)
 			invokingWidget.setVisible(false);
+		SnapHelper.getInstance().setIgnoreWidget(invokingWidget);
 		draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
 			@Override
 			public void onMouseMove(MouseMoveEvent event) {
@@ -70,6 +71,7 @@ class ResizeHelper {
 				final int finalWidth = draggingWidget.getOffsetWidth()  - (int)VkDesignerUtil.getDecorationsWidth(widget.getElement());
 				final int finalHeight = draggingWidget.getOffsetHeight()  - (int)VkDesignerUtil.getDecorationsHeight(widget.getElement());
 				draggingWidget.removeFromParent();
+				SnapHelper.getInstance().setIgnoreWidget(null);
 				if(finalWidth > 0)
 					widget.setWidth(finalWidth + "px");
 				if(finalHeight > 0)

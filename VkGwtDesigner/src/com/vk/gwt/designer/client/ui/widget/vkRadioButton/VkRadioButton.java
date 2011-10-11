@@ -96,6 +96,7 @@ public class VkRadioButton extends RadioButton implements IVkWidget, HasVkText, 
 	private String doubleClickJs = "";
 	private char accessKey;
 	private boolean isEnabled = true;
+	private IVkWidget vkParent;
 
 	@Override
 	public void addClickHandler(final String js) {
@@ -463,5 +464,13 @@ public class VkRadioButton extends RadioButton implements IVkWidget, HasVkText, 
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

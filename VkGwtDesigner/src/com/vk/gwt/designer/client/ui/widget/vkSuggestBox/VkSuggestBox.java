@@ -111,6 +111,7 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 	private char accessKey;
 	private List<String> suggestions = new ArrayList<String>();
 	private boolean isEnabled = true;
+	private IVkWidget vkParent;
 	
 	public VkSuggestBox(){
 		if(VkStateHelper.getInstance().isDesignerMode()){
@@ -533,5 +534,14 @@ public class VkSuggestBox extends SuggestBox implements IVkWidget, HasVkText, Ha
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

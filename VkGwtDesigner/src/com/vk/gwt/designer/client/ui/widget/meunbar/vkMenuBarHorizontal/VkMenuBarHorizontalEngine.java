@@ -32,6 +32,7 @@ import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.designer.VkEventTextArea;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
+import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 import com.vk.gwt.designer.client.ui.widget.meunbar.vkMenuBarVertical.VkMenuBarVertical;
 
 public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarHorizontal> {
@@ -276,7 +277,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 					buffer.append(",js:'").append(menuBar.getCommandJs().get(i).replace('\'', '"')).append("'");
 				else
 					buffer.append(",child:")
-						.append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)menuBar.getWidgets().get(i)).getWidgetName()).serialize((IVkWidget) menuBar.getWidgets().get(i)));
+						.append(WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)menuBar.getWidgets().get(i)).getWidgetName()).serialize((IVkWidget) menuBar.getWidgets().get(i)));
 			}
 			else
 				buffer.append(",menu:").append(serialize((IVkWidget) menuBar.getItems().get(i).getSubMenu()));
@@ -303,7 +304,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			JSONObject item = items.get(i).isObject();
 			JSONValue js = item.get("js");
 			if(js != null)
-				((VkMenuBarHorizontalEngine)VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)tree).getWidgetName()))
+				((VkMenuBarHorizontalEngine)WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)tree).getWidgetName()))
 					.addMenuItem(tree, item.get("html").isString().stringValue(), item.get("js").isString().stringValue());
 			else if(item.containsKey("child"))
 			{
@@ -311,7 +312,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 				JSONString widgetName = childObj.get("widgetName").isString();
 				Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
 				VkStateHelper.getInstance().getEngine().addWidget(widget, ((IVkPanel)tree));
-				VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
+				WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childObj, widget);
 				//addAttributes(childObj, widget);
 			}
 			else if(item.get("separator") == null)
@@ -319,7 +320,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 				VkMenuBarHorizontal subTree = (VkMenuBarHorizontal)VkStateHelper.getInstance().getEngine().getWidget(VkMenuBarVertical.NAME);//all submenus are vertical
 				//addAttributes(item.get("menu").isObject(), subTree);
 				tree.addItem(new MenuItem(item.get("html").isString().stringValue(), subTree));
-				VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)tree).getWidgetName()).buildWidget(item.get("menu").isObject(), subTree);
+				WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)tree).getWidgetName()).buildWidget(item.get("menu").isObject(), subTree);
 			}
 			else
 				addSeparator(tree);
@@ -340,7 +341,7 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			{
 				VkMenuBarHorizontal widget = (VkMenuBarHorizontal)VkStateHelper.getInstance().getEngine().getWidget(VkMenuBarVertical.NAME);
 				targetMenuBar.addItem(new MenuItem(sourceMenuBar.getItems().get(i).getHTML()
-					, (VkMenuBarVertical) VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).deepClone(sourceMenuBar.getItems().get(i).getSubMenu(), widget)));
+					, (VkMenuBarVertical) WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).deepClone(sourceMenuBar.getItems().get(i).getSubMenu(), widget)));
 			}
 			if(k < sourceMenuBar.getSeperatorIndices().size() && sourceMenuBar.getSeperatorIndices().get(k) == allItems + 1)
 				addSeparator(targetMenuBar);

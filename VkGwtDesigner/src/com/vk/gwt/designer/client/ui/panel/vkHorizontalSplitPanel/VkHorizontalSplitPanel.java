@@ -13,12 +13,14 @@ import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkImageUrl;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkHorizontalSplitPanel extends Composite implements IVkPanel, HasVkWidgets, HasVkImageUrl{
 	public static final String NAME = "Horizontal Split Panel";
 	private HorizontalSplitPanel horizontalSplitPanel;
+	private IVkWidget vkParent;
 	//TODO if mousedown event of VkDesignerUtil is not being used then there is no need for this complex structure of widgets
 	public VkHorizontalSplitPanel()
 	{
@@ -45,17 +47,18 @@ public class VkHorizontalSplitPanel extends Composite implements IVkPanel, HasVk
 	@Override
 	public void add(Widget widget)
 	{
-		if(horizontalSplitPanel.getStartOfLineWidget() == null)
-		{
+		if(horizontalSplitPanel.getStartOfLineWidget() == null) {
 			horizontalSplitPanel.setStartOfLineWidget(widget);
 			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as start line widget of Horizontal Split Panel");
-		}
-		else if(horizontalSplitPanel.getEndOfLineWidget() == null)
-		{
+			if(widget instanceof IVkWidget)
+				((IVkWidget)widget).setVkParent(this);
+		} else if(horizontalSplitPanel.getEndOfLineWidget() == null) {
 			horizontalSplitPanel.setEndOfLineWidget(widget);
 			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Widget added as end line widget of Horizontal Split Panel");
+			if(widget instanceof IVkWidget)
+				((IVkWidget)widget).setVkParent(this);
 		}
 		else
 			Window.alert("Horizontal Split Panel can add only two widgets");
@@ -138,7 +141,14 @@ public class VkHorizontalSplitPanel extends Composite implements IVkPanel, HasVk
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

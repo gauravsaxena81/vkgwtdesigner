@@ -12,15 +12,19 @@ import com.vk.gwt.designer.client.api.attributes.HasVkCaptionHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionText;
 import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkDecoratedStackPanel extends DecoratedStackPanel implements HasVkWidgets, IVkPanel, HasVkSwitchNumberedWidget, HasVkCaptionHtml, HasVkCaptionText {
 	public static final String NAME = "Decorated Stack Panel";
+	private IVkWidget vkParent;
 	 @Override
 	public void add(Widget w) {
 		super.add(w);
 		setHeaderHtml(getWidgetCount()- 1, "Untitled");
+		if(w instanceof IVkWidget)
+			((IVkWidget)w).setVkParent(this);
 	}
 	@Override
 	public int getCurrentlyShowingWidget() {
@@ -159,5 +163,13 @@ private boolean checkAccess(int index) {
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

@@ -23,6 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkHtml;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
@@ -30,6 +31,7 @@ import com.vk.gwt.designer.client.designer.VkStateHelper;
 public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IVkPanel, HasVkHtml {
 	public static final String NAME = "Html Panel";
 	private String id;
+	private IVkWidget vkParent;
 	public VkHtmlPanel() {
 		super("<div id='html1' style='width: 100%; height: 100%'></div>");
 		showAddHTMLDialog(this);
@@ -123,6 +125,8 @@ public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IVkPanel, Ha
 				Element elem = getElementById(id);
 				if (elem != null) {
 					VkHtmlPanel.super.add(widget, id);
+					if(widget instanceof IVkWidget)
+						((IVkWidget)widget).setVkParent(VkHtmlPanel.this);
 					origDialog.hide();
 				} else
 					Window.alert("Element with the id doesn't exist");
@@ -203,8 +207,14 @@ public class VkHtmlPanel extends HTMLPanel implements HasVkWidgets, IVkPanel, Ha
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
 	}
-	
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
+	}	
 }

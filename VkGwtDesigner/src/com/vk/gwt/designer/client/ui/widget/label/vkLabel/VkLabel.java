@@ -57,6 +57,7 @@ public class VkLabel extends Label implements IVkWidget, HasVkText, HasVkAllMous
 	private String mouseWheelJs = "";
 	private String clickJs = "";
 	private String doubleClickJs = "";
+	private IVkWidget vkParent;
 	
 	@Override
 	public String getPriorJs(String eventName) {
@@ -293,5 +294,13 @@ public class VkLabel extends Label implements IVkWidget, HasVkText, HasVkAllMous
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

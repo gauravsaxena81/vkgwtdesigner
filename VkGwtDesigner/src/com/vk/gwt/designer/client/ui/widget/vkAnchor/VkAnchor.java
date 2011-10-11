@@ -91,6 +91,7 @@ public class VkAnchor extends Anchor implements IVkWidget, HasVkAllKeyHandlers, 
 	private String clickJs = "";
 	private String doubleClickJs = "";
 	private char accessKey;
+	private IVkWidget vkParent;
 
 	@Override
 	public void addClickHandler(final String js) {
@@ -443,7 +444,14 @@ public class VkAnchor extends Anchor implements IVkWidget, HasVkAllKeyHandlers, 
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

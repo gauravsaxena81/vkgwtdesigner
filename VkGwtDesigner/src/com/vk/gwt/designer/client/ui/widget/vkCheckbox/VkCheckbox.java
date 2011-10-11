@@ -102,6 +102,7 @@ public class VkCheckbox extends CheckBox implements IVkWidget, HasVkAllKeyHandle
 	private String changeJs = "";
 	private char accessKey;
 	private boolean isEnabled = true;
+	private IVkWidget vkParent;
 	@Override
 	public void addChangeHandler(String js) {
 		if(changeHandlerRegistration != null)
@@ -521,5 +522,13 @@ public class VkCheckbox extends CheckBox implements IVkWidget, HasVkAllKeyHandle
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

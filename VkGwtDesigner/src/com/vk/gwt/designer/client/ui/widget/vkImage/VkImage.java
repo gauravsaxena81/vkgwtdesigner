@@ -66,6 +66,7 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 	private String doubleClickJs = "";
 	private String loadJs = "";
 	private String errorJs = "";
+	private IVkWidget vkParent;
 
 	@Override
 	public void addClickHandler(final String js) {
@@ -316,5 +317,13 @@ public class VkImage extends Image implements IVkWidget, HasVkAllMouseHandlers, 
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

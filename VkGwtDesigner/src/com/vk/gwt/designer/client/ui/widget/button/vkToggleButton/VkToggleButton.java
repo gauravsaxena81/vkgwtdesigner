@@ -94,6 +94,8 @@ HasVkFocusHandler, HasVkBlurHandler{
 	private String imageUpSrc;
 	private String imageDownSrc;
 	private boolean isEnabled = true;
+
+	private IVkWidget vkParent;
 	
 
 	@Override
@@ -469,5 +471,12 @@ HasVkFocusHandler, HasVkBlurHandler{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
+	}
 }

@@ -82,8 +82,8 @@ public class ToolbarHelper {
 			for(int i = 0, len = toolbarWidgets.size(); i < len; i++)
 				toolBarHp.add(toolbarWidgets.get(i));
 		int widgetAbsoluteLeft = widget.getAbsoluteLeft();
-		int menuTop = widget.getAbsoluteTop() - VkStateHelper.getInstance().getMenu().getOffsetHeight();
 		toolBarPanel.show();
+		int menuTop = widget.getAbsoluteTop() - toolBarPanel.getOffsetHeight();
 		toolBarPanel.setPopupPosition(widgetAbsoluteLeft,  menuTop + 3);
 		resizePanel.show();
 		resizePanel.setPopupPosition(widgetAbsoluteLeft + widget.getOffsetWidth(), menuTop + widget.getOffsetHeight() + resizePanel.getOffsetHeight() + 3);

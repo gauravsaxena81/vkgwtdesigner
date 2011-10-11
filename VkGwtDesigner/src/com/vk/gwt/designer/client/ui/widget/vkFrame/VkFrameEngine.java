@@ -1,11 +1,10 @@
 package com.vk.gwt.designer.client.ui.widget.vkFrame;
 
-import com.google.gwt.user.client.ui.Frame;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 
-public class VkFrameEngine extends VkAbstractWidgetEngine<Frame> {
+public class VkFrameEngine extends VkAbstractWidgetEngine<VkFrame> {
 	@Override
-	public Frame getWidget() {
+	public VkFrame getWidget() {
 		VkFrame widget = new VkFrame();
 		init(widget);
 		return widget;

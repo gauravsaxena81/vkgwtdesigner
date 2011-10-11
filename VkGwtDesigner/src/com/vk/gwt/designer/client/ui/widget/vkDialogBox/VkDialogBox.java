@@ -25,6 +25,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkGlassStyle;
 import com.vk.gwt.designer.client.api.attributes.HasVkInitiallyShowing;
 import com.vk.gwt.designer.client.api.attributes.HasVkModal;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.EventHelper;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
@@ -34,12 +35,16 @@ public class VkDialogBox extends DialogBox implements IVkPanel, HasVkCloseHandle
 	private HandlerRegistration closeRegistration;
 	private String closeJs = "";
 	private boolean isInitiallyShowing = true;
+	private IVkWidget vkParent;
 	@Override
 	public void add(Widget w) {
 		if(getWidget() != null)
 			Window.alert("DialogBox can add only one widget");
-		else
+		else {
 			super.add(w);
+			if(w instanceof IVkWidget)
+				((IVkWidget)w).setVkParent(this);
+		}
 	}
 	//to suppress its own dragging during designer mode
 	@Override
@@ -187,7 +192,14 @@ public class VkDialogBox extends DialogBox implements IVkPanel, HasVkCloseHandle
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

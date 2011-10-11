@@ -30,8 +30,10 @@ import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.engine.IEngine;
 import com.vk.gwt.designer.client.designer.EventHelper;
+import com.vk.gwt.designer.client.designer.ToolbarHelper;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
+import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 import com.vk.gwt.designer.client.ui.panel.vkAbsolutePanel.VkAbsolutePanel;
 import com.vk.gwt.designer.client.ui.panel.vkAbsolutePanel.VkAbsolutePanelEngine;
 import com.vk.gwt.designer.client.ui.widget.label.vkHtml.VkHTML;
@@ -44,6 +46,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	private boolean startSelection = false;
 	private boolean firstSelection = false;
 	private VkFlexTableColumnFormatter columnFormatter;
+	private IVkWidget vkParent;
 	
 	class VkFlexTableColumnFormatter extends ColumnFormatter
 	{
@@ -55,6 +58,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	
 	class VkGridAbsolutePanel extends VkAbsolutePanel{
 		final public static String NAME = "FlexTable Panel";
+		private IVkWidget vkParent;
 		public void setWidth(String width) {
 			super.setWidth("100%");
 			if(width.endsWith("px")) {
@@ -98,6 +102,14 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 		public boolean showMenu() {
 			return true;
 		}
+		@Override
+		public IVkWidget getVkParent() {
+			return this.vkParent;
+		}
+		@Override
+		public void setVkParent(IVkWidget panel) {
+			this.vkParent = panel;
+		}
 	};
 	
 	class VkFlexTableAbsolutePanelEngine extends VkAbsolutePanelEngine{
@@ -119,12 +131,10 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	
 	public VkGrid()
 	{
-		if(!VkStateHelper.getInstance().getEngineMap().containsKey(VkGridAbsolutePanel.NAME))
-			VkStateHelper.getInstance().getEngineMap().put(VkGridAbsolutePanel.NAME, new VkFlexTableAbsolutePanelEngine());
+		if(!WidgetEngineMapping.getInstance().getEngineMap().containsKey(VkGridAbsolutePanel.NAME))
+			WidgetEngineMapping.getInstance().getEngineMap().put(VkGridAbsolutePanel.NAME, new VkFlexTableAbsolutePanelEngine());
 		if(VkStateHelper.getInstance().isDesignerMode())
 			showAddTextAttributeDialog();
-		super.setHeight("100px");
-		super.setWidth("100px");
 		this.columnFormatter = new VkFlexTableColumnFormatter();
 		setColumnFormatter(columnFormatter);
 		DOM.setStyleAttribute(getElement(), "tableLayout", "fixed");
@@ -237,9 +247,9 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 					for(int i = 0; i < rowCount; i++)
 						for(int j = 0; j < colCount; j++)
 							makeCell(i, j);
+					ToolbarHelper.getInstance().showToolbar(VkGrid.this);
 					origDialog.hide();
-				}catch(NumberFormatException e)
-				{
+				} catch(NumberFormatException e) {
 					Window.alert("row and column number cannot be non-numeric");
 				}
 			}
@@ -273,10 +283,11 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 		}, MouseOverEvent.getType());
 		DOM.setStyleAttribute(l2.getElement(), "border", "solid 1px gray");
 		DOM.setStyleAttribute(l2.getElement(), "overflow", "");
-		VkStateHelper.getInstance().getEngine().prepareWidget(l2, VkStateHelper.getInstance().getEngineMap().get(VkAbsolutePanel.NAME));
+		VkStateHelper.getInstance().getEngine().prepareWidget(l2, WidgetEngineMapping.getInstance().getEngineMap().get(VkAbsolutePanel.NAME));
 		boolean isVkDesignerMode = VkStateHelper.getInstance().isDesignerMode();
 		VkStateHelper.getInstance().setDesignerMode(false);//important as call routes to inserRow here instead of super's
 		setWidget(row, col, l2);
+		l2.setVkParent(this);
 		VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 		DOM.setStyleAttribute(getCellFormatter().getElement(row, col), "height", "inherit");
 		DOM.setElementAttribute(getCellFormatter().getElement(row, col), "col", Integer.toString(col));
@@ -631,5 +642,13 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

@@ -15,6 +15,7 @@ import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
+import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 
 public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 	private static final String ADD_ITEM = "Add Item";
@@ -79,7 +80,7 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 	}
 	@Override//overriding deep clone because addition of widgets has to be done in a different way
 	public Widget deepClone(Widget sourceWidget, Widget targetWidget) {
-		//VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
+		//WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
 		copyAttributes(sourceWidget, targetWidget);
 		VkTree vkTreeSource = (VkTree)sourceWidget;
 		VkTree vkTreeTarget = (VkTree)targetWidget;
@@ -91,7 +92,7 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 			if(treeItem.getWidget() == null)
 				copiedItem = new TreeItem(treeItem.getHTML());
 			else
-				copiedItem = new TreeItem((VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)treeItem.getWidget()).getWidgetName())).deepClone(treeItem.getWidget()
+				copiedItem = new TreeItem((WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)treeItem.getWidget()).getWidgetName())).deepClone(treeItem.getWidget()
 						, VkStateHelper.getInstance().getEngine().getWidget(((IVkWidget)treeItem.getWidget()).getWidgetName())));
 			vkTreeTarget.addItem(copiedItem);
 			deepClone(vkTreeSource.getItem(i), copiedItem);
@@ -108,7 +109,7 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 			if(treeItem.getWidget() == null)
 				copiedItem = new TreeItem(treeItem.getHTML());
 			else
-				copiedItem = new TreeItem(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)treeItem.getWidget()).getWidgetName()).deepClone(treeItem.getWidget()
+				copiedItem = new TreeItem(WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)treeItem.getWidget()).getWidgetName()).deepClone(treeItem.getWidget()
 						, VkStateHelper.getInstance().getEngine().getWidget(((IVkWidget)treeItem.getWidget()).getWidgetName())));
 			targetItem.addItem(copiedItem);
 			deepClone(sourceItem.getChild(i), copiedItem);
@@ -129,7 +130,7 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 			if(child.getWidget() == null)
 				buffer.append("{html:'").append(child.getHTML()).append("'");
 			else
-				buffer.append("{widget:").append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child.getWidget()).getWidgetName())
+				buffer.append("{widget:").append(WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)child.getWidget()).getWidgetName())
 						.serialize((IVkWidget) child.getWidget()));
 			buffer.append(",selected:").append(child.isSelected());
 			buffer.append(",open:").append(child.getState());
@@ -150,7 +151,7 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 			if(child.getWidget() == null)
 				buffer.append("{html:'").append(child.getHTML()).append("'");
 			else
-				buffer.append("{widget:").append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child.getWidget()).getWidgetName())
+				buffer.append("{widget:").append(WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)child.getWidget()).getWidgetName())
 						.serialize((IVkWidget) child.getWidget()));
 			buffer.append(",selected:").append(child.isSelected());
 			buffer.append(",open:").append(child.getState());
@@ -189,7 +190,7 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 		Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
 		TreeItem child = tree.addItem(widget);
 		addAttributes(jsonObj, widget);
-		VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(jsonObj, widget);
+		WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(jsonObj, widget);
 		return child;
 	}
 	private void buildItemWidget(JSONObject itemJson, TreeItem parent) {
@@ -216,7 +217,7 @@ public class VkTreeEngine extends VkAbstractWidgetEngine<VkTree> {
 		Widget widget = VkStateHelper.getInstance().getEngine().getWidget(widgetName.stringValue());
 		TreeItem child = treeItem.addItem(widget);
 		addAttributes(jsonObj, widget);
-		VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(jsonObj, widget);
+		WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(jsonObj, widget);
 		return child;
 	}
 }

@@ -14,6 +14,7 @@ import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
+import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 
 public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 
@@ -29,6 +30,8 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 	public VkFlexTable getWidget() {
 		VkFlexTable widget = new VkFlexTable();
 		init(widget);
+		DOM.setStyleAttribute(widget.getElement(), "width", "100px");
+		DOM.setStyleAttribute(widget.getElement(), "height", "20px");
 		return widget;
 	}
 	@Override
@@ -344,7 +347,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 				buffer.append("{row:").append(i).append(",col:").append(j).append(",rowSpan:")
 					.append(flexTable.getRowSpan(i, j))
 				.append(",colSpan:").append(flexTable.getColSpan(i, j))
-				.append(",child:").append(VkStateHelper.getInstance().getEngineMap()
+				.append(",child:").append(WidgetEngineMapping.getInstance().getEngineMap()
 						.get(((IVkWidget)flexTable.getWidget(i,j)).getWidgetName())
 							.serialize((IVkWidget) flexTable.getWidget(i,j)))
 				.append("},");
@@ -400,7 +403,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 					.doubleValue());
 			flexTable.setColSpan(row, col, colSpan);
 			//addAttributes(cellsArray.get(i).isObject().get("child").isObject(), widget);
-			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(cellsArray.get(i).isObject().get("child").isObject(), widget);
+			WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(cellsArray.get(i).isObject().get("child").isObject(), widget);
 		}
 		JSONArray widthArray = jsonObj.get("widths").isArray();
 		for(int i = 0, len = widthArray.size(); i < len; i++)

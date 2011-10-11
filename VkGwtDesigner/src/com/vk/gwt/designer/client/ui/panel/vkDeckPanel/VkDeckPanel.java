@@ -8,10 +8,12 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
 import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 
 public class VkDeckPanel extends DeckPanel implements IVkPanel, HasVkWidgets, HasVkAnimation, HasVkSwitchNumberedWidget {
 	final public static String NAME = "Deck Panel";
+	private IVkWidget vkParent;
 	@Override
 	public int getCurrentlyShowingWidget() {
 		return getVisibleWidget();
@@ -20,6 +22,8 @@ public class VkDeckPanel extends DeckPanel implements IVkPanel, HasVkWidgets, Ha
 	public void add(Widget w){
 		super.add(w);
 		super.showWidget(super.getWidgetCount() - 1);
+		if(w instanceof IVkWidget)
+			((IVkWidget)w).setVkParent(this);
 	}
 	@Override
 	public String getWidgetName() {
@@ -100,7 +104,14 @@ public class VkDeckPanel extends DeckPanel implements IVkPanel, HasVkWidgets, Ha
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

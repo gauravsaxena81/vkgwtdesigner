@@ -27,6 +27,7 @@ public class VkDecoratedTabBar extends DecoratedTabBar implements IVkWidget, Has
 	private HandlerRegistration selectionHandler;
 	private String beforeSelectionJs = "";
 	private String selectionJs = "";
+	private IVkWidget vkParent;
 	@Override
 	public void addBeforeSelectionHandler(String js) {
 		if(beforeSelectionHandler != null)
@@ -185,5 +186,12 @@ public class VkDecoratedTabBar extends DecoratedTabBar implements IVkWidget, Has
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
+	}
 }

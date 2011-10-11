@@ -11,4 +11,6 @@ public interface IVkWidget extends IsMovable, IsResizable{
 	public void clone(Widget targetWidget);
 	public boolean showMenu();
 	public List<Widget> getToolbarWidgets();
+	public IVkWidget getVkParent();
+	public void setVkParent(IVkWidget panel);
 }

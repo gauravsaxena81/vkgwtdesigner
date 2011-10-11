@@ -13,6 +13,7 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 public class VkFrame extends Frame implements IVkWidget, HasVkUrl, HasVkName{
 
 	public static final String NAME = "Frame";
+	private IVkWidget vkParent;
 	@Override
 	public String getWidgetName() {
 		return NAME;
@@ -78,5 +79,13 @@ public class VkFrame extends Frame implements IVkWidget, HasVkUrl, HasVkName{
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

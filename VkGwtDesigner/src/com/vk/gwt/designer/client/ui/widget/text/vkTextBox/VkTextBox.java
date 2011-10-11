@@ -100,6 +100,7 @@ public class VkTextBox extends TextBox implements IVkWidget, HasVkText, HasVkAll
 	private String changeJs = "";
 	private char accessKey;
 	private boolean isEnabled = true;
+	private IVkWidget vkParent;
 	
 	public VkTextBox(){
 		if(VkStateHelper.getInstance().isDesignerMode()){
@@ -544,5 +545,14 @@ public class VkTextBox extends TextBox implements IVkWidget, HasVkText, HasVkAll
 	public List<Widget> getToolbarWidgets() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }

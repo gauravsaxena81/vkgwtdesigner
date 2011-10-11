@@ -24,6 +24,7 @@ import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
+import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 
 public class VkDecoratedTabPanelEngine extends VkAbstractWidgetEngine<VkDecoratedTabPanel> {
 	private final String DISABLE_TAB = "Disable a Tab";
@@ -94,7 +95,7 @@ public class VkDecoratedTabPanelEngine extends VkAbstractWidgetEngine<VkDecorate
 				buffer.append(",enabled:").append(((VkDecoratedTabPanel)widget).getTabEnabled(widgetIndex++));
 				buffer.append(",child:");
 				if(child instanceof IVkWidget)
-					buffer.append(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append("},");
+					buffer.append(WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)child).getWidgetName()).serialize((IVkWidget) child)).append("},");
 			}
 		}
 		if(buffer.charAt(buffer.length() - 1) == ',')
@@ -134,7 +135,7 @@ public class VkDecoratedTabPanelEngine extends VkAbstractWidgetEngine<VkDecorate
 			int tabIndex = ((VkDecoratedTabPanel)parent).getWidgetCount() - 1;
 			((VkDecoratedTabPanel)parent).setTabHeaderHtml(tabIndex, childObj.get("headerHtml").isString().stringValue());
 			((VkDecoratedTabPanel)parent).setTabEnabled(tabIndex, childObj.get("enabled").isBoolean().booleanValue());
-			VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
+			WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)widget).getWidgetName()).buildWidget(childWidgetObj, widget);
 		}
 		addAttributes(jsonObj, parent);
 	}
@@ -178,13 +179,13 @@ public class VkDecoratedTabPanelEngine extends VkAbstractWidgetEngine<VkDecorate
 				Widget newWidget = VkStateHelper.getInstance().getEngine().getWidget(((IVkWidget)currentWidget).getWidgetName());
 				VkStateHelper.getInstance().setDesignerMode(false);
 				if(currentWidget instanceof IVkWidget)
-					VkStateHelper.getInstance().getEngine().addWidget(VkStateHelper.getInstance().getEngineMap().get(((IVkWidget) currentWidget).getWidgetName()).deepClone(currentWidget, newWidget), (IVkPanel)targetWidget);
+					VkStateHelper.getInstance().getEngine().addWidget(WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget) currentWidget).getWidgetName()).deepClone(currentWidget, newWidget), (IVkPanel)targetWidget);
 				VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 			}
 		}
 		VkStateHelper.getInstance().setDesignerMode(false);
 		((IVkWidget)sourceWidget).clone(targetWidget);
-		//VkStateHelper.getInstance().getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
+		//WidgetEngineMapping.getInstance().getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
 		copyAttributes(sourceWidget, targetWidget);
 		VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 		return targetWidget;

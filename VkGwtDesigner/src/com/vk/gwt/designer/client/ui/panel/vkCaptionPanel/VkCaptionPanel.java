@@ -9,21 +9,23 @@ import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionHtml;
 import com.vk.gwt.designer.client.api.attributes.HasVkCaptionText;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
-public class VkCaptionPanel extends CaptionPanel implements IVkPanel,HasVkWidgets, HasVkCaptionText, HasVkCaptionHtml{
+public class VkCaptionPanel extends CaptionPanel implements IVkPanel,HasVkWidgets, HasVkCaptionText, HasVkCaptionHtml {
 	public static final String NAME = "Caption Panel";
+	private IVkWidget vkParent;
 	@Override
-	public void add(Widget w)
-	{
-		if(getContentWidget() != null)
-		{
+	public void add(Widget w) {
+		if(getContentWidget() != null) {
 			if(VkStateHelper.getInstance().isDesignerMode())
 				Window.alert("Caption Panel can add only one Widget");
-		}
-		else
+		} else {
 			super.add(w);
+			if(w instanceof IVkWidget)
+				((IVkWidget)w).setVkParent(this);
+		}
 	}
 	@Override
 	public String getCaptionHtml() {
@@ -102,7 +104,14 @@ public class VkCaptionPanel extends CaptionPanel implements IVkPanel,HasVkWidget
 	}
 	@Override
 	public List<Widget> getToolbarWidgets() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public IVkWidget getVkParent() {
+		return vkParent;
+	}
+	@Override
+	public void setVkParent(IVkWidget panel) {
+		this.vkParent = panel;
 	}
 }
