@@ -14,22 +14,13 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.engine.IEngine;
 import com.vk.gwt.designer.client.designer.EventHelper;
-import com.vk.gwt.designer.client.designer.ToolbarHelper;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
@@ -37,8 +28,9 @@ import com.vk.gwt.designer.client.ui.panel.vkAbsolutePanel.VkAbsolutePanel;
 import com.vk.gwt.designer.client.ui.panel.vkAbsolutePanel.VkAbsolutePanelEngine;
 import com.vk.gwt.designer.client.ui.widget.label.vkHtml.VkHTML;
 import com.vk.gwt.designer.client.ui.widget.label.vkLabel.VkLabel;
+import com.vk.gwt.designer.client.ui.widget.table.IVkTable;
 
-public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandler{
+public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandler, IVkTable{
 	public static final String NAME = "Flex Table";
 	private HandlerRegistration clickHandlerRegistration;
 	private String clickJs = "";
@@ -145,8 +137,8 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	public VkFlexTable() {
 		if(!WidgetEngineMapping.getInstance().getEngineMap().containsKey(VkFlexTableAbsolutePanel.NAME))
 			WidgetEngineMapping.getInstance().getEngineMap().put(VkFlexTableAbsolutePanel.NAME, new VkFlexTableAbsolutePanelEngine());
-		if(VkStateHelper.getInstance().isDesignerMode())
-			showAddTextAttributeDialog();
+		/*if(VkStateHelper.getInstance().isDesignerMode())
+			showAddTextAttributeDialog();*/
 		this.columnFormatter = new VkFlexTableColumnFormatter();
 		setColumnFormatter(columnFormatter);
 		DOM.setStyleAttribute(getElement(), "tableLayout", "fixed");
@@ -224,7 +216,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 			}
 		}
 	}
-	private void showAddTextAttributeDialog() {
+	/*private void showAddTextAttributeDialog() {
 		final DialogBox origDialog = new DialogBox();
 		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
@@ -269,9 +261,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 				try{
 					int rowCount = Integer.parseInt(rowsTextBox.getText().trim());
 					VkFlexTable.this.initialColumnCount = Integer.parseInt(columnsTextBox.getText().trim());
-					for(int i = 0; i < rowCount; i++)
-						for(int j = 0; j < initialColumnCount; j++)
-							makeCell(i, j , j);
+					defineTable(rowCount, initialColumnCount);
 					ToolbarHelper.getInstance().showToolbar(VkFlexTable.this);
 					origDialog.hide();
 				}catch(NumberFormatException e) {
@@ -288,7 +278,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 			}
 		});
 		origDialog.center();
-	}
+	}*/
 	public void makeCell(final int row, final int col, int actualCol) {
 		VkFlexTableAbsolutePanel l2 = new VkFlexTableAbsolutePanel();
 		if(VkStateHelper.getInstance().isDesignerMode()) {
@@ -307,12 +297,15 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 				}
 			}, MouseOverEvent.getType());
 		}
-		DOM.setStyleAttribute(l2.getElement(), "border", "solid 1px gray");
 		DOM.setStyleAttribute(l2.getElement(), "overflow", "");//otherwise mouse over is not called when mouse button is pressed 
 		VkStateHelper.getInstance().getEngine().prepareWidget(l2, WidgetEngineMapping.getInstance().getEngineMap().get(VkAbsolutePanel.NAME));
 		boolean isVkDesignerMode = VkStateHelper.getInstance().isDesignerMode();
 		VkStateHelper.getInstance().setDesignerMode(false);//important as call routes to inserRow here instead of super's
 		super.setWidget(row, col, l2);
+		if(col != 0)
+			DOM.setStyleAttribute(super.getWidget(row, col - 1).getElement(), "borderRight", "solid 1px gray");
+		if(row != 0)
+			DOM.setStyleAttribute(super.getWidget(row - 1, col).getElement(), "borderBottom", "solid 1px gray");
 		l2.setVkParent(this);
 		VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 		DOM.setStyleAttribute(getFlexCellFormatter().getElement(row, col), "height", "inherit");
@@ -529,6 +522,12 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	@Override
 	public List<Widget> getToolbarWidgets() {
 		return null;
+	}
+	@Override
+	public void defineTable(int rows, int cols) {
+		for(int i = 0; i < rows; i++)
+			for(int j = 0; j < cols; j++)
+				makeCell(i, j , j);
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

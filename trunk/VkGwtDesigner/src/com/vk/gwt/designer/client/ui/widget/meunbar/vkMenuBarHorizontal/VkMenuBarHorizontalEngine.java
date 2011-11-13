@@ -29,7 +29,7 @@ import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.EventHelper;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
 import com.vk.gwt.designer.client.designer.VkEventTextArea;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
@@ -65,9 +65,9 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			}
 			for(int i = 0; i < itemCount; i++)
 				listBox.addItem(menuBar.getMenuItem(i).getText(), Integer.toString(i));
-			VkDesignerUtil.showAddListDialog("Choose the item to edit", listBox, new IEventRegister() {
+			VkDesignerUtil.showAddListDialog("Choose the item to edit", listBox, new IDialogCallback() {
 				@Override
-				public void registerEvent(String number) {
+				public void save(String number) {
 					menuBar.removeItem(menuBar.getMenuItem(listBox.getSelectedIndex()));
 				}
 			});
@@ -82,9 +82,9 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 			}
 			for(int i = 0; i < itemCount; i++)
 				listBox.addItem(menuBar.getMenuItem(i).getText(), Integer.toString(i));
-			VkDesignerUtil.showAddListDialog("Choose the item to edit", listBox, new IEventRegister() {
+			VkDesignerUtil.showAddListDialog("Choose the item to edit", listBox, new IDialogCallback() {
 				@Override
-				public void registerEvent(String number) {
+				public void save(String number) {
 					int index = listBox.getSelectedIndex();
 					showEditItemAttributeDialog(menuBar, index);
 				}
@@ -92,12 +92,13 @@ public class VkMenuBarHorizontalEngine extends VkAbstractWidgetEngine<VkMenuBarH
 		} else if(attributeName.equals(ADD_MENU)) {
 			final TextBox nameTb = new TextBox();
 			nameTb.setWidth("300px");
-			VkDesignerUtil.showAddTextAttributeDialog("Please provide name of sub-menu", nameTb, new IEventRegister() {
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide name of sub-menu", nameTb, new IDialogCallback() {
 				
 				@Override
-				public void registerEvent(String js) {
+				public void save(String js) {
 					final VkMenuBarVertical widget = (VkMenuBarVertical)VkStateHelper.getInstance().getEngine().getWidget(VkMenuBarVertical.NAME);
-					menuBar.addItem(nameTb.getText(), widget);
+					menuBar.add(widget);
+					menuBar.getMenuItem(menuBar.getItemCount() - 1).setText(nameTb.getText());
 				}
 			});
 		}

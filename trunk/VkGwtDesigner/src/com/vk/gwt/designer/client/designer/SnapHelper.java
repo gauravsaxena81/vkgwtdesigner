@@ -51,30 +51,40 @@ class SnapHelper {
 	public static SnapHelper getInstance(){
 		return snapHelper;
 	}
-	public int getSnappedLeft(int left){
-		int newLeft = SNAP_TO_FIT_LEFT * (int)Math.ceil((double)left / SNAP_TO_FIT_LEFT);
-		int origCalculatedLeft = newLeft;
-		newLeft = getHorizontalSnapElementTarget(newLeft);
-		if(newLeft != -1 && Math.abs(newLeft - left) < Math.abs(origCalculatedLeft - left)){
+	public int getSnappedLeft(int left, int width){
+		int snappedLeft = SNAP_TO_FIT_LEFT * (int)Math.ceil((double)left / SNAP_TO_FIT_LEFT);
+		int leftWhenLeftSnapped = getHorizontalSnapElementTarget(left);
+		int leftWhenRightSnapped = getHorizontalSnapElementTarget(left + width);
+		if(leftWhenRightSnapped != -1 && Math.abs(leftWhenRightSnapped - width - left) < Math.abs(leftWhenLeftSnapped - left) && Math.abs(leftWhenRightSnapped - width - left) < Math.abs(snappedLeft - left)){
 			snapToTargetLineVertical.setPixelSize(1, Window.getClientHeight());
-			snapToTargetLineVertical.setPopupPosition(newLeft, 0);
+			snapToTargetLineVertical.setPopupPosition(leftWhenRightSnapped, 0);
 			snapToTargetLineVertical.show();
-			return newLeft;
+			return leftWhenRightSnapped - width;
+		} else if(leftWhenLeftSnapped != -1 && Math.abs(leftWhenLeftSnapped - left) < Math.abs(snappedLeft - left)){
+			snapToTargetLineVertical.setPixelSize(1, Window.getClientHeight());
+			snapToTargetLineVertical.setPopupPosition(leftWhenLeftSnapped, 0);
+			snapToTargetLineVertical.show();
+			return leftWhenLeftSnapped;
 		} else
-			return origCalculatedLeft;
+			return snappedLeft;
 	}
 	
-	public int getSnappedTop(int top){
-		int newTop = SNAP_TO_FIT_TOP * (int) Math.ceil((double)top / SNAP_TO_FIT_TOP);
-		int origCalculatedTop = newTop;
-		newTop = getVerticalSnapElementTarget(newTop);
-		if(newTop != -1 && Math.abs(newTop - top) < Math.abs(origCalculatedTop - top)){
+	public int getSnappedTop(int top, int height){
+		int snappedTop = SNAP_TO_FIT_TOP * (int) Math.ceil((double)top / SNAP_TO_FIT_TOP);
+		int topWhenTopSnapped = getVerticalSnapElementTarget(top);
+		int topWhenBottomSnapped = getVerticalSnapElementTarget(top  + height);
+		if(topWhenBottomSnapped != -1 && Math.abs(topWhenBottomSnapped - height - top) < Math.abs(topWhenTopSnapped - top) && Math.abs(topWhenBottomSnapped - height - top) < Math.abs(snappedTop - top)){
 			snapToTargetLineHorizontal.setPixelSize(Window.getClientWidth(), 1);
-			snapToTargetLineHorizontal.setPopupPosition(0, newTop);
+			snapToTargetLineHorizontal.setPopupPosition(0, topWhenBottomSnapped);
 			snapToTargetLineHorizontal.show();
-			return newTop;
+			return topWhenBottomSnapped - height;
+		} else if(topWhenTopSnapped != -1 && Math.abs(topWhenTopSnapped - top) < Math.abs(snappedTop - top)){
+			snapToTargetLineHorizontal.setPixelSize(Window.getClientWidth(), 1);
+			snapToTargetLineHorizontal.setPopupPosition(0, topWhenTopSnapped);
+			snapToTargetLineHorizontal.show();
+			return topWhenTopSnapped;
 		} else
-			return origCalculatedTop;
+			return snappedTop;
 	}
 	
 	public int getSnappedWidth(int left, int width) {
@@ -92,8 +102,7 @@ class SnapHelper {
 	
 	public int getSnappedHeight(int top, int height) {
 		int snappedHeight = (int)(SNAP_TO_FIT_TOP * Math.ceil((double)height / SNAP_TO_FIT_TOP));
-		int newBottom = top + snappedHeight;
-		newBottom = getVerticalSnapElementTarget(newBottom);
+		int newBottom = getVerticalSnapElementTarget(top + height);
 		if(newBottom != -1 && Math.abs(newBottom - top - height) < Math.abs(snappedHeight - height)) {
 			snapToTargetLineHorizontal.setPixelSize(Window.getClientWidth(), 1);
 			snapToTargetLineHorizontal.setPopupPosition(0, newBottom);
@@ -109,13 +118,23 @@ class SnapHelper {
 			if(!snappableWidgets.get(i).equals(ignoreWidget)) {
 				int absLeft = snappableWidgets.get(i).getAbsoluteLeft();
 				int width = snappableWidgets.get(i).getOffsetWidth();
-				if(Math.abs(absLeft - pos) < max) {
-					max = Math.abs(absLeft - pos);
+				int borderLeftWidth = VkDesignerUtil.getPixelValue(snappableWidgets.get(i).getElement(), "border-left-width");
+				int borderRightWidth = VkDesignerUtil.getPixelValue(snappableWidgets.get(i).getElement(), "border-right-width");
+				if(Math.abs(absLeft - originalPos) < max) {
 					pos = absLeft;
+					max = Math.abs(pos - originalPos);
 				} 
-				if(Math.abs(absLeft + width - originalPos) < max){
-					max = Math.abs(absLeft + width - originalPos);
+				if(Math.abs(absLeft - originalPos + borderLeftWidth) < max) {
+					pos = absLeft + borderLeftWidth;
+					max = Math.abs(pos - originalPos);
+				}
+				if(Math.abs(absLeft + width - borderRightWidth - originalPos) < max) {
+					pos = absLeft + width - borderRightWidth;
+					max = Math.abs(pos - originalPos);
+				}
+				if(Math.abs(absLeft + width - originalPos) < max) {
 					pos = absLeft + width;
+					max = Math.abs(pos - originalPos);
 				}
 			}
 		}
@@ -130,15 +149,25 @@ class SnapHelper {
 		int originalPos = pos;
 		for(int i = 0, len = snappableWidgets.size(); i < len; i++) {
 			if(!snappableWidgets.get(i).equals(ignoreWidget)) {
-				int absTop = snappableWidgets.get(i).getAbsoluteTop();
+				int absTop = snappableWidgets.get(i).getElement().getAbsoluteTop();
 				int height = snappableWidgets.get(i).getOffsetHeight();
-				if(Math.abs(absTop - pos) < max) {
-					max = Math.abs(absTop - pos);
+				int borderTopWidth = VkDesignerUtil.getPixelValue(snappableWidgets.get(i).getElement(), "border-top-width");
+				int borderBottomWidth = VkDesignerUtil.getPixelValue(snappableWidgets.get(i).getElement(), "border-bottom-width");
+				if(Math.abs(absTop - originalPos) < max) {
 					pos = absTop;
+					max = Math.abs(pos - originalPos);
 				} 
+				if(Math.abs(absTop - originalPos + borderTopWidth) < max) {
+					pos = absTop + borderTopWidth;
+					max = Math.abs(pos - originalPos);
+				}
 				if(Math.abs(absTop + height - originalPos) < max){
-					max = Math.abs(absTop + height - originalPos);
 					pos = absTop + height;
+					max = Math.abs(pos - originalPos);
+				}
+				if(Math.abs(absTop + height - originalPos - borderBottomWidth) < max){
+					pos = absTop + height - borderBottomWidth;
+					max = Math.abs(pos - originalPos);
 				}
 			}
 		}

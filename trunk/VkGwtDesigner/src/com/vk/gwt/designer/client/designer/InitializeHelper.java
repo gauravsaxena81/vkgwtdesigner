@@ -154,54 +154,6 @@ public class InitializeHelper {
 					//	@com.vk.gwt.designer.client.designer.VkDesignerUtil::makeMovable(Lcom/google/gwt/user/client/ui/Widget;)(widget);
 				}
 			}
-			$doc.onkeydown = function(ev){
-				if(typeof ev == 'undefined')
-					ev = $wnd.event;
-				var vkStatehelper = @com.vk.gwt.designer.client.designer.VkStateHelper::getInstance()();
-				var menu = vkStatehelper.@com.vk.gwt.designer.client.designer.VkStateHelper::getMenu()();
-				if(ev.keyCode == 46) {//remove widget
-					var deleteCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getRemoveCommand()();
-					if(deleteCommand != null)
-					{
-						deleteCommand.@com.google.gwt.user.client.Command::execute()();
-						var toolBarHelper = @com.vk.gwt.designer.client.designer.ToolbarHelper::getInstance()()
-						toolBarHelper.@com.vk.gwt.designer.client.designer.ToolbarHelper::hideToolbar()();
-					}
-				}
-				else if(ev.keyCode == 67 && ev.ctrlKey && ev.shiftKey) {//copy style
-					var copyCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCopyStyleCommand()();
-					if(copyCommand != null)
-						copyCommand.@com.google.gwt.user.client.Command::execute()();
-				}
-				else if(ev.keyCode == 86 && ev.ctrlKey && ev.shiftKey){//paste style
-					var pasteCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getPasteStyleCommand()();
-					if(pasteCommand != null)
-						pasteCommand.@com.google.gwt.user.client.Command::execute()();
-				}
-				else if(ev.keyCode == 67 && ev.ctrlKey){//copy
-					var copyCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCopyCommand()();
-					if(copyCommand != null)
-						copyCommand.@com.google.gwt.user.client.Command::execute()();
-				}
-				else if(ev.keyCode == 86 && ev.ctrlKey){//paste
-					var pasteCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getPasteCommand()();
-					if(pasteCommand != null)
-						pasteCommand.@com.google.gwt.user.client.Command::execute()();
-				}
-				else if(ev.keyCode == 88 && ev.ctrlKey){//redo
-					var cutCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getCutCommand()();
-					if(cutCommand != null)
-						cutCommand.@com.google.gwt.user.client.Command::execute()();
-				}
-				else if(ev.keyCode == 89 && ev.ctrlKey){//redo
-					var redoCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getRedoCommand()();
-					redoCommand.@com.google.gwt.user.client.Command::execute()();
-				}
-				else if(ev.keyCode == 90 && ev.ctrlKey){//undo
-					var undoCommand = menu.@com.vk.gwt.designer.client.designer.VkMenu::getUndoCommand()();
-					undoCommand.@com.google.gwt.user.client.Command::execute()();
-				}
-			};
 		}
 	}-*/;
 }

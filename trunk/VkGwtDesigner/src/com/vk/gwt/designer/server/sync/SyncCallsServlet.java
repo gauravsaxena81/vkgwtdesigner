@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 
+import com.vk.gwt.designer.server.filereader.VkFileReader;
 import com.vk.gwt.designer.server.image.ImageSrcMaker;
 import com.vk.gwt.designer.server.upload.UploadHelper;
 import com.vk.gwt.designer.server.upload.UploadStateHelper;
@@ -26,7 +27,14 @@ public class SyncCallsServlet extends HttpServlet{
 			response.setContentType("text/html");
 			if("imgUpload".equals(getParameter("op", fileItems))) {
 				fileItems = UploadHelper.getInstance().doUpload(fileItems);
-				ImageSrcMaker.getInstance().writeToResponse(response, fileItems);
+				new ImageSrcMaker().writeToResponse(response, fileItems);
+			} else if ("downLoadLayoutFile".equals(getParameter("op", fileItems))) {
+				response.setContentType("application/octet-stream"); 
+		        response.setHeader("Content-disposition", "attachment;filename=layout.vk");
+				response.getWriter().write(getParameter("downloadString", fileItems));
+			} else if ("upLoadLayoutFile".equals(getParameter("op", fileItems))) {
+				fileItems = UploadHelper.getInstance().doUpload(fileItems);
+				new VkFileReader().writeToResponse(response, fileItems);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

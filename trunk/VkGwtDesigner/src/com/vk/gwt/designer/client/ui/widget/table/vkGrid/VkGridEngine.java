@@ -9,9 +9,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.designer.ToolbarHelper;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 
@@ -63,13 +64,12 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 	}
 	private void removeSelectedColumns(VkGrid table) {
 		int rowCount = table.getRowCount();
-		for(int i = 0; i < rowCount; i++)
-		{
+		boolean isAnyCellSelected = false;
+		for(int i = 0; i < rowCount; i++) {
 			int colCount = table.getCellCount(i);
-			for(int j = 0; j < colCount; j++)
-			{
-				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1)
-				{
+			for(int j = 0; j < colCount; j++) {
+				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
+					isAnyCellSelected = true;
 					for(int l = 0; l < rowCount; l++)
 						table.removeCell(l, j);
 					table.getColumnFormatter().getElement(j).removeFromParent();
@@ -78,17 +78,19 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 				}
 			}
 		}
+		if(isAnyCellSelected)
+			Window.alert("Please select cells before applying cell operations");
 		clearAndStopCellSelection(table);
+		ToolbarHelper.getInstance().showToolbar(table);
 	}
 	private void removeSelectedRows(VkGrid table) {
+		boolean isAnyCellSelected = false;
 		int rowCount = table.getRowCount();
-		for(int i = 0; i < rowCount; i++)
-		{
+		for(int i = 0; i < rowCount; i++) {
 			int colCount = table.getCellCount(i);
-			for(int j = 0; j < colCount; j++)
-			{
-				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1)
-				{
+			for(int j = 0; j < colCount; j++) {
+				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
+					isAnyCellSelected = true;
 					table.removeRow(i);
 					i--;
 					rowCount--;
@@ -96,7 +98,10 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 				}
 			}
 		}
+		if(isAnyCellSelected)
+			Window.alert("Please select cells before applying cell operations");
 		clearAndStopCellSelection(table);
+		ToolbarHelper.getInstance().showToolbar(table);
 	}
 	
 	private void addNewColumn(VkGrid table) {
@@ -126,9 +131,10 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 		
 		for(int i = columnNumber + 2, len = table.getColumnCount(); i < len; i++)
 			table.getColumnFormatter().setWidth(i, DOM.getElementAttribute(table.getColumnFormatter().getElement(i - 1), "width"));
-		if(isAnyCellSelected)
+		if(isAnyCellSelected) {
 			clearAndStopCellSelection(table);
-		else
+			ToolbarHelper.getInstance().showToolbar(table);
+		} else
 			Window.alert("Please select cells before applying cell operations");
 	}
 	private void addNewRow(VkGrid table) {
@@ -143,21 +149,23 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 				}
 			}
 		}
-		if(isAnyCellSelected)
+		if(isAnyCellSelected) {
 			clearAndStopCellSelection(table);
+			ToolbarHelper.getInstance().showToolbar(table);
+		}
 		else
 			Window.alert("Please select cells before applying cell operations");
 	}
 	private void addCellPadding(final VkGrid table) {
 		TextBox tb = new TextBox();
 		tb.setWidth("100px");
-		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IEventRegister() {
+		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IDialogCallback() {
 			@Override
-			public void registerEvent(String text) {
+			public void save(String text) {
 				try{
 					table.setCellPadding(Integer.parseInt(text.trim()));
-				}catch(NumberFormatException e)
-				{
+					ToolbarHelper.getInstance().showToolbar(table);
+				} catch(NumberFormatException e) {
 					Window.alert("Cell Padding cannot be non-numeric");
 					addCellPadding(table);
 				}
@@ -167,30 +175,19 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 	private void addCellSpacing(final VkGrid table) {
 		TextBox tb = new TextBox();
 		tb.setWidth("300px");
-		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IEventRegister() {
+		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IDialogCallback() {
 			@Override
-			public void registerEvent(String text) {
+			public void save(String text) {
 				try{
 					table.setCellSpacing(Integer.parseInt(text.trim()));
-				}catch(NumberFormatException e)
-				{
+					ToolbarHelper.getInstance().showToolbar(table);
+				}catch(NumberFormatException e)	{
 					Window.alert("Cell Spacing cannot be non-numeric");
 					addCellSpacing(table);
 				}
 			}
 		});
 	}
-	/*private void startCellSelection(VkGrid table) {
-		table.setSelectionEnabled(true);
-		int rowCount = table.getRowCount();
-		for(int i = 0; i < rowCount; i++)
-		{
-			int colCount = table.getCellCount(i);
-			for(int j = 0; j < colCount; j++)
-				table.getCellFormatter().setStyleName(i, j, "");
-		}
-		Window.alert("Cell Selection is enabled. Click on a cell to start cell selecting and click again to stop");
-	}*/
 	private void clearAndStopCellSelection(VkGrid table) {
 		int rowCount = table.getRowCount();
 		for(int i = 0; i < rowCount; i++)

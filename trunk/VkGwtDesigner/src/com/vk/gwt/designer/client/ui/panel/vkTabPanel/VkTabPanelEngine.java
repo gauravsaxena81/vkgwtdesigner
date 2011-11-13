@@ -22,7 +22,7 @@ import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 
@@ -53,9 +53,9 @@ public class VkTabPanelEngine extends VkAbstractWidgetEngine<VkTabPanel> {
 				listBox.addItem(widget.getTabHeaderText(i), Integer.toString(i));
 			listBox.setWidth("300px");
 			VkDesignerUtil.showAddListDialog("Add Tab number to enable", listBox
-			, new IEventRegister() {
+			, new IDialogCallback() {
 				@Override
-				public void registerEvent(String text) {
+				public void save(String text) {
 					int tabNumber = Integer.parseInt(text);
 					widget.setTabEnabled(tabNumber, true);
 					widget.selectTab(tabNumber);
@@ -67,9 +67,9 @@ public class VkTabPanelEngine extends VkAbstractWidgetEngine<VkTabPanel> {
 				listBox.addItem(widget.getTabHeaderText(i), Integer.toString(i));
 			listBox.setWidth("300px");
 			VkDesignerUtil.showAddListDialog("Add Tab number to disable", listBox
-			, new IEventRegister() {
+			, new IDialogCallback() {
 				@Override
-				public void registerEvent(String text) {
+				public void save(String text) {
 					widget.setTabEnabled(Integer.parseInt(text), false);
 				}
 			});

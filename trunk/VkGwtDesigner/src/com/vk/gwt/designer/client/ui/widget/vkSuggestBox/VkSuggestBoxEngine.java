@@ -13,7 +13,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
@@ -34,9 +34,9 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 			final TextBox tb = new TextBox();
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please edit the suggestion", tb
-				, new IEventRegister() {
+				, new IDialogCallback() {
 					@Override
-					public void registerEvent(String js) {
+					public void save(String js) {
 						MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)widget.getSuggestOracle();
 						oracle.add(tb.getText());
 						widget.getSuggestions().add(tb.getText());
@@ -51,9 +51,9 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 			for (Iterator<String> iterator = widget.getSuggestions().iterator(); iterator.hasNext();)
 				listBox.addItem(iterator.next(),Integer.toString(i++));
 			VkDesignerUtil.showAddListDialog("Pick a suggestion to delete", listBox
-				, new IEventRegister() {
+				, new IDialogCallback() {
 					@Override
-					public void registerEvent(String js) {
+					public void save(String js) {
 						MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)widget.getSuggestOracle();
 						oracle.clear();
 						widget.getSuggestions().remove(listBox.getSelectedIndex());
@@ -70,16 +70,16 @@ public class VkSuggestBoxEngine extends VkAbstractWidgetEngine<VkSuggestBox> {
 			for (Iterator<String> iterator = widget.getSuggestions().iterator(); iterator.hasNext();)
 				listBox.addItem(iterator.next(),Integer.toString(i++));
 			VkDesignerUtil.showAddListDialog("Pick a suggestion to delete", listBox
-				, new IEventRegister() {
+				, new IDialogCallback() {
 					@Override
-					public void registerEvent(String js) {
+					public void save(String js) {
 						final TextBox tb = new TextBox();
 						tb.setText(widget.getSuggestions().get(listBox.getSelectedIndex()));
 						tb.setWidth("300px");
 						VkDesignerUtil.showAddTextAttributeDialog("Please edit the suggestion", tb
-							, new IEventRegister() {
+							, new IDialogCallback() {
 								@Override
-								public void registerEvent(String js) {
+								public void save(String js) {
 									MultiWordSuggestOracle oracle = (MultiWordSuggestOracle)widget.getSuggestOracle();
 									oracle.clear();
 									widget.getSuggestions().remove(listBox.getSelectedIndex());

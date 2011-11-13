@@ -12,7 +12,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
@@ -54,9 +54,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			else
 				tb.setText("");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up image url", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String src) {
+						public void save(String src) {
 							widget.getUpFace().setImage(new Image(src));
 							widget.setImageUpSrc(src);
 						}
@@ -71,9 +71,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			else
 				tb.setText("");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up hover image url", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String src) {
+						public void save(String src) {
 							widget.getUpHoveringFace().setImage(new Image(src));
 							widget.setImageUpHoveringSrc(src);
 						}
@@ -88,9 +88,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			else
 				tb.setText("");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up disabled image url", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String src) {
+						public void save(String src) {
 							widget.getUpDisabledFace().setImage(new Image(src));
 							widget.setImageUpDisabledSrc(src);
 						}
@@ -105,9 +105,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			else
 				tb.setText("");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down image url", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String src) {
+						public void save(String src) {
 							widget.getDownFace().setImage(new Image(src));
 							widget.setImageDownSrc(src);
 						}
@@ -122,9 +122,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			else
 				tb.setText("");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down hover image url", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String src) {
+						public void save(String src) {
 							widget.getDownHoveringFace().setImage(new Image(src));
 							widget.setImageDownHoveringSrc(src);
 						}
@@ -139,9 +139,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			else
 				tb.setText("");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down disabled image url", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String src) {
+						public void save(String src) {
 							widget.getDownDisabledFace().setImage(new Image(src));
 							widget.setImageDownDisabledSrc(src);
 						}
@@ -153,9 +153,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			ta.setText(widget.getUpFace().getHTML());
 			ta.setSize("300px", "100px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up html", ta
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String html) {
+						public void save(String html) {
 							widget.getUpFace().setHTML(html);
 							widget.setImageUpSrc(null);
 						}
@@ -167,9 +167,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			ta.setText(widget.getUpHoveringFace().getHTML());
 			ta.setSize("300px", "100px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up hover html", ta
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String html) {
+						public void save(String html) {
 							widget.getUpHoveringFace().setHTML(html);
 							widget.setImageUpHoveringSrc(null);
 						}
@@ -181,9 +181,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			ta.setText(widget.getUpDisabledFace().getHTML());
 			ta.setSize("300px", "100px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up disabled html", ta
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String html) {
+						public void save(String html) {
 							widget.getUpDisabledFace().setHTML(html);
 							widget.setImageUpDisabledSrc(null);
 						}
@@ -195,9 +195,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			ta.setText(widget.getDownFace().getHTML());
 			ta.setSize("300px", "100px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down html", ta
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String html) {
+						public void save(String html) {
 							widget.getDownFace().setHTML(html);
 							widget.setImageDownSrc (null);
 						}
@@ -209,9 +209,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			ta.setText(widget.getDownHoveringFace().getHTML());
 			ta.setSize("300px", "100px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down hover html", ta
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String html) {
+						public void save(String html) {
 							widget.getDownHoveringFace().setHTML(html);
 							widget.setImageDownHoveringSrc(null);
 						}
@@ -223,9 +223,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			ta.setText(widget.getDownDisabledFace().getHTML());
 			ta.setSize("300px", "100px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down disabled html", ta
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String html) {
+						public void save(String html) {
 							widget.getDownDisabledFace().setHTML(html);
 							widget.setImageDownDisabledSrc(null);
 						}
@@ -237,9 +237,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			tb.setText(widget.getUpFace().getText());
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up text", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String text) {
+						public void save(String text) {
 							widget.getUpFace().setText(text);
 							widget.setImageUpSrc(null);
 						}
@@ -251,9 +251,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			tb.setText(widget.getUpHoveringFace().getText());
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up hover text", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String text) {
+						public void save(String text) {
 							widget.getUpHoveringFace().setText(text);
 							widget.setImageUpHoveringSrc(null);
 						}
@@ -265,9 +265,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			tb.setText(widget.getUpDisabledFace().getText());
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up disabled text", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String text) {
+						public void save(String text) {
 							widget.getUpDisabledFace().setText(text);
 							widget.setImageUpDisabledSrc(null);
 						}
@@ -279,9 +279,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			tb.setText(widget.getDownFace().getText());
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down text", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String text) {
+						public void save(String text) {
 							widget.setImageDownSrc(null);
 							widget.getDownFace().setText(text);
 						}
@@ -293,9 +293,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			tb.setText(widget.getDownHoveringFace().getText());
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down hover text", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String text) {
+						public void save(String text) {
 							widget.getDownHoveringFace().setText(text);
 							widget.setImageDownHoveringSrc(null);
 						}
@@ -307,9 +307,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			tb.setText(widget.getDownDisabledFace().getText());
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down disabled text", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String text) {
+						public void save(String text) {
 							widget.getDownDisabledFace().setText(text);
 							widget.setImageDownDisabledSrc(null);
 						}
@@ -322,9 +322,9 @@ public class VkPushButtonEngine extends VkAbstractWidgetEngine<VkPushButton> {
 			listBox.addItem("True","0");
 			listBox.addItem("False","1");
 			listBox.setSelectedIndex(widget.isAllowHoldDown() ? 0 : 1);
-			VkDesignerUtil.showAddListDialog("Please provide option for holding button down on click", listBox, new IEventRegister(){
+			VkDesignerUtil.showAddListDialog("Please provide option for holding button down on click", listBox, new IDialogCallback(){
 				@Override
-				public void registerEvent(String js) {
+				public void save(String js) {
 					if(listBox.getSelectedIndex() == 0)
 						widget.setAllowHoldDown(true);
 					else

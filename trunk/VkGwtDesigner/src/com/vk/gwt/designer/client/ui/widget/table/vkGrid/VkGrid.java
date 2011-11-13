@@ -15,22 +15,13 @@ import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.engine.IEngine;
 import com.vk.gwt.designer.client.designer.EventHelper;
-import com.vk.gwt.designer.client.designer.ToolbarHelper;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
@@ -38,17 +29,18 @@ import com.vk.gwt.designer.client.ui.panel.vkAbsolutePanel.VkAbsolutePanel;
 import com.vk.gwt.designer.client.ui.panel.vkAbsolutePanel.VkAbsolutePanelEngine;
 import com.vk.gwt.designer.client.ui.widget.label.vkHtml.VkHTML;
 import com.vk.gwt.designer.client.ui.widget.label.vkLabel.VkLabel;
+import com.vk.gwt.designer.client.ui.widget.table.IVkTable;
 
-public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
+public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler, IVkTable{
 	public static final String NAME = "Grid";
 	private HandlerRegistration clickHandlerRegistration;
 	private String clickJs = "";
 	private boolean startSelection = false;
 	private boolean firstSelection = false;
-	private VkFlexTableColumnFormatter columnFormatter;
+	private VkGridColumnFormatter columnFormatter;
 	private IVkWidget vkParent;
 	
-	class VkFlexTableColumnFormatter extends ColumnFormatter
+	class VkGridColumnFormatter extends ColumnFormatter
 	{
 		public com.google.gwt.user.client.Element getElement(int col){
 			// no need to ensure that this <col> exists because in make cell this is made 
@@ -112,7 +104,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 		}
 	};
 	
-	class VkFlexTableAbsolutePanelEngine extends VkAbsolutePanelEngine{
+	class VkGridAbsolutePanelEngine extends VkAbsolutePanelEngine{
 		@Override
 		public VkGridAbsolutePanel getWidget() {
 			VkGridAbsolutePanel widget = new VkGridAbsolutePanel();
@@ -129,13 +121,12 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 		}
 	}
 	
-	public VkGrid()
-	{
+	public VkGrid() {
 		if(!WidgetEngineMapping.getInstance().getEngineMap().containsKey(VkGridAbsolutePanel.NAME))
-			WidgetEngineMapping.getInstance().getEngineMap().put(VkGridAbsolutePanel.NAME, new VkFlexTableAbsolutePanelEngine());
-		if(VkStateHelper.getInstance().isDesignerMode())
-			showAddTextAttributeDialog();
-		this.columnFormatter = new VkFlexTableColumnFormatter();
+			WidgetEngineMapping.getInstance().getEngineMap().put(VkGridAbsolutePanel.NAME, new VkGridAbsolutePanelEngine());
+		/*if(VkStateHelper.getInstance().isDesignerMode())
+			showAddTextAttributeDialog();*/
+		this.columnFormatter = new VkGridColumnFormatter();
 		setColumnFormatter(columnFormatter);
 		DOM.setStyleAttribute(getElement(), "tableLayout", "fixed");
 		this.addDomHandler(new MouseDownHandler() {
@@ -198,7 +189,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 			}
 		}
 	}
-	private void showAddTextAttributeDialog() {
+	/*private void showAddTextAttributeDialog() {
 		final DialogBox origDialog = new DialogBox();
 		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		final VerticalPanel dialog = new VerticalPanel();
@@ -243,10 +234,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 				try{
 					int rowCount = Integer.parseInt(rowsTextBox.getText().trim());
 					int colCount = Integer.parseInt(columnsTextBox.getText().trim());
-					VkGrid.this.resize(rowCount, colCount);
-					for(int i = 0; i < rowCount; i++)
-						for(int j = 0; j < colCount; j++)
-							makeCell(i, j);
+					defineTable(rowCount, colCount);
 					ToolbarHelper.getInstance().showToolbar(VkGrid.this);
 					origDialog.hide();
 				} catch(NumberFormatException e) {
@@ -263,7 +251,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 			}
 		});
 		origDialog.center();
-	}
+	}*/
 	public void makeCell(final int row, final int col)
 	{
 		VkGridAbsolutePanel l2 = new VkGridAbsolutePanel();
@@ -281,12 +269,15 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 				}
 			}
 		}, MouseOverEvent.getType());
-		DOM.setStyleAttribute(l2.getElement(), "border", "solid 1px gray");
 		DOM.setStyleAttribute(l2.getElement(), "overflow", "");
 		VkStateHelper.getInstance().getEngine().prepareWidget(l2, WidgetEngineMapping.getInstance().getEngineMap().get(VkAbsolutePanel.NAME));
 		boolean isVkDesignerMode = VkStateHelper.getInstance().isDesignerMode();
 		VkStateHelper.getInstance().setDesignerMode(false);//important as call routes to inserRow here instead of super's
 		setWidget(row, col, l2);
+		if(col != 0)
+			DOM.setStyleAttribute(super.getWidget(row, col - 1).getElement(), "borderRight", "solid 1px gray");
+		if(row != 0)
+			DOM.setStyleAttribute(super.getWidget(row - 1, col).getElement(), "borderBottom", "solid 1px gray");
 		l2.setVkParent(this);
 		VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 		DOM.setStyleAttribute(getCellFormatter().getElement(row, col), "height", "inherit");
@@ -400,40 +391,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	public int getCellSpacing(){
 		return super.getCellSpacing();
 	}
-	/*public void setCellHorizontalAlignment(int row, int col, String horizontalAlignment)
-	{
-		HorizontalAlignmentConstant hAlign;
-		if(horizontalAlignment.equals(HasHorizontalAlignment.ALIGN_CENTER.getTextAlignString()))
-			hAlign = HasHorizontalAlignment.ALIGN_CENTER;
-		else if(horizontalAlignment.equals(HasHorizontalAlignment.ALIGN_LEFT.getTextAlignString()))
-			hAlign = HasHorizontalAlignment.ALIGN_LEFT;
-		else if(horizontalAlignment.equals(HasHorizontalAlignment.ALIGN_RIGHT.getTextAlignString()))
-			hAlign = HasHorizontalAlignment.ALIGN_RIGHT;
-		else 
-		{
-			Window.alert("horizontal direction can only take one of the following values: " + HasHorizontalAlignment.ALIGN_CENTER.getTextAlignString() + "," 
-				+ HasHorizontalAlignment.ALIGN_LEFT.getTextAlignString() + "," +	HasHorizontalAlignment.ALIGN_RIGHT.getTextAlignString());
-			return;
-		}
-		getCellFormatter().setHorizontalAlignment(row, col, hAlign);
-	}
-	public void setCellVerticalAlignment(int row, int col, String verticalAlignment)
-	{
-		VerticalAlignmentConstant vAlign;
-		if(verticalAlignment.equals(HasVerticalAlignment.ALIGN_BOTTOM.getVerticalAlignString()))
-			vAlign = HasVerticalAlignment.ALIGN_BOTTOM;
-		else if(verticalAlignment.equals(HasVerticalAlignment.ALIGN_MIDDLE.getVerticalAlignString()))
-			vAlign = HasVerticalAlignment.ALIGN_MIDDLE;
-		else if(verticalAlignment.equals(HasVerticalAlignment.ALIGN_TOP.getVerticalAlignString()))
-			vAlign = HasVerticalAlignment.ALIGN_TOP;
-		else 
-		{
-			Window.alert("vertical direction can only take one of the following values: " + HasVerticalAlignment.ALIGN_BOTTOM.getVerticalAlignString() + "," 
-				+ HasVerticalAlignment.ALIGN_MIDDLE.getVerticalAlignString() + "," +	HasVerticalAlignment.ALIGN_TOP.getVerticalAlignString());
-			return;
-		}
-		getCellFormatter().setVerticalAlignment(row, col, vAlign);
-	}
+	/*
 	public void setCellWordWrap(int row, int col, boolean wordWrap) {
 		super.getCellFormatter().setWordWrap(row, col, wordWrap);
 	}*/
@@ -454,6 +412,13 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler{
 	@Override
 	public boolean isResizable() {
 		return true;
+	}
+	@Override
+	public void defineTable(int rows, int cols) {
+		VkGrid.this.resize(rows, cols);
+		for(int i = 0; i < rows; i++)
+			for(int j = 0; j < cols; j++)
+				makeCell(i, j);
 	}
 	/**************************Export attribute Methods********************************/
 	@Override

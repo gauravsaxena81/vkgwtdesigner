@@ -72,21 +72,19 @@ public class UndoHelper {
 		undoStack.push(new UndoAbleCommand(redoCommand, undoCommand));
 		redoStack.clear();
 	}
-	public boolean undo(){
+	public void undo(){
 		if(!undoStack.isEmpty()) {
 			UndoAbleCommand command = undoStack.pop();
 			command.undoCommand.execute();
 			redoStack.push(command);
 		}
-		return !undoStack.isEmpty();	
 	}
-	public boolean redo(){
+	public void redo(){
 		if(!redoStack.isEmpty()) {
 			UndoAbleCommand command = redoStack.pop();
 			command.redoCommand.execute();
 			undoStack.push(command);
 		}
-		return !redoStack.isEmpty();
 	}
 
 	public void init() {

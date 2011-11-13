@@ -10,7 +10,7 @@ public interface IVkWidget extends IsMovable, IsResizable{
 	public String getWidgetName();
 	public void clone(Widget targetWidget);
 	public boolean showMenu();
-	public List<Widget> getToolbarWidgets();
+	public List<? extends Widget> getToolbarWidgets();
 	public IVkWidget getVkParent();
 	public void setVkParent(IVkWidget panel);
 }

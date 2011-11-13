@@ -66,7 +66,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.EventHelper;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 import com.vk.gwt.designer.client.ui.widget.vkRichText.richtexttoolbar.RichTextToolbar;
 
@@ -459,9 +459,9 @@ public class VkRichTextArea extends Grid implements IVkWidget, HasVkText, HasVkH
 		final TextBox tb = new TextBox();
 		tb.setWidth("300px");
 		VkDesignerUtil.showAddTextAttributeDialog("Please provide a link", tb
-			, new IEventRegister() {
+			, new IDialogCallback() {
 				@Override
-				public void registerEvent(String link) {
+				public void save(String link) {
 					richTextArea.getFormatter().createLink(tb.getText());
 				}
 		});
