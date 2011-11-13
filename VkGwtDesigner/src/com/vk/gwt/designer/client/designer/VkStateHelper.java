@@ -3,7 +3,7 @@ package com.vk.gwt.designer.client.designer;
 
 public class VkStateHelper {
 	private static VkStateHelper vkStateHelper = new VkStateHelper();
-	private VkMenu vkMenu = VkMenu.getInstance();
+	private VkMenu vkMenu = new VkMenu();
 	
 	private boolean isDesignerMode = true;
 	private boolean isLoadRunning = false;
@@ -18,9 +18,9 @@ public class VkStateHelper {
 	public VkMenu getMenu() {
 		return vkMenu;
 	}
-	/*public void setMenu(VkMenu vkMenu) {
+	public void setMenu(VkMenu vkMenu) {
 		this.vkMenu = vkMenu;
-	}*/
+	}
 	public VkEngine getEngine() {
 		return vkEngine;
 	}

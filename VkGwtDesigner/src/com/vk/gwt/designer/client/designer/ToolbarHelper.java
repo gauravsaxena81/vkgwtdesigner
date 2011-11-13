@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBoxBase;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 
@@ -30,18 +31,18 @@ public class ToolbarHelper {
 		HorizontalPanel moveHp = new HorizontalPanel();
 		toolBarPanel.setWidget(moveHp);
 		toolBarPanel.setAutoHideEnabled(false);
-		DOM.setStyleAttribute(toolBarPanel.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
+		DOM.setStyleAttribute(toolBarPanel.getElement(), "zIndex", Integer.toString(1));
 		resizePanel.add(resizeImage);
 		resizePanel.setAutoHideEnabled(false);
-		DOM.setStyleAttribute(resizePanel.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
+		DOM.setStyleAttribute(resizePanel.getElement(), "zIndex", Integer.toString(1));
 		moveImage.addMouseDownHandler(new MouseDownHandler() {
 			@Override
 			public void onMouseDown(MouseDownEvent event) {
-				 VkStateHelper.getInstance().getMenu().prepareMenu((IVkWidget) popUpAssociateWidget);
+				VkStateHelper.getInstance().getMenu().prepareMenu((IVkWidget) popUpAssociateWidget);
+				if(popUpAssociateWidget instanceof TextBoxBase)
+					((TextBoxBase)popUpAssociateWidget).setFocus(false);
 				if(event.getNativeButton() == NativeEvent.BUTTON_LEFT && ((IVkWidget)popUpAssociateWidget).isMovable() && popUpAssociateWidget.getParent() instanceof AbsolutePanel) {
 					MoveHelper.getInstance().makeMovable(popUpAssociateWidget);
-					toolBarPanel.hide();
-					resizePanel.hide();
 					event.preventDefault();
 					event.stopPropagation();
 				}
@@ -77,7 +78,7 @@ public class ToolbarHelper {
 		HorizontalPanel toolBarHp = (HorizontalPanel) toolBarPanel.getWidget();
 		toolBarHp.clear();
 		toolBarHp.add(moveImage);
-		List<Widget> toolbarWidgets = ((IVkWidget)widget).getToolbarWidgets();
+		List<? extends Widget> toolbarWidgets = ((IVkWidget)widget).getToolbarWidgets();
 		if(toolbarWidgets != null)
 			for(int i = 0, len = toolbarWidgets.size(); i < len; i++)
 				toolBarHp.add(toolbarWidgets.get(i));

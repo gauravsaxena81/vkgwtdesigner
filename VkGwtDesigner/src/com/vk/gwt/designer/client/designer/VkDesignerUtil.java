@@ -2,6 +2,7 @@ package com.vk.gwt.designer.client.designer;
 
 import java.util.Map;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -25,10 +26,16 @@ import com.gwtstructs.gwt.client.widgets.autocompleterTextbox.AutoCompleterTextB
 import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkLoadHandler;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.designer.quirks.QuirkHelper;
 
 public class VkDesignerUtil {
-	public interface IEventRegister{
-		public void registerEvent(String js);
+	private static QuirkHelper quirkImpl = GWT.create(QuirkHelper.class);
+	
+	public interface IDialogCallback{
+		public void save(String js);
+	}
+	public interface IMultipleWidgetDialogCallback{
+		public void save();
 	}
 	public static native void setCapture(Widget widget) /*-{
 		var elem = widget.@com.google.gwt.user.client.ui.Widget::getElement()();
@@ -96,7 +103,7 @@ public class VkDesignerUtil {
 		try{
 			return parseInt(ret);
 		} catch(e){
-			return -1;
+			return 0;
 		}
 	}-*/;
 	public native static String getCssText(Widget widget) /*-{
@@ -104,29 +111,37 @@ public class VkDesignerUtil {
 		return elem.style.cssText;
 	}-*/;
 	public static double getDecorationsWidth(Element elem) {
-		if(elem.getTagName().equalsIgnoreCase("button"))
+		/*if(elem.getTagName().equalsIgnoreCase("button"))
 			return 0;
 		else if(elem.getTagName().equalsIgnoreCase("input") && (elem.getAttribute("type").isEmpty() || elem.getAttribute("type").equals("text")))
 			return 0;
-		int width = VkDesignerUtil.getPixelValue(elem, "border-left-width");
-		width += VkDesignerUtil.getPixelValue(elem, "border-right-width");
-		width += VkDesignerUtil.getPixelValue(elem, "padding-left");
-		width += VkDesignerUtil.getPixelValue(elem, "padding-right");
-		return width;
+		else if(elem.getTagName().equalsIgnoreCase("textarea"))
+			return 0;*/
+		if(elem.getTagName().equalsIgnoreCase("DIV")) {
+			int width = VkDesignerUtil.getPixelValue(elem, "border-left-width");
+			width += VkDesignerUtil.getPixelValue(elem, "border-right-width");
+			width += VkDesignerUtil.getPixelValue(elem, "padding-left");
+			width += VkDesignerUtil.getPixelValue(elem, "padding-right");
+			return width;
+		} else return 0;
 	}
 	public static double getDecorationsHeight(Element elem) {
 		//Textbox and buttons are assigned width and height irrespective of the decorations i.e. if 100px is assigned then, this value is inclusive of all decorations
-		if(elem.getTagName().equalsIgnoreCase("button"))
+		/*if(elem.getTagName().equalsIgnoreCase("button"))
 			return 0;
 		else if(elem.getTagName().equalsIgnoreCase("input") && (elem.getAttribute("type").isEmpty() || elem.getAttribute("type").equals("text")))
 			return 0;
-		int height = VkDesignerUtil.getPixelValue(elem, "border-top-width");
-		height += VkDesignerUtil.getPixelValue(elem, "border-bottom-width");
-		height += VkDesignerUtil.getPixelValue(elem, "padding-bottom");
-		height += VkDesignerUtil.getPixelValue(elem, "padding-top");
-		return height;
+		else if(elem.getTagName().equalsIgnoreCase("textarea"))
+			return 0;*/
+		if(elem.getTagName().equalsIgnoreCase("DIV")) {
+			int height = VkDesignerUtil.getPixelValue(elem, "border-top-width");
+			height += VkDesignerUtil.getPixelValue(elem, "border-bottom-width");
+			height += VkDesignerUtil.getPixelValue(elem, "padding-bottom");
+			height += VkDesignerUtil.getPixelValue(elem, "padding-top");
+			return height;
+		} else return 0;
 	}
-	public static void showAddListDialog(String heading, final ListBox listBox, final IEventRegister eventRegister) {
+	public static void showAddListDialog(String heading, final ListBox listBox, final IDialogCallback eventRegister) {
 		final DialogBox origDialog = new DialogBox();
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
@@ -156,7 +171,7 @@ public class VkDesignerUtil {
 		saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				eventRegister.registerEvent(listBox.getValue(listBox.getSelectedIndex()));
+				eventRegister.save(listBox.getValue(listBox.getSelectedIndex()));
 				origDialog.hide();
 			}
 		});
@@ -170,7 +185,7 @@ public class VkDesignerUtil {
 		});
 		origDialog.center();
 	}
-	public static void showAddTextAttributeDialog(String heading, final TextBoxBase addTextTa, final IEventRegister eventRegister) {
+	public static void showAddTextAttributeDialog(String heading, final TextBoxBase addTextTa, final IDialogCallback eventRegister) {
 		final DialogBox origDialog = new DialogBox();
 		FocusPanel fp = new FocusPanel();
 		origDialog.add(fp);
@@ -208,7 +223,7 @@ public class VkDesignerUtil {
 		saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				eventRegister.registerEvent(addTextTa.getText());
+				eventRegister.save(addTextTa.getText());
 				origDialog.hide();
 			}
 		});
@@ -222,7 +237,7 @@ public class VkDesignerUtil {
 		});
 		origDialog.center();
 	}
-	public static void showEventRegistrationDialog(HasVkEventHandler invokingWidget, String eventName, final IEventRegister iEventRegister) {
+	public static void showEventRegistrationDialog(HasVkEventHandler invokingWidget, String eventName, final IDialogCallback IDialogCallback) {
 		final DialogBox origDialog = new DialogBox();
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
@@ -247,7 +262,7 @@ public class VkDesignerUtil {
 		saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				iEventRegister.registerEvent(addTextTa.getText());
+				IDialogCallback.save(addTextTa.getText());
 				origDialog.hide();
 			}
 		});
@@ -262,7 +277,7 @@ public class VkDesignerUtil {
 		origDialog.center();
 		origDialog.setPopupPosition(origDialog.getPopupLeft() + 1, origDialog.getPopupTop());//for IE 9, the textarea otherwise doesn't take id of other widgets when clicked on
 	}
-	public static void showAddAutoCompleteTextDialog(String heading, final AutoCompleterTextBox targetTb, final IEventRegister eventRegister) {
+	public static void showAddAutoCompleteTextDialog(String heading, final AutoCompleterTextBox targetTb, final IDialogCallback eventRegister) {
 		final DialogBox origDialog = new DialogBox();
 		final VerticalPanel dialog = new VerticalPanel();
 		origDialog.add(dialog);
@@ -290,7 +305,46 @@ public class VkDesignerUtil {
 		saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				eventRegister.registerEvent(targetTb.getText());
+				eventRegister.save(targetTb.getText());
+				origDialog.hide();
+			}
+		});
+		Button cancelButton = new Button("Cancel");
+		buttonsPanel.add(cancelButton);
+		cancelButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				origDialog.hide();
+			}
+		});
+		origDialog.center();
+	}
+	public static void showAddWidgetsDialog(String heading, final IMultipleWidgetDialogCallback callback, final Widget... widgets) {
+		final DialogBox origDialog = new DialogBox();
+		final VerticalPanel dialog = new VerticalPanel();
+		origDialog.add(dialog);
+		origDialog.setText(heading);
+		dialog.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+		dialog.setWidth("100%");
+		DOM.setStyleAttribute(origDialog.getElement(), "zIndex", Integer.MAX_VALUE + "");
+		for(int i = 0; i < widgets.length;i++){
+			widgets[i].addDomHandler(new KeyDownHandler(){
+				@Override
+				public void onKeyDown(KeyDownEvent event) {
+					if(event.getNativeEvent().getKeyCode() == KeyCodes.KEY_DELETE)
+						event.stopPropagation();
+				}}, KeyDownEvent.getType());
+			dialog.add(widgets[i]);
+		}
+		
+		HorizontalPanel buttonsPanel = new HorizontalPanel();
+		dialog.add(buttonsPanel);
+		Button saveButton = new Button("Ok");
+		buttonsPanel.add(saveButton);
+		saveButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				callback.save();
 				origDialog.hide();
 			}
 		});
@@ -325,5 +379,11 @@ public class VkDesignerUtil {
 			DOM.setStyleAttribute(parent.getElement(), "position","static");
 		DOM.setStyleAttribute(widget.getElement(), "top", "0px");
 		DOM.setStyleAttribute(widget.getElement(), "left", "0px");
+	}
+	public static int getOffsetTop(Element elem){
+		return quirkImpl.getOffsetTop(elem);
+	}
+	public static int getOffsetLeft(Element elem) {
+		return quirkImpl.getOffsetLeft(elem);
 	}
 }

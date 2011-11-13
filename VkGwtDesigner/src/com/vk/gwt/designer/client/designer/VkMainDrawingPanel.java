@@ -16,7 +16,7 @@ public class VkMainDrawingPanel extends VkAbsolutePanel implements IVkPanel, Has
 	private static VkMainDrawingPanel drawingPanel = new VkMainDrawingPanel();
 	private VkMainDrawingPanel(){
 		getElement().setId("drawingPanel");
-		setPixelSize(Window.getClientWidth() - 5, Window.getClientHeight() - 20);
+		setPixelSize(Window.getClientWidth() - 5, Window.getClientHeight() - 50);
 		DOM.setStyleAttribute(getElement(), "border", "solid 1px gray");
 		DOM.setStyleAttribute(getElement(), "position", "relative");
 		if(VkStateHelper.getInstance().isDesignerMode()) {

@@ -24,11 +24,12 @@ private static MoveHelper moveHelper = new MoveHelper();
 	void makeMovable(final Widget invokingWidget) {
 		final HTML draggingWidget = new HTML("&nbsp;");
 		RootPanel.get().add(draggingWidget);
+		DOM.setStyleAttribute(draggingWidget.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		DOM.setStyleAttribute(draggingWidget.getElement(), "background", "blue");
 		draggingWidget.getElement().getStyle().setOpacity(0.2);
 		DOM.setStyleAttribute(draggingWidget.getElement(), "position", "absolute");
 		draggingWidget.setPixelSize(invokingWidget.getOffsetWidth(), invokingWidget.getOffsetHeight());
-		DOM.setStyleAttribute(draggingWidget.getElement(), "top", invokingWidget.getAbsoluteTop() + "px");
+		DOM.setStyleAttribute(draggingWidget.getElement(), "top", invokingWidget.getElement().getAbsoluteTop() + "px");
 		DOM.setStyleAttribute(draggingWidget.getElement(), "left", invokingWidget.getAbsoluteLeft() + "px");
 		DOM.setCapture(draggingWidget.getElement());
 		SnapHelper.getInstance().setIgnoreWidget(invokingWidget);
@@ -36,24 +37,24 @@ private static MoveHelper moveHelper = new MoveHelper();
 		draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
 			@Override
 			public void onMouseMove(MouseMoveEvent event) {
-				DOM.setStyleAttribute(draggingWidget.getElement(), "top", SnapHelper.getInstance().getSnappedTop(event.getClientY() +  RootPanel.getBodyElement().getScrollTop()) + "px");
-				DOM.setStyleAttribute(draggingWidget.getElement(), "left", SnapHelper.getInstance().getSnappedLeft(event.getClientX()) + "px");
+				DOM.setStyleAttribute(draggingWidget.getElement(), "top", SnapHelper.getInstance().getSnappedTop(event.getClientY() +  RootPanel.getBodyElement().getScrollTop(), draggingWidget.getOffsetHeight()) + "px");
+				DOM.setStyleAttribute(draggingWidget.getElement(), "left", SnapHelper.getInstance().getSnappedLeft(event.getClientX(), draggingWidget.getOffsetWidth()) + "px");
 				event.preventDefault();
 			}
 		});
 		draggingWidget.addMouseUpHandler(new MouseUpHandler() {
 			@Override
 			public void onMouseUp(MouseUpEvent event) {
-				final int initialTop = invokingWidget.getElement().getOffsetTop();
-				final int initialLeft = invokingWidget.getElement().getOffsetLeft();
-				final int finalTop = draggingWidget.getElement().getAbsoluteTop() - invokingWidget.getElement().getOffsetParent().getAbsoluteTop() 
+				final int initialTop = VkDesignerUtil.getOffsetTop(invokingWidget.getElement());
+				final int initialLeft = VkDesignerUtil.getOffsetLeft(invokingWidget.getElement());
+				final int finalTop = draggingWidget.getAbsoluteTop() - invokingWidget.getElement().getOffsetParent().getAbsoluteTop()
 				- VkDesignerUtil.getPixelValue((Element) invokingWidget.getElement().getOffsetParent(), "border-top-width") 
 				/*- VkDesignerUtil.getPixelValue((Element) invokingWidget.getElement().getOffsetParent(), "border-bottom-width")*/;
-				final int finalLeft = draggingWidget.getElement().getOffsetLeft() - invokingWidget.getElement().getOffsetParent().getAbsoluteLeft()
+				final int finalLeft = VkDesignerUtil.getOffsetLeft(draggingWidget.getElement()) - invokingWidget.getElement().getOffsetParent().getAbsoluteLeft()
 				- VkDesignerUtil.getPixelValue((Element) invokingWidget.getElement().getOffsetParent(), "border-left-width") 
 				/*- VkDesignerUtil.getPixelValue((Element) invokingWidget.getElement().getOffsetParent(), "border-right-width")*/;
 				SnapHelper.getInstance().setIgnoreWidget(null);
-				if(finalTop != initialTop - 1 || finalLeft != initialLeft - 1) {//-1 is hack for FF
+				if(finalTop != initialTop || finalLeft != initialLeft) {//-1 is hack for FF
 					UndoHelper.getInstance().doCommand(new Command(){
 						@Override
 						public void execute() {
@@ -65,10 +66,8 @@ private static MoveHelper moveHelper = new MoveHelper();
 								public void execute() {
 									DOM.setStyleAttribute(invokingWidget.getElement(), "top", initialTop + "px"); 
 									DOM.setStyleAttribute(invokingWidget.getElement(), "left", initialLeft + "px");
-									ToolbarHelper.getInstance().showToolbar(invokingWidget);
 								}});
-				} else
-					ToolbarHelper.getInstance().showToolbar(invokingWidget);
+				}
 				DOM.releaseCapture(draggingWidget.getElement());
 				//VkDesignerUtil.releaseCapture(draggingWidget);
 				draggingWidget.removeFromParent();

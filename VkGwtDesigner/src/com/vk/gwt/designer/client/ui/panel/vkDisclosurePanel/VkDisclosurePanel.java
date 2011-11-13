@@ -25,6 +25,9 @@ import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.EventHelper;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
+import com.vk.gwt.designer.client.ui.panel.vkAbsolutePanel.VkAbsolutePanel;
+import com.vk.gwt.designer.client.ui.widget.label.vkHtml.VkHTML;
+import com.vk.gwt.designer.client.ui.widget.label.vkLabel.VkLabel;
 
 public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidgets, HasVkAnimation, HasVkCloseHandler, HasVkOpenHandler{
 	public static final String NAME = "Disclosure Panel";
@@ -34,35 +37,47 @@ public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidge
 	private String closeJs = "";
 	private String openJs = "";
 	private IVkWidget vkParent;
+	private boolean isInitInProgress = false;
 	
 	public VkDisclosurePanel(){
 		dp = new DisclosurePanel();
 		initWidget(dp);
-		setPixelSize(100, 100);
+		isInitInProgress = true;
+		VkLabel header = (VkLabel) VkStateHelper.getInstance().getEngine().addWidgetByName(this, VkLabel.NAME);
+		VkAbsolutePanel absolutePanel = (VkAbsolutePanel) VkStateHelper.getInstance().getEngine().addWidgetByName(this, VkAbsolutePanel.NAME);
+		isInitInProgress = false;
+		header.setText("Header");
+		VkHTML contentLabel = (VkHTML) VkStateHelper.getInstance().getEngine().addWidgetByName(absolutePanel, VkHTML.NAME);
+		contentLabel.setHTML("Content");
+		contentLabel.setHeight("40px");
 	}
 	
-	public void add(Widget w)
-	{
-		if(dp.getHeader() == null)
-		{
+	public void add(Widget w) {
+		if(dp.getHeader() == null) {
 			dp.setHeader(w);
-			w.setWidth(VkDesignerUtil.getPixelValue(dp.getElement(), "width") + "px");
-			if(VkStateHelper.getInstance().isDesignerMode())
+			int width = VkDesignerUtil.getPixelValue(dp.getElement(), "width") ;
+			if(width == 0)
+				w.setWidth("100px");
+			else
+				w.setWidth(width + "px");
+			if(VkStateHelper.getInstance().isDesignerMode() && !isInitInProgress)
 				Window.alert("Widget added as header of Disclosure Panel");
 			if(w instanceof IVkWidget)
 				((IVkWidget)w).setVkParent(this);
-		}
-		else if(dp.getContent() == null)
-		{
+		} else if(dp.getContent() == null) {
 			dp.add(w);
-			w.setWidth(VkDesignerUtil.getPixelValue(dp.getElement(), "width") + "px");
+			int width = VkDesignerUtil.getPixelValue(dp.getElement(), "width") ;
+			if(width != 0)
+				w.setWidth("100px");
+			else
+				w.setWidth(width + "px");
+			DOM.setStyleAttribute(w.getElement(), "padding", "0px");
 			DOM.setStyleAttribute(w.getElement(), "margin", "0px");
-			if(VkStateHelper.getInstance().isDesignerMode())
+			if(VkStateHelper.getInstance().isDesignerMode() && !isInitInProgress)
 				Window.alert("Widget added as content of Disclosure Panel");
 			if(w instanceof IVkWidget)
 				((IVkWidget)w).setVkParent(this);
-		}
-		else
+		} else
 			Window.alert("Disclosure Panel can add only two widgets");
 	}
 	@Override
@@ -139,12 +154,10 @@ public class VkDisclosurePanel extends Composite implements IVkPanel, HasVkWidge
 	}
 	@Override
 	public void setWidth(String width){
-		dp.setWidth(width);
-		int widthValue = VkDesignerUtil.getPixelValue(dp.getElement(), "width");
 		if(dp.getHeader() != null)
-			dp.getHeader().setWidth(widthValue + "px");
+			dp.getHeader().setWidth(width);
 		if(dp.getContent() != null)
-			dp.getContent().setWidth(widthValue + "px");
+			dp.getContent().setWidth(width);
 	}
 	@Override
 	public boolean isMovable() {

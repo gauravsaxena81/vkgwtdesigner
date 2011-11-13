@@ -10,13 +10,6 @@ import org.apache.commons.fileupload.FileItem;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 public class ImageSrcMaker {
-	private static ImageSrcMaker converter = new ImageSrcMaker();
-	
-	private ImageSrcMaker(){}
-	
-	public static ImageSrcMaker getInstance(){
-		return converter;
-	}
 	private String getBase64EncodedImage(byte[] byteArray){
 		return Base64.encode(byteArray);
 	}

@@ -22,5 +22,13 @@
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
   <source path='shared'/>
+  
+  <replace-with class="com.vk.gwt.designer.client.designer.quirks.QuirkHelperFFImpl">
+    <when-type-assignable class="com.vk.gwt.designer.client.designer.quirks.QuirkHelper"/>
+    <any>
+	    <when-property-is name="user.agent" value="gecko1_8" />
+	    <when-property-is name="user.agent" value="gecko"/>
+	</any>
+  </replace-with>
 
 </module>

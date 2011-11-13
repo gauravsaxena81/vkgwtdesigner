@@ -10,9 +10,10 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.designer.ToolbarHelper;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
 
@@ -102,8 +103,10 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 				}
 			}
 		}
-		if(isAnyCellSelected)
+		if(isAnyCellSelected) {
 			table.clearCellSelection();
+			ToolbarHelper.getInstance().showToolbar(table);
+		}
 		else
 			Window.alert("Please select cells before applying cell operations");
 	}
@@ -152,8 +155,10 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 				}
 			}
 		}
-		if(isAnyCellSelected)
+		if(isAnyCellSelected) {
 			table.clearCellSelection();
+			ToolbarHelper.getInstance().showToolbar(table);
+		}
 		else
 			Window.alert("Please select cells before applying cell operations");
 	}
@@ -199,8 +204,10 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 				}
 			}
 		}
-		if(isAnyCellSelected)
+		if(isAnyCellSelected) {
 			table.clearCellSelection();
+			ToolbarHelper.getInstance().showToolbar(table);
+		}
 		else
 			for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++)
 				table.insertCell(i, table.getCellCount(i));
@@ -248,8 +255,10 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 				}
 			}
 		}
-		if(isAnyCellSelected)
+		if(isAnyCellSelected) {
 			table.clearCellSelection();
+			ToolbarHelper.getInstance().showToolbar(table);
+		}
 		else
 			table.insertRow(table.getRowCount());
 				
@@ -299,13 +308,13 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 	private void addCellPadding(final VkFlexTable table) {
 		TextBox tb = new TextBox();
 		tb.setWidth("300px");
-		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IEventRegister() {
+		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IDialogCallback() {
 			@Override
-			public void registerEvent(String text) {
+			public void save(String text) {
 				try{
 					table.setCellPadding(Integer.parseInt(text.trim()));
-				}catch(NumberFormatException e)
-				{
+					ToolbarHelper.getInstance().showToolbar(table);
+				} catch(NumberFormatException e)	{
 					Window.alert("Cell Padding cannot be non-numeric");
 					addCellPadding(table);
 				}
@@ -315,13 +324,13 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 	private void addCellSpacing(final VkFlexTable table) {
 		TextBox tb = new TextBox();
 		tb.setWidth("300px");
-		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IEventRegister() {
+		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IDialogCallback() {
 			@Override
-			public void registerEvent(String text) {
+			public void save(String text) {
 				try{
 					table.setCellSpacing(Integer.parseInt(text.trim()));
-				}catch(NumberFormatException e)
-				{
+					ToolbarHelper.getInstance().showToolbar(table);
+				} catch(NumberFormatException e)	{
 					Window.alert("Cell Spacing cannot be non-numeric");
 					addCellSpacing(table);
 				}

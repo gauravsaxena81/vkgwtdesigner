@@ -11,7 +11,7 @@ import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -24,7 +24,8 @@ import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
 import com.vk.gwt.designer.client.designer.EventHelper;
-import com.vk.gwt.designer.client.ui.widget.meunbar.vkMenuBarVertical.VkMenuBarVertical;
+import com.vk.gwt.designer.client.designer.ResizeHelper;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 
 public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkCloseHandler, HasVkAnimation, HasVkAutoOpen, HasVkWidgets, IVkPanel{
 	public static final String NAME = "Menu Bar Horizontal";
@@ -34,8 +35,12 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 	private List<Integer> seperatorIndices = new ArrayList<Integer>();
 	private HashMap<Integer, Widget> widgets = new HashMap<Integer, Widget>();
 	private IVkWidget vkParent;
-	public VkMenuBarHorizontal(){}
-	public VkMenuBarHorizontal(boolean b) {
+	
+	public VkMenuBarHorizontal(){
+		this(false);
+	}
+	
+	protected VkMenuBarHorizontal(boolean b) {
 		super(b);
 		setAutoOpen(true);
 	}
@@ -44,18 +49,33 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 	}
 	@Override
 	public void add(Widget widget) {
-		widgets.put(getItemCount(),widget);
+		addWidgetToCollection(widget);
 		final MenuItem menuItem = new MenuItem("Widget", (Command) null){
 			@Override
 			public void setSelectionStyle(boolean selected)
 			{
 				super.setSelectionStyle(selected);
-				if(VkMenuBarHorizontal.this.getAutoOpen())
+				if(VkMenuBarHorizontal.this.getAutoOpen() && getCommand() != null)
 					getCommand().execute();
 			}
 		};
 		this.addItem(menuItem);
-		final PopupPanel popupPanel = new PopupPanel();
+		final PopupPanel popupPanel = new PopupPanel() {
+			public void hide(boolean autoClosed) {
+				if(autoClosed) {
+					new Timer(){
+						@Override
+						public void run() {
+							lateHide();
+						}}.schedule(100);
+				} else
+					super.hide(autoClosed);
+			}
+			private void lateHide() {
+				if(!ResizeHelper.getInstance().isResizing())
+					super.hide(true);
+			}
+		};
 		popupPanel.add(widget);
 		if(widget instanceof IVkWidget)
 			((IVkWidget)widget).setVkParent(this);
@@ -68,7 +88,7 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 					popupPanel.hide();
 				else {
 					popupPanel.showRelativeTo(menuItem);
-					DOM.setStyleAttribute(popupPanel.getElement(), "top", popupPanel.getElement().getOffsetTop() + VkMenuBarHorizontal.this.getOffsetHeight() - menuItem.getOffsetHeight() + "");
+					DOM.setStyleAttribute(popupPanel.getElement(), "top", VkDesignerUtil.getOffsetTop(popupPanel.getElement()) + VkMenuBarHorizontal.this.getOffsetHeight() - menuItem.getOffsetHeight() + "");
 					popupPanel.show();
 				}
 			}});
@@ -106,7 +126,7 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 		else
 			return "";
 	}
-	@Override
+	/*@Override
 	public void onBrowserEvent(Event event) {
 		super.onBrowserEvent(event);
 		switch (DOM.eventGetType(event)) {
@@ -121,10 +141,13 @@ public class VkMenuBarHorizontal extends MenuBar implements IVkWidget, HasVkClos
 	      		}
 	      	}
 		}
-	}
+	}*/
 	@Override
 	public String getWidgetName() {
 		return NAME;
+	}
+	protected void addWidgetToCollection(Widget widget) {
+		widgets.put(getItemCount(),widget);
 	}
 	@Override
 	protected List<MenuItem> getItems() {

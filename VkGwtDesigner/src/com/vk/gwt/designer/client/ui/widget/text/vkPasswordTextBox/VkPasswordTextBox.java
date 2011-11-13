@@ -12,6 +12,7 @@ import com.google.gwt.event.dom.client.DoubleClickEvent;
 import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.FocusEvent;
 import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -106,7 +107,8 @@ public class VkPasswordTextBox extends PasswordTextBox implements IVkWidget, Has
 			super.addKeyDownHandler(new KeyDownHandler(){
 				@Override
 				public void onKeyDown(KeyDownEvent event) {
-					event.stopPropagation();
+					if(event.getNativeKeyCode() == KeyCodes.KEY_DELETE)
+						event.stopPropagation();
 				}});
 		}
 	}

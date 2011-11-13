@@ -12,6 +12,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ListBox;
@@ -20,7 +21,7 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.stylesheets.CssImpl;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
 import com.vk.gwt.designer.client.ui.widget.colorpicker.VkColorPicker;
 
 public class StyleToolbar extends Composite{
@@ -32,12 +33,24 @@ public class StyleToolbar extends Composite{
 	private String className;
 	
 	private StyleToolbar(){
-		initWidget(new MenuBar());
+		initWidget(new MenuBar(){
+			public void onBrowserEvent(Event event) {
+				MenuItem item = findItem(DOM.eventGetTarget(event));
+		        if (item != null && (item.getCommand() != null || item.getSubMenu() != null))
+		        	super.onBrowserEvent(event);
+			}
+			private MenuItem findItem(Element hItem) {
+			    for (MenuItem item : getItems()) {
+			      if (DOM.isOrHasChild(item.getElement(), hItem)) {
+			        return item;
+			      }
+			    }
+			    return null;
+			  }
+		});
 		makeToolbar();
 	}
 	public static StyleToolbar getInstance(){
-		if(invokingElement != null)
-			StyleMenu.getInstance().refreshStylePanel(invokingElement);
 		return styleToolbar;
 	} 
 	private void makeToolbar() {
@@ -61,11 +74,13 @@ public class StyleToolbar extends Composite{
 		toolBar.addItem(getBottomIndentItem());
 		toolBar.addItem(getIncreaseFontSizeItem());
 		toolBar.addItem(getDecreaseFontSizeItem());
+		toolBar.addItem(getFontChooserItem());
 		StyleMenu.getInstance().refreshStylePanel(invokingElement);
 		toolBar.addItem(getStyleDialogMenuItem(StyleMenu.getInstance()));
-		
-		toolBar.addSeparator();
-		toolBar.addItem("SE", new Command(){
+		toolBar.addItem(getSelectElementForCssEdit());
+	}
+	private MenuItem getSelectElementForCssEdit() {
+		return new MenuItem("SE", new Command(){
 			@Override
 			public void execute() {
 				selectElementClickHandlerRegistration = VkMainDrawingPanel.getInstance().addDomHandler(new ClickHandler() {
@@ -89,6 +104,113 @@ public class StyleToolbar extends Composite{
 					}
 				}, ClickEvent.getType());				
 			}});
+	}
+	private MenuItem getFontChooserItem() {
+		MenuBar fontChooser = new MenuBar(true);
+		
+		fontChooser.addItem("<span style='font-family:\"Arial\"'>Arial", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Arial, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Arial Black\"'>Arial Black", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Arial Black, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Arial Narrow\"'>Arial Narrow", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Arial Narrow, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Calibri\"'>Calibri", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Calibri, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Comic Sans MS\"'>Comic Sans MS", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Comic Sans MS, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Consolas\"'>Consolas", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Consolas, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Corsiva\"'>Corsiva", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Corsiva, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Courier New\"'>Courier New", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Courier New, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Droid Sans\"'>Droid Sans", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Droid Sans, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Droid Serif\"'>Droid Serif", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Droid Serif, serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Garamond\"'>Garamond", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Garamond, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Georgia\"'>Georgia", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Georgia, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Tahoma\"'>Tahoma", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Tahoma, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Times New Roman\"'>Times New Roman", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Times New Roman, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Trebuchet MS\"'>Trebuchet MS", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Trebuchet MS, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Ubuntu\"'>Ubuntu", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Ubuntu, sans-serif");
+			}
+		});
+		fontChooser.addItem("<span style='font-family:\"Verdana\"'>Verdana", true, new Command(){
+			@Override
+			public void execute() {
+				DOM.setStyleAttribute(invokingElement, "fontFamily", "Verdana, sans-serif");
+			}
+		});
+		return new MenuItem("Font", fontChooser);
 	}
 	private MenuItem getDecreaseFontSizeItem() {
 		return new MenuItem("A-",new Command(){
@@ -130,9 +252,9 @@ public class StyleToolbar extends Composite{
 		ListBox listBox = new ListBox();
 		for(int i = 0; i < classNameArray.length; i++)
 			listBox.addItem(classNameArray[i], classNameArray[i]);
-		VkDesignerUtil.showAddListDialog("Choose css class to modify", listBox, new IEventRegister() {
+		VkDesignerUtil.showAddListDialog("Choose css class to modify", listBox, new IDialogCallback() {
 			@Override
-			public void registerEvent(String chosenClassName) {
+			public void save(String chosenClassName) {
 				className = chosenClassName;
 			}
 		});
@@ -158,13 +280,13 @@ public class StyleToolbar extends Composite{
 				UndoHelper.getInstance().doCommand(new Command(){
 					@Override
 					public void execute() {
-						DOM.setStyleAttribute(element, "width", element.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(element) - 5 + "px");
+						DOM.setStyleAttribute(element, "width", element.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(element) - getPaddingAdjustmentForDivs(element) + "px");
 						setAttribute(element, finalClassName, "paddingLeft", prior + 5 + "px");
 					}
 				}, new Command(){
 						@Override
 						public void execute() {
-							DOM.setStyleAttribute(element, "width", element.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(element) + 5 + "px");
+							DOM.setStyleAttribute(element, "width", element.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(element) + getPaddingAdjustmentForDivs(element) + "px");
 							setAttribute(element, finalClassName, "paddingLeft", prior + "px");
 						}});
 			}});
@@ -180,15 +302,21 @@ public class StyleToolbar extends Composite{
 						UndoHelper.getInstance().doCommand(new Command(){
 							@Override
 							public void execute() {
-								DOM.setStyleAttribute(element, "width", element.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(element) + 5 + "px");
+								DOM.setStyleAttribute(element, "width", element.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(element) + getPaddingAdjustmentForDivs(element) + "px");
 								setAttribute(element, finalClassName, "paddingLeft", prior - 5 + "px");
 							}}, new Command(){
 									@Override
 									public void execute() {
-										DOM.setStyleAttribute(element, "width", element.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(element) - 5 + "px");
+										DOM.setStyleAttribute(element, "width", element.getOffsetWidth() - VkDesignerUtil.getDecorationsWidth(element) - getPaddingAdjustmentForDivs(element) + "px");
 										setAttribute(element, finalClassName, "paddingLeft", prior + "px");
 									}});
 					}});
+	}
+	private int getPaddingAdjustmentForDivs(Element elem) {
+		if(elem.getTagName().equalsIgnoreCase("DIV"))
+			return 5;
+		else 
+			return 0;
 	}
 	private MenuItem getTopIndentItem() {
 		return new MenuItem("<img src='images/top-indent.png' height=16 width=16'>"
@@ -201,12 +329,12 @@ public class StyleToolbar extends Composite{
 						UndoHelper.getInstance().doCommand(new Command(){
 							@Override
 							public void execute() {
-								DOM.setStyleAttribute(element, "height", element.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(element) - 5 + "px");
+								DOM.setStyleAttribute(element, "height", element.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(element) - getPaddingAdjustmentForDivs(element) + "px");
 								setAttribute(element, finalClassName, "paddingTop", prior + 5 + "px");
 							}}, new Command(){
 									@Override
 									public void execute() {
-										DOM.setStyleAttribute(element, "height", element.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(element) + 5 + "px");
+										DOM.setStyleAttribute(element, "height", element.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(element) + getPaddingAdjustmentForDivs(element) + "px");
 										setAttribute(element, finalClassName, "paddingTop", prior + "px");
 									}});
 					}});
@@ -222,12 +350,12 @@ public class StyleToolbar extends Composite{
 						UndoHelper.getInstance().doCommand(new Command(){
 							@Override
 							public void execute() {
-								DOM.setStyleAttribute(element, "height", element.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(element) + 5 + "px");
+								DOM.setStyleAttribute(element, "height", element.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(element) + getPaddingAdjustmentForDivs(element) + "px");
 								setAttribute(element, finalClassName, "paddingTop", prior - 5 + "px");
 							}}, new Command(){
 									@Override
 									public void execute() {
-										DOM.setStyleAttribute(element, "height", element.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(element) - 5 + "px");
+										DOM.setStyleAttribute(element, "height", element.getOffsetHeight() - VkDesignerUtil.getDecorationsHeight(element) - getPaddingAdjustmentForDivs(element) + "px");
 										setAttribute(element, finalClassName, "paddingTop", prior + "px");
 									}});
 					}});
@@ -372,8 +500,10 @@ public class StyleToolbar extends Composite{
 			public void execute() {
 				if(stylePickerPopPanel.isShowing())
 					stylePickerPopPanel.hide();
-				else
+				else {
+					StyleMenu.getInstance().refreshStylePanel(invokingElement);
 					stylePickerPopPanel.showRelativeTo(styleMenuItem);
+				}
 			}
 		});
 		styleMenuItem.setTitle("Detailed Style Dialog");
@@ -582,7 +712,10 @@ public class StyleToolbar extends Composite{
 	}
 	public void setWidget(Widget w){
 		className = null;
-		StyleToolbar.invokingElement = w.getElement();
+		Element element = w.getElement();
+		if(!element.equals(invokingElement))
+			StyleMenu.getInstance().refreshStylePanel(element);
+		StyleToolbar.invokingElement = element;
 	}
 	public void setAttribute(final String attribute, final String text) {
 		final Element element = invokingElement;

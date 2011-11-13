@@ -15,7 +15,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
@@ -49,9 +49,9 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 		{
 			final TextArea ta = new TextArea();
 			ta.setSize("300px", "100px");
-			VkDesignerUtil.showAddTextAttributeDialog("Please provide HTML for tab name", ta, new IEventRegister() {
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide HTML for tab name", ta, new IDialogCallback() {
 				@Override
-				public void registerEvent(String js) {
+				public void save(String js) {
 					tabbar.addTab(ta.getText(), true);
 				}
 			});
@@ -65,9 +65,9 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 				final TextArea ta = new TextArea();
 				ta.setText(tabbar.getTabHTML(tabbar.getSelectedTab()));
 				ta.setSize("300px", "100px");
-				VkDesignerUtil.showAddTextAttributeDialog("Please provide HTML for tab name", ta, new IEventRegister() {
+				VkDesignerUtil.showAddTextAttributeDialog("Please provide HTML for tab name", ta, new IDialogCallback() {
 					@Override
-					public void registerEvent(String js) {
+					public void save(String js) {
 						tabbar.setTabHTML(tabbar.getSelectedTab(), ta.getText());
 					}
 				});
@@ -96,9 +96,9 @@ public class VkTabBarEngine extends VkAbstractWidgetEngine<VkTabBar> {
 				if(tabbar.isTabEnabled(i) != enable)
 					listBox.addItem(Integer.toString(i), Integer.toString(i));
 			if(listBox.getItemCount() > 0){
-				VkDesignerUtil.showAddListDialog("Add Tab number to enable", listBox, new IEventRegister() {
+				VkDesignerUtil.showAddListDialog("Add Tab number to enable", listBox, new IDialogCallback() {
 					@Override
-					public void registerEvent(String text) {
+					public void save(String text) {
 						tabbar.setTabEnabled(Integer.parseInt(text), enable);
 					}
 				});

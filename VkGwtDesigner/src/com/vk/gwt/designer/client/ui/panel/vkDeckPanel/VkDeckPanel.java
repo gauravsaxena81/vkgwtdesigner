@@ -1,8 +1,12 @@
 package com.vk.gwt.designer.client.ui.panel.vkDeckPanel;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtstructs.gwt.client.widgets.jsBridge.Export;
 import com.vk.gwt.designer.client.api.attributes.HasVkAnimation;
@@ -103,8 +107,19 @@ public class VkDeckPanel extends DeckPanel implements IVkPanel, HasVkWidgets, Ha
 		super.removeStyleName(className);
 	}
 	@Override
-	public List<Widget> getToolbarWidgets() {
-		return null;
+	public List<? extends Widget> getToolbarWidgets() {
+		List<Label> pages = new ArrayList<Label>();
+		for(int i = 0, len = getWidgetCount(); i < len; i++) {
+			Label page = new Label("P" + i);
+			pages.add(page);
+			final int widgetIndex = i;
+			page.addClickHandler(new ClickHandler(){
+				@Override
+				public void onClick(ClickEvent event) {
+					showWidget(widgetIndex);
+				}});
+		}
+		return pages;
 	}
 	@Override
 	public IVkWidget getVkParent() {

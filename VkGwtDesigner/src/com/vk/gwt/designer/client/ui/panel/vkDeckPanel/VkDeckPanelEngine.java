@@ -1,21 +1,67 @@
 package com.vk.gwt.designer.client.ui.panel.vkDeckPanel;
 
+import java.util.List;
+
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
+import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IMultipleWidgetDialogCallback;
+import com.vk.gwt.designer.client.designer.VkMainDrawingPanel;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 import com.vk.gwt.designer.client.designer.WidgetEngineMapping;
+import com.vk.gwt.designer.client.ui.widget.button.vkButton.VkButton;
+import com.vk.gwt.designer.client.ui.widget.label.vkLabel.VkLabel;
+import com.vk.gwt.designer.client.ui.widget.vkImage.VkImage;
 
 public class VkDeckPanelEngine extends VkAbstractWidgetEngine<VkDeckPanel>{
+	private final static String ADD_ASSOCIATED_WIDGET = "Add associated widget";
 	@Override
 	public VkDeckPanel getWidget() {
 		VkDeckPanel widget = new VkDeckPanel();
 		init(widget);
 		return widget;
+	}
+	@Override
+	public void applyAttribute(String attributeName, final Widget invokingWidget){
+		if(attributeName.equals(ADD_ASSOCIATED_WIDGET)){
+			final ListBox widgetListBox = new ListBox();
+			widgetListBox.addItem(VkLabel.NAME);
+			widgetListBox.addItem(VkButton.NAME);
+			widgetListBox.addItem(VkImage.NAME);
+			VkDeckPanel deck =(VkDeckPanel)invokingWidget;
+			final ListBox pageListBox = new ListBox();
+			DOM.setStyleAttribute(pageListBox.getElement(), "marginTop", "10px");
+			for(int i = 0, len = deck.getWidgetCount(); i < len; i++)
+				pageListBox.addItem("Page " + i);
+			
+			VkDesignerUtil.showAddWidgetsDialog("Choose associated widget", new IMultipleWidgetDialogCallback() {
+				@Override
+				public void save() {
+					Widget widget = VkStateHelper.getInstance().getEngine().addWidgetByName(VkMainDrawingPanel.getInstance()
+					, widgetListBox.getItemText(widgetListBox.getSelectedIndex()));
+					if(widget instanceof HasVkText)
+						((HasVkText) widget).setText(pageListBox.getItemText(pageListBox.getSelectedIndex()));
+					else
+						widget.getElement().setTitle(pageListBox.getItemText(pageListBox.getSelectedIndex()));
+					((HasVkClickHandler)widget).addClickHandler("&(" + invokingWidget.getElement().getId() + ").showWidget(" + pageListBox.getSelectedIndex() + ");");
+				}
+			}, widgetListBox, pageListBox);
+		} else
+			super.applyAttribute(attributeName, invokingWidget);
+	}
+	public List<String> getAttributesList(Widget invokingWidget){
+		List<String> attributesList = super.getAttributesList(invokingWidget);
+		attributesList.add(ADD_ASSOCIATED_WIDGET);
+		return attributesList;
 	}
 	@Override
 	public void buildWidget(JSONObject jsonObj, Widget parent) {

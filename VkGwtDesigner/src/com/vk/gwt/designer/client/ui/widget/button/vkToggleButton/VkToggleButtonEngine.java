@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
-import com.vk.gwt.designer.client.designer.VkDesignerUtil.IEventRegister;
+import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
 public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton> {
@@ -36,9 +36,9 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			tb.setValue(widget.getImageUpSrc());
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up image url", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String src) {
+						public void save(String src) {
 							widget.getUpFace().setImage(new Image(src));
 							widget.setImageUpSrc(src);
 						}
@@ -50,9 +50,9 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			tb.setValue(widget.getImageDownSrc());
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down image url", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String src) {
+						public void save(String src) {
 							widget.getDownFace().setImage(new Image(src));
 							widget.setImageDownSrc(src);
 						}
@@ -64,9 +64,9 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			ta.setValue(widget.getUpFace().getHTML());
 			ta.setSize("300px", "100px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up html", ta
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String html) {
+						public void save(String html) {
 							widget.getUpFace().setHTML(html);
 							widget.setImageUpSrc(null);
 						}
@@ -78,9 +78,9 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			ta.setValue(widget.getDownFace().getHTML());
 			ta.setSize("300px", "100px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down html", ta
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String html) {
+						public void save(String html) {
 							widget.getDownFace().setHTML(html);
 							widget.setImageDownSrc(null);
 						}
@@ -92,9 +92,9 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			tb.setValue(widget.getUpFace().getText());
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide up text", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String text) {
+						public void save(String text) {
 							widget.getUpFace().setText(text);
 							widget.setImageUpSrc(null);
 						}
@@ -106,9 +106,9 @@ public class VkToggleButtonEngine extends VkAbstractWidgetEngine<VkToggleButton>
 			tb.setValue(widget.getDownFace().getText());
 			tb.setWidth("300px");
 			VkDesignerUtil.showAddTextAttributeDialog("Please provide down text", tb
-					, new IEventRegister() {
+					, new IDialogCallback() {
 						@Override
-						public void registerEvent(String text) {
+						public void save(String text) {
 							widget.getDownFace().setText(text);
 							widget.setImageDownSrc(null);
 						}
