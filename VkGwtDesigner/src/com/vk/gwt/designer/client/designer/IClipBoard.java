@@ -13,6 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vk.gwt.designer.client.api.widgets;
+package com.vk.gwt.designer.client.designer;
 
-public interface HasVkSuggestBox {}
+import com.vk.gwt.designer.client.api.component.IVkPanel;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
+
+public interface IClipBoard {
+
+	public void copyWidget(IVkWidget widget);
+
+	public void cutWidget(IVkWidget widget);
+
+	public void pasteWidget(IVkPanel panel);
+
+	public void copyStyle(IVkWidget widget);
+
+	public void pasteStyle(IVkWidget widget);
+
+	public boolean isPasteWidgetPossible();
+
+	public boolean isPasteStylePossible();
+
+}

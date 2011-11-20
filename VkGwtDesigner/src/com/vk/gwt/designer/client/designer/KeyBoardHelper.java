@@ -1,10 +1,24 @@
+/*
+ * Copyright 2011 Gaurav Saxena < gsaxena81 AT gmail.com >
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.vk.gwt.designer.client.designer;
 
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.api.engine.IEngine;
 
 public class KeyBoardHelper {
 	private static KeyBoardHelper boardHelper = new KeyBoardHelper();
@@ -16,24 +30,26 @@ public class KeyBoardHelper {
 	
 	private native void declareKeyBoardHandler() /*-{
 		var keyBoardHandler = this;
+		var resizeHelper = @com.vk.gwt.designer.client.designer.ResizeHelper::getInstance()();
+		var moveHelper = @com.vk.gwt.designer.client.designer.MoveHelper::getInstance();
 		$doc.onkeydown = function(ev){
 			if(typeof ev == 'undefined')
 				ev = $wnd.event;
-			if(ev.keyCode == 46)//remove widget
+			if(ev.keyCode == 46)//delete
 				keyBoardHandler.@com.vk.gwt.designer.client.designer.KeyBoardHelper::deleteWidget()();
-			else if(ev.keyCode == 67 && ev.ctrlKey && ev.shiftKey) //copy style
+			else if(ev.keyCode == 67 && ev.ctrlKey && ev.shiftKey) //ctrl + shift + c
 				keyBoardHandler.@com.vk.gwt.designer.client.designer.KeyBoardHelper::copyWidgetStyle()();
-			else if(ev.keyCode == 86 && ev.ctrlKey && ev.shiftKey)//paste style
+			else if(ev.keyCode == 86 && ev.ctrlKey && ev.shiftKey)//ctrl + shift + v
 				keyBoardHandler.@com.vk.gwt.designer.client.designer.KeyBoardHelper::pasteWidgetStyle()();
-			else if(ev.keyCode == 67 && ev.ctrlKey)//copy
+			else if(ev.keyCode == 67 && ev.ctrlKey)//ctrl + c
 				keyBoardHandler.@com.vk.gwt.designer.client.designer.KeyBoardHelper::copyWidget()();
-			else if(ev.keyCode == 86 && ev.ctrlKey)//paste
+			else if(ev.keyCode == 86 && ev.ctrlKey)//ctrl + v
 				keyBoardHandler.@com.vk.gwt.designer.client.designer.KeyBoardHelper::pasteWidget()();
-			else if(ev.keyCode == 88 && ev.ctrlKey) //cut
+			else if(ev.keyCode == 88 && ev.ctrlKey) //ctrl + x
 				keyBoardHandler.@com.vk.gwt.designer.client.designer.KeyBoardHelper::cutWidget()();
-			else if(ev.keyCode == 89 && ev.ctrlKey)//redo
+			else if(ev.keyCode == 89 && ev.ctrlKey)//ctrl + z
 				keyBoardHandler.@com.vk.gwt.designer.client.designer.KeyBoardHelper::redo()();
-			else if(ev.keyCode == 90 && ev.ctrlKey)//undo
+			else if(ev.keyCode == 90 && ev.ctrlKey)//ctrl + y
 				keyBoardHandler.@com.vk.gwt.designer.client.designer.KeyBoardHelper::undo()();
 			else if(ev.keyCode == 39){//right arrow
 				if(ev.ctrlKey)
@@ -65,91 +81,62 @@ public class KeyBoardHelper {
 	public static KeyBoardHelper getInstance(){
 		return boardHelper;
 	}
+	private void resizeWidgetRight() {
+		ResizeHelper.getInstance().resizeWidgetRight(widget);
+	}
+	private void moveWidgetRight() {
+		MoveHelper.getInstance().moveWidgetRight(widget);
+	}
+	private void resizeWidgetLeft() {
+		ResizeHelper.getInstance().resizeWidgetLeft(widget);
+	}
+	private void moveWidgetLeft() {
+		MoveHelper.getInstance().moveWidgetLeft(widget);
+	}
+	private void resizeWidgetUp() {
+		ResizeHelper.getInstance().resizeWidgetUp(widget);
+	}
+	private void moveWidgetUp() {
+		MoveHelper.getInstance().moveWidgetUp(widget);
+	}
+	private void resizeWidgetDown() {
+		ResizeHelper.getInstance().resizeWidgetDown(widget);
+	}
+	private void moveWidgetDown() {
+		MoveHelper.getInstance().moveWidgetDown(widget);
+	}
 	private void deleteWidget(){
-		Command deleteCommand = VkStateHelper.getInstance().getMenu().getRemoveCommand();
-		if(deleteCommand != null) {
-			deleteCommand.execute();
-			ToolbarHelper.getInstance().hideToolbar();
+		if(WidgetEngineMapping.getInstance().getEngineMap().get(widget.getWidgetName()).getOperationsList((Widget) widget).contains(IEngine.REMOVE)) {
+			VkStateHelper.getInstance().getEngine().removeWidget((Widget) widget);
+			VkStateHelper.getInstance().getMenu().prepareMenu(widget.getVkParent());
 		}
 	}
 	private void copyWidgetStyle(){
-		Command copyCommand = VkStateHelper.getInstance().getMenu().getCopyStyleCommand();
-		if(copyCommand != null)
-			copyCommand.execute();
+		if(WidgetEngineMapping.getInstance().getEngineMap().get(widget.getWidgetName()).getOperationsList((Widget) widget).contains(IEngine.COPY_STYLE))
+			VkStateHelper.getInstance().getClipBoardHelper().copyStyle(widget);
 	}
 	private void pasteWidgetStyle(){
-		Command pasteCommand = VkStateHelper.getInstance().getMenu().getPasteStyleCommand();
-		if(pasteCommand != null)
-			pasteCommand.execute();
+		if(WidgetEngineMapping.getInstance().getEngineMap().get(widget.getWidgetName()).getOperationsList((Widget) widget).contains(IEngine.PASTE_STYLE))
+			VkStateHelper.getInstance().getClipBoardHelper().pasteStyle(widget);
 	}
 	private void copyWidget(){
-		Command copyCommand = VkStateHelper.getInstance().getMenu().getCopyCommand();
-		if(copyCommand != null)
-			copyCommand.execute();
+		if(WidgetEngineMapping.getInstance().getEngineMap().get(widget.getWidgetName()).getOperationsList((Widget) widget).contains(IEngine.COPY))
+			VkStateHelper.getInstance().getClipBoardHelper().copyWidget(widget);
 	}
 	private void pasteWidget(){
-		Command pasteCommand = VkStateHelper.getInstance().getMenu().getPasteCommand();
-		if(pasteCommand != null)
-			pasteCommand.execute();
+		if(WidgetEngineMapping.getInstance().getEngineMap().get(widget.getWidgetName()).getOperationsList((Widget) widget).contains(IEngine.PASTE) 
+				&& widget instanceof IVkPanel)
+			VkStateHelper.getInstance().getClipBoardHelper().pasteWidget((IVkPanel) widget);
 	}
 	private void cutWidget(){
-		Command cutCommand = VkStateHelper.getInstance().getMenu().getCutCommand();
-		if(cutCommand != null)
-			cutCommand.execute();
+		if(WidgetEngineMapping.getInstance().getEngineMap().get(widget.getWidgetName()).getOperationsList((Widget) widget).contains(IEngine.COPY))
+			VkStateHelper.getInstance().getClipBoardHelper().cutWidget(widget);
 	}
 	private void redo(){
-		Command redoCommand = VkStateHelper.getInstance().getMenu().getRedoCommand();
-		redoCommand.execute();
+		UndoHelper.getInstance().redo();
 	}
 	private void undo(){
-		Command undoCommand = VkStateHelper.getInstance().getMenu().getUndoCommand();
-		undoCommand.execute();
-	}
-	private void moveWidgetRight(){
-		if(widget.isMovable()) {
-			DOM.setStyleAttribute(((UIObject) widget).getElement(), "left", VkDesignerUtil.getOffsetLeft(((UIObject) widget).getElement()) + 1 + "px");
-			ToolbarHelper.getInstance().showToolbar((Widget) widget);
-		}
-	}
-	private void resizeWidgetRight(){
-		if(widget.isResizable()) {
-			DOM.setStyleAttribute(((UIObject) widget).getElement(), "width", ((UIObject) widget).getElement().getOffsetWidth() 
-			- VkDesignerUtil.getPixelValue(((Widget) widget).getElement(), "border-left-width") - VkDesignerUtil.getPixelValue(((Widget) widget).getElement(), "border-right-width") + 1 + "px");
-			ToolbarHelper.getInstance().showToolbar((Widget) widget);
-		}
-	}
-	private void moveWidgetLeft(){
-		if(widget.isMovable()) {
-			DOM.setStyleAttribute(((UIObject) widget).getElement(), "left", VkDesignerUtil.getOffsetLeft(((UIObject) widget).getElement()) - 1 + "px");
-			ToolbarHelper.getInstance().showToolbar((Widget) widget);
-		}
-	}
-	private void resizeWidgetLeft(){
-		resizeWidgetRight();
-		moveWidgetLeft();
-	}
-	private void moveWidgetUp(){
-		if(widget.isMovable()) {
-			DOM.setStyleAttribute(((UIObject) widget).getElement(), "top", VkDesignerUtil.getOffsetTop(((UIObject) widget).getElement()) - 1 + "px");
-			ToolbarHelper.getInstance().showToolbar((Widget) widget);
-		}
-	}
-	private void resizeWidgetUp(){
-		resizeWidgetDown();
-		moveWidgetUp();
-	}
-	private void moveWidgetDown(){
-		if(widget.isMovable()) {
-			DOM.setStyleAttribute(((UIObject) widget).getElement(), "top", VkDesignerUtil.getOffsetTop(((UIObject) widget).getElement()) + 1 + "px");
-			ToolbarHelper.getInstance().showToolbar((Widget) widget);
-		}
-	}
-	private void resizeWidgetDown(){
-		if(widget.isResizable()) {
-			DOM.setStyleAttribute(((UIObject) widget).getElement(), "height", ((UIObject) widget).getElement().getOffsetHeight() 
-			- VkDesignerUtil.getPixelValue(((Widget) widget).getElement(), "border-top-width") - VkDesignerUtil.getPixelValue(((Widget) widget).getElement(), "border-bottom-width") + 1 + "px");
-			ToolbarHelper.getInstance().showToolbar((Widget) widget);
-		}
+		UndoHelper.getInstance().undo();
 	}
 	public void setWidget(IVkWidget invokingWidget) {
 		this.widget = invokingWidget;

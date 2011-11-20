@@ -1,3 +1,18 @@
+/*
+ * Copyright 2011 Gaurav Saxena < gsaxena81 AT gmail.com >
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.vk.gwt.designer.client.designer;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -8,11 +23,14 @@ import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.ui.widget.vkFrame.VkFrame;
 import com.vk.gwt.designer.client.ui.widget.vkRichText.VkRichTextArea;
 
@@ -24,7 +42,7 @@ public class ResizeHelper {
 	public static ResizeHelper getInstance(){
 		return resizeHelper;
 	}
-	void resize(final Widget invokingWidget){
+	public void resize(final Widget invokingWidget){
 		isResizing = true;
 		final HTML draggingWidget = getDraggingWidget();
 		SnapHelper.getInstance().setIgnoreWidget(invokingWidget);
@@ -102,5 +120,35 @@ public class ResizeHelper {
 		RootPanel.get().add(draggingWidget);
 		DOM.setStyleAttribute(draggingWidget.getElement(), "position", "absolute");
 		return draggingWidget;
+	}
+	public void resizeWidgetRight(IVkWidget widget){
+		if(widget.isResizable()) {
+			DOM.setStyleAttribute(((UIObject) widget).getElement(), "width", ((UIObject) widget).getElement().getOffsetWidth() - getBorderWidthForDiv(widget, "border-left-width") 
+				- getBorderWidthForDiv(widget, "border-right-width") + 1 + "px");
+			ToolbarHelper.getInstance().showToolbar((Widget) widget);
+		}
+	}
+	private int getBorderWidthForDiv(IVkWidget widget, String property) {
+		Element elem = ((Widget) widget).getElement();
+		if(elem.getTagName().equalsIgnoreCase("DIV"))
+			return VkDesignerUtil.getPixelValue(elem, property);
+		else
+			return 0;
+	}
+
+	public void resizeWidgetLeft(IVkWidget widget){
+		resizeWidgetRight(widget);
+		MoveHelper.getInstance().moveWidgetLeft(widget);
+	}
+	public void resizeWidgetUp(IVkWidget widget){
+		resizeWidgetDown(widget);
+		MoveHelper.getInstance().moveWidgetUp(widget);
+	}
+	public void resizeWidgetDown(IVkWidget widget){
+		if(widget.isResizable()) {
+			DOM.setStyleAttribute(((UIObject) widget).getElement(), "height", ((UIObject) widget).getElement().getOffsetHeight() - getBorderWidthForDiv(widget, "border-top-width") 
+				- getBorderWidthForDiv(widget, "border-bottom-width") + 1 + "px");
+			ToolbarHelper.getInstance().showToolbar((Widget) widget);
+		}
 	}
 }
