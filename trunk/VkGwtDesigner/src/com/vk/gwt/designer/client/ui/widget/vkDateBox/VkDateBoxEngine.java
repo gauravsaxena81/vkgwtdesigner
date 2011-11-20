@@ -1,3 +1,18 @@
+/*
+ * Copyright 2011 Gaurav Saxena < gsaxena81 AT gmail.com >
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.vk.gwt.designer.client.ui.widget.vkDateBox;
 
 import java.util.ArrayList;
@@ -107,21 +122,19 @@ public class VkDateBoxEngine extends VkAbstractWidgetEngine<VkDateBox> {
 			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	@Override
-	public List<String> getAttributesList(Widget invokingWidget)
-	{
+	public List<String> getAttributesList(Widget invokingWidget) {
 		List<String> list = VkStateHelper.getInstance().getEngine().getAttributesList(invokingWidget);
 		list.add(3, SET_FORMAT);
 		return list;
 	}
 	@Override
-	public String serialize(IVkWidget widget)
-	{
+	public String serialize(IVkWidget widget) {
 		StringBuffer buffer = new StringBuffer("{");
 		buffer.append("widgetName:'").append(widget.getWidgetName()).append("'");
 		buffer.append(",style:'").append(VkDesignerUtil.getCssText((Widget) widget)).append("'");
 		serializeAttributes(buffer, (Widget) widget);
 		buffer.append(",dateFormat:'").append(((VkDateBox)widget).getPattern()).append("'");
-		buffer.append(",children:[").append("]}");
+		buffer.append(",children:[]}");
 		return buffer.toString();
 	}
 	@Override

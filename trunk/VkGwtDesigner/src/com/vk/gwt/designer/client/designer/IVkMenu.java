@@ -13,6 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.vk.gwt.designer.client.api.widgets;
+package com.vk.gwt.designer.client.designer;
 
-public interface HasVkSuggestBox {}
+import com.google.gwt.user.client.ui.IsWidget;
+import com.vk.gwt.designer.client.api.component.IVkWidget;
+
+public interface IVkMenu extends IsWidget{
+	public void prepareMenu(IVkWidget widget);
+}
