@@ -54,7 +54,7 @@ public class TableSizeChooserMenuItem extends MenuItem {
 			public void run() {
 				popupPanel.hide();
 			}};
-		popupPanel.setWidget(makeTableChooser(widgetName, command));
+		popupPanel.setWidget(makeTableChooser(getText(), command));
 		DOM.setStyleAttribute(popupPanel.getElement(), "zIndex", Integer.toString(Integer.MAX_VALUE));
 		popupPanel.setStyleName("vkgwtdesigner-vertical-menu");
 	}

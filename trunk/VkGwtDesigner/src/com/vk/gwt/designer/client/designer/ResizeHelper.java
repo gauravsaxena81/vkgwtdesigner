@@ -75,11 +75,10 @@ public class ResizeHelper {
 				final int finalHeight = draggingWidget.getOffsetHeight()  - (int)VkDesignerUtil.getDecorationsHeight(widget.getElement()) - (invokingWidget instanceof VkRichTextArea ? 10 : 0);
 				draggingWidget.removeFromParent();
 				VkStateHelper.getInstance().getSnapHelper().setIgnoreWidget(null);
-				if(finalWidth > 0)
+				/*if(finalWidth > 0)
 					widget.setWidth(finalWidth + "px");
 				if(finalHeight > 0)
-					widget.setHeight(finalHeight + "px");
-				VkStateHelper.getInstance().getToolbarHelper().showToolbar(invokingWidget);
+					widget.setHeight(finalHeight + "px");*/
 				UndoHelper.getInstance().doCommand(new Command(){
 					@Override
 					public void execute() {
@@ -87,12 +86,14 @@ public class ResizeHelper {
 							widget.setWidth(finalWidth + "px");
 						if(finalHeight > 0)
 							widget.setHeight(finalHeight + "px");
+						VkStateHelper.getInstance().getToolbarHelper().showToolbar(invokingWidget);
 					}
 				}, new Command(){
 					@Override
 					public void execute() {
 						widget.setWidth(initialWidth + "px");
 						widget.setHeight(initialHeight + "px");
+						VkStateHelper.getInstance().getToolbarHelper().showToolbar(invokingWidget);
 					}});
 				isResizing = false;
 			}

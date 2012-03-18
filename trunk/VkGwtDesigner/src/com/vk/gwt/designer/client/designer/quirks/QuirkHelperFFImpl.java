@@ -20,9 +20,11 @@ import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 
 public class QuirkHelperFFImpl extends QuirkHelper{
 	public int getOffsetTop(Element elem){
-		return elem.getOffsetTop() + VkDesignerUtil.getPixelValue((Element) elem.getOffsetParent(), "border-top-width");
+		com.google.gwt.dom.client.Element offsetParent = elem.getOffsetParent();
+		return elem.getOffsetTop() + (offsetParent != null ? VkDesignerUtil.getPixelValue((Element) Element.as(offsetParent), "border-top-width") : 0);
 	}
 	public int getOffsetLeft(Element elem) {
-		return elem.getOffsetLeft() + VkDesignerUtil.getPixelValue((Element) elem.getOffsetParent(), "border-left-width");
+		com.google.gwt.dom.client.Element offsetParent = elem.getOffsetParent();
+		return elem.getOffsetLeft() + (offsetParent != null ? VkDesignerUtil.getPixelValue((Element) Element.as(offsetParent), "border-left-width") : 0);
 	}
 }
