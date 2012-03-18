@@ -77,14 +77,15 @@ public class VkMenu extends Composite implements IVkMenu{
 	private Command pasteStyleCommand;
 	private Command removeCommand;
 	private Command moveCommand;
-	private Command moveRightCommand;
+	/*private Command moveRightCommand;
 	private Command moveLeftCommand;
 	private Command moveUpCommand;
+	private Command moveDownCommand;*/
 	private Command resizeCommand;
-	private Command resizeRightCommand;
+	/*private Command resizeRightCommand;
 	private Command resizeLeftCommand;
 	private Command resizeUpCommand;
-	private Command resizeDownCommand;
+	private Command resizeDownCommand;*/
 	
 	
 	public VkMenu() {
@@ -356,8 +357,6 @@ public class VkMenu extends Composite implements IVkMenu{
 		undoItem = editMenu.addItem("Undo(Ctrl+Z)", getUndoCommand());
 		redoItem = editMenu.addItem("Redo(Ctrl+Y)", getRedoCommand());
 		refreshUndoRedo();
-		MenuItem item = editMenu.addItem(IEngine.DELETE + "(Del)", getRemoveCommand());
-		item.setEnabled(operationsList.indexOf(IEngine.DELETE) > -1);
 		editMenu.addItem(IEngine.CUT + "(Ctrl+X)", getCutCommand()).setEnabled(operationsList.indexOf(IEngine.CUT) > -1);
 		editMenu.addItem(IEngine.COPY + "(Ctrl+C)", getCopyCommand()).setEnabled(operationsList.indexOf(IEngine.COPY) > -1);
 		editMenu.addItem(IEngine.PASTE + "(Ctrl+V)", getPasteCommand()).setEnabled(operationsList.indexOf(IEngine.PASTE) > -1 && VkStateHelper.getInstance().getClipBoardHelper().isPasteWidgetPossible());
@@ -366,22 +365,23 @@ public class VkMenu extends Composite implements IVkMenu{
 			&& VkStateHelper.getInstance().getClipBoardHelper().isPasteStylePossible());
 		boolean isMoveEnabled = operationsList.indexOf(IEngine.MOVE) > -1;
 		editMenu.addItem(IEngine.MOVE, getMoveCommand()).setEnabled(isMoveEnabled);
-		editMenu.addItem(IEngine.MOVE + "-Right(Right arrow)", getMoveRightCommand()).setEnabled(isMoveEnabled);
+		/*editMenu.addItem(IEngine.MOVE + "-Right(Right arrow)", getMoveRightCommand()).setEnabled(isMoveEnabled);
 		editMenu.addItem(IEngine.MOVE + "-Left(Left arrow)", getMoveLeftCommand()).setEnabled(isMoveEnabled);
 		editMenu.addItem(IEngine.MOVE + "-Up(Up arrow)", getMoveUpCommand()).setEnabled(isMoveEnabled);
-		editMenu.addItem(IEngine.MOVE + "-Down(Down arrow)", getMoveDownCommand()).setEnabled(isMoveEnabled);
+		editMenu.addItem(IEngine.MOVE + "-Down(Down arrow)", getMoveDownCommand()).setEnabled(isMoveEnabled);*/
 		boolean isResizeEnabled = operationsList.indexOf(IEngine.RESIZE) > -1;		
 		editMenu.addItem(IEngine.RESIZE , getResizeCommand()).setEnabled(isResizeEnabled);
-		editMenu.addItem(IEngine.RESIZE + "-Right(Ctrl + Right arrow)", getResizeRightCommand()).setEnabled(isResizeEnabled);
+		/*editMenu.addItem(IEngine.RESIZE + "-Right(Ctrl + Right arrow)", getResizeRightCommand()).setEnabled(isResizeEnabled);
 		editMenu.addItem(IEngine.RESIZE + "-Left(Ctrl + Left arrow)", getResizeLeftCommand()).setEnabled(isResizeEnabled);
 		editMenu.addItem(IEngine.RESIZE + "-Up(Ctrl + Up arrow)", getResizeUpCommand()).setEnabled(isResizeEnabled);
-		editMenu.addItem(IEngine.RESIZE + "-Down(Ctrl + Down arrow)", getResizeDownCommand()).setEnabled(isResizeEnabled);
-		addPreviewMenuItem(editMenu);
+		editMenu.addItem(IEngine.RESIZE + "-Down(Ctrl + Down arrow)", getResizeDownCommand()).setEnabled(isResizeEnabled);*/
+		MenuItem item = editMenu.addItem(IEngine.DELETE + "(Del)", getRemoveCommand());
+		item.setEnabled(operationsList.indexOf(IEngine.DELETE) > -1);
 		return editMenu;
 	}	
 
-	private Command getMoveDownCommand() {
-		return moveUpCommand = moveUpCommand != null ? moveUpCommand : new Command(){
+	/*private Command getMoveDownCommand() {
+		return moveDownCommand = moveDownCommand != null ? moveDownCommand : new Command(){
 			@Override
 			public void execute() {
 				VkStateHelper.getInstance().getMoveHelper().moveWidgetDown((IVkWidget) invokingWidget);
@@ -400,7 +400,7 @@ public class VkMenu extends Composite implements IVkMenu{
 			public void execute() {
 				VkStateHelper.getInstance().getMoveHelper().moveWidgetLeft((IVkWidget) invokingWidget);
 			}};
-	}
+	}*/
 	private Command getMoveCommand() {
 		return moveCommand = moveCommand != null ? moveCommand : new Command(){
 			@Override
@@ -408,13 +408,13 @@ public class VkMenu extends Composite implements IVkMenu{
 				VkStateHelper.getInstance().getMoveHelper().makeMovable((IVkWidget) invokingWidget);
 			}};
 	}
-	private Command getMoveRightCommand() {
+	/*private Command getMoveRightCommand() {
 		return moveRightCommand = moveRightCommand != null ? moveRightCommand : new Command(){
 			@Override
 			public void execute() {
 				VkStateHelper.getInstance().getMoveHelper().moveWidgetRight((IVkWidget) invokingWidget);
 			}};
-	}
+	}*/
 	private Command getOpenUsingStringCommand() {
 		return loadCommand = loadCommand != null ? loadCommand : new Command(){
 			@Override
@@ -608,7 +608,7 @@ public class VkMenu extends Composite implements IVkMenu{
 				VkStateHelper.getInstance().getResizeHelper().resize(invokingWidget);
 			}};
 	}
-	private Command getResizeRightCommand() {
+	/*private Command getResizeRightCommand() {
 		return resizeRightCommand = resizeRightCommand != null ? resizeRightCommand : new Command(){
 			@Override
 			public void execute() {
@@ -635,7 +635,7 @@ public class VkMenu extends Composite implements IVkMenu{
 			public void execute() {
 				VkStateHelper.getInstance().getResizeHelper().resizeWidgetDown((IVkWidget)invokingWidget);
 			}};
-	}
+	}*/
 	private Command getCopyCommand() {
 		return copyCommand = copyCommand != null ? copyCommand :  new Command(){
 			@Override

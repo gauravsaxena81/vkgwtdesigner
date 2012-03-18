@@ -21,6 +21,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkClickHandler;
@@ -56,18 +57,20 @@ public class VkDeckPanelEngine extends VkAbstractWidgetEngine<VkDeckPanel>{
 			DOM.setStyleAttribute(pageListBox.getElement(), "marginTop", "10px");
 			for(int i = 0, len = deck.getWidgetCount(); i < len; i++)
 				pageListBox.addItem("Page " + i);
-			
-			VkDesignerUtil.showAddWidgetsDialog("Choose associated widget", new IMultipleWidgetDialogCallback() {
-				@Override
-				public void save() {
-					Widget widget = VkStateHelper.getInstance().getEngine().addWidget(widgetListBox.getItemText(widgetListBox.getSelectedIndex()), VkMainDrawingPanel.getInstance());
-					if(widget instanceof HasVkText)
-						((HasVkText) widget).setText(pageListBox.getItemText(pageListBox.getSelectedIndex()));
-					else
-						widget.getElement().setTitle(pageListBox.getItemText(pageListBox.getSelectedIndex()));
-					((HasVkClickHandler)widget).addClickHandler("&(" + invokingWidget.getElement().getId() + ").showWidget(" + pageListBox.getSelectedIndex() + ");");
-				}
-			}, widgetListBox, pageListBox);
+			if(pageListBox.getItemCount() > 0) {
+				VkDesignerUtil.showAddWidgetsDialog("Choose associated widget", new IMultipleWidgetDialogCallback() {
+					@Override
+					public void save() {
+						Widget widget = VkStateHelper.getInstance().getEngine().addWidget(widgetListBox.getItemText(widgetListBox.getSelectedIndex()), VkMainDrawingPanel.getInstance());
+						if(widget instanceof HasVkText)
+							((HasVkText) widget).setText(pageListBox.getItemText(pageListBox.getSelectedIndex()));
+						else
+							widget.getElement().setTitle(pageListBox.getItemText(pageListBox.getSelectedIndex()));
+						((HasVkClickHandler)widget).addClickHandler("&(" + invokingWidget.getElement().getId() + ").showWidget(" + pageListBox.getSelectedIndex() + ");");
+					}
+				}, widgetListBox, pageListBox);
+			} else
+				Window.alert("Deck panel doesn't contain any widgets");
 		} else
 			super.applyAttribute(attributeName, invokingWidget);
 	}

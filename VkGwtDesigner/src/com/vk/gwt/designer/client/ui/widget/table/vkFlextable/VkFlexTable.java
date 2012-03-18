@@ -68,7 +68,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		public void setWidth(String width) {
 			super.setWidth("100%");
 			if(width.endsWith("px")) {
-				int intWidth = Integer.parseInt(width.replaceAll("px", ""));
+				int intWidth = (int) Double.parseDouble(width.replaceAll("px", ""));
 				int currentCol = Integer.parseInt(DOM.getElementAttribute((com.google.gwt.user.client.Element) getElement().getParentElement(), "col"));
 				int denominator = 0;
 				int maxCols = currentCol + Math.max(1, DOM.getElementPropertyInt((com.google.gwt.user.client.Element) getElement().getParentElement(), "colSpan"));
@@ -82,7 +82,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		public void setHeight(String height) {
 			super.setHeight("100%");
 			if(height.endsWith("px")) {
-				int intHeight = Integer.parseInt(height.replaceAll("px", ""));
+				int intHeight = (int) Double.parseDouble(height.replaceAll("px", ""));
 				int currentRow = getRow();
 				int denominator = 0;
 				int maxRows = currentRow + Math.max(1, DOM.getElementPropertyInt((com.google.gwt.user.client.Element) getElement().getParentElement(), "rowSpan"));
