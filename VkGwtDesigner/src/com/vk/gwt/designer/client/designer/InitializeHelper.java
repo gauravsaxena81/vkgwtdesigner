@@ -50,10 +50,19 @@ public class InitializeHelper implements IIntializeHelper{
 					@Override
 					public void onDoubleClick(DoubleClickEvent event) {
 						addTextBox(widget);
+						event.stopPropagation();
 					}
 				});
-			} else
-				addNativeDoubleClickHandler(widget);
+			} else {
+				widget.addDomHandler(new DoubleClickHandler() {
+					@Override
+					public void onDoubleClick(DoubleClickEvent event) {
+						addTextBox(widget);
+						event.stopPropagation();
+					}
+				}, DoubleClickEvent.getType());
+			}
+				//addNativeDoubleClickHandler(widget);
 		}
 	}
 	private native void addNativeDoubleClickHandler(Widget widget) /*-{
