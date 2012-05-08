@@ -400,20 +400,24 @@ public class VkDesignerUtil {
 				@Override
 				public void execute() {
 					widget.setPixelSize(parentWidth, parentHeight);
+					VkStateHelper.getInstance().getToolbarHelper().showToolbar(widget);
 				}}, new Command(){
 					@Override
 					public void execute() {
 						widget.setPixelSize(originalWidth - widgetDecorationWidth, originalHeight - widgetDecorationHeight);
+						VkStateHelper.getInstance().getToolbarHelper().showToolbar(widget);
 					}});
 		} else {
 			UndoHelper.getInstance().doCommand(new Command(){
 				@Override
 				public void execute() {
 					widget.setPixelSize(parentWidth - parentDecorationWidth - widgetDecorationWidth, parentHeight - parentDecorationHeight - widgetDecorationHeight);
+					VkStateHelper.getInstance().getToolbarHelper().showToolbar(widget);
 				}}, new Command(){
 					@Override
 					public void execute() {
 						widget.setPixelSize(originalWidth - widgetDecorationWidth, originalHeight - widgetDecorationHeight);
+						VkStateHelper.getInstance().getToolbarHelper().showToolbar(widget);
 					}});
 		}
 		if(DOM.getStyleAttribute(parent.getElement(), "position").isEmpty())

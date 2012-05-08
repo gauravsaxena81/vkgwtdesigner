@@ -114,7 +114,7 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 	@Override
 	public Widget deepClone(Widget sourceWidget, Widget targetWidget) {
 		boolean isVkDesignerMode = VkStateHelper.getInstance().isDesignerMode();
-		//TODO: applying attribute is best done after all the children are added, because some widgets apply attributes to their widget holders e.g. stackpanel
+		//TODO: applying attribute is best done after all the children are added, because some widgets apply attributes to their widget holders e.g. stackpanel or some attributes are only defind when the widget is done constructing e.g. rowspan in flextable
 		VkStateHelper.getInstance().setDesignerMode(false);
 		((IVkWidget)sourceWidget).clone(targetWidget);
 		//VkStateHelper.getInstance().getWidgetEngineMapping().getEngineMap().get(((IVkWidget)targetWidget).getWidgetName()).copyAttributes(sourceWidget, targetWidget);
@@ -126,8 +126,11 @@ public abstract class VkAbstractWidgetEngine<T extends Widget> implements IWidge
 				Widget currentWidget = widgets.next();
 				Widget newWidget = VkStateHelper.getInstance().getEngine().getWidget(((IVkWidget)currentWidget).getWidgetName());
 				VkStateHelper.getInstance().setDesignerMode(false);
-				if(currentWidget instanceof IVkWidget)
-					VkStateHelper.getInstance().getEngine().addWidget(VkStateHelper.getInstance().getWidgetEngineMapping().getEngineMap().get(((IVkWidget)currentWidget).getWidgetName()).deepClone(currentWidget, newWidget), (IVkPanel)targetWidget);
+				if(currentWidget instanceof IVkWidget) {
+					Widget clonedChild = VkStateHelper.getInstance().getWidgetEngineMapping().getEngineMap().get(((IVkWidget)currentWidget).getWidgetName()).deepClone(currentWidget, newWidget);
+					VkStateHelper.getInstance().getEngine().prepareWidget(clonedChild);
+					VkStateHelper.getInstance().getEngine().addWidget(clonedChild, (IVkPanel)targetWidget);
+				}
 				VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 			}
 		}

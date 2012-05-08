@@ -47,6 +47,7 @@ public class VkGwtDesigner implements EntryPoint {
 		if(VkStateHelper.getInstance().isDesignerMode())
 			RootPanel.get().add(VkStateHelper.getInstance().getMenu());
 		RootPanel.get().add(VkMainDrawingPanel.getInstance());
+		VkMainDrawingPanel.getInstance().setHeight(VkMainDrawingPanel.getInstance().getOffsetHeight() - VkStateHelper.getInstance().getMenu().asWidget().getOffsetHeight() + "px");
 	}
 	protected void init() {
 		VkStateHelper.getInstance().setEngine(new VkEngine());

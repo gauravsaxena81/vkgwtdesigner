@@ -29,6 +29,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.attributes.HasVkText;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.api.engine.IWidgetEngine;
 
 public class InitializeHelper implements IIntializeHelper{
 	private static InitializeHelper initializeHelper = new InitializeHelper();
@@ -62,7 +63,24 @@ public class InitializeHelper implements IIntializeHelper{
 					}
 				}, DoubleClickEvent.getType());
 			}
-				//addNativeDoubleClickHandler(widget);
+		} else {
+			if(widget instanceof HasDoubleClickHandlers) {
+				((HasDoubleClickHandlers)widget).addDoubleClickHandler(new DoubleClickHandler() {
+					@Override
+					public void onDoubleClick(DoubleClickEvent event) {
+						event.stopPropagation();
+					}
+				});
+			} else {
+				widget.addDomHandler(new DoubleClickHandler() {
+					@Override
+					public void onDoubleClick(DoubleClickEvent event) {
+						IWidgetEngine<? extends IVkWidget> iWidgetEngine = VkStateHelper.getInstance().getWidgetEngineMapping().getEngineMap().get(((IVkWidget)widget).getWidgetName());
+						iWidgetEngine.applyAttribute(iWidgetEngine.getAttributesList(widget).get(0), widget);
+						event.stopPropagation();
+					}
+				}, DoubleClickEvent.getType());
+			}
 		}
 	}
 	private native void addNativeDoubleClickHandler(Widget widget) /*-{
