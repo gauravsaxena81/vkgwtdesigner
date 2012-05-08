@@ -162,12 +162,9 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 						firstSelection = true;
 						Element td = getEventTargetCell(Event.as(event.getNativeEvent()));
 						if(td != null) {
-							if(td.getClassName().indexOf("vkflextable-cell-selected") > - 1)
-								clearCellSelection();
-							else {
-								clearCellSelection();
+							clearCellSelection();
+							if(td.getClassName().indexOf("vkflextable-cell-selected") == - 1)
 								td.setClassName("vkflextable-cell-selected first");
-							}
 							event.stopPropagation();
 						}
 					}
@@ -428,7 +425,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	}
 	@Override
 	public void setWidget(int row, int col, Widget widget){
-		if(row >= 0 && row < getRowCount() && col >=0 && col < getCellCount(row)){
+		if(row >= 0 && row < getRowCount() && col >=0 && col < getCellCount(row) && widget instanceof IVkWidget){
 			super.setWidget(row, col, widget);
 			widget.addDomHandler(new MouseOverHandler() {
 				@Override
@@ -444,6 +441,7 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 					}
 				}
 			}, MouseOverEvent.getType());
+			((IVkWidget)widget).setVkParent(this);
 			DOM.setStyleAttribute(widget.getElement(), "border", "solid 1px gray");
 			DOM.setStyleAttribute(widget.getElement(), "overflow", "");
 		}
@@ -637,8 +635,9 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 		checkCellBounds(row, col);
 		VkAbsolutePanel panel = (VkAbsolutePanel)getWidget(row, col);
 		panel.clear();
-		DOM.setInnerHTML(panel.getElement(), "");
-		VkStateHelper.getInstance().getEngine().addWidget(VkStateHelper.getInstance().getEngine().getWidget(VkHTML.NAME), panel);
+		VkHTML htmlWidget = (VkHTML)VkStateHelper.getInstance().getEngine().getWidget(VkHTML.NAME);
+		htmlWidget.setHTML(html);
+		VkStateHelper.getInstance().getEngine().addWidget(htmlWidget, panel);
 	}
 	@Override
 	@Export
@@ -655,7 +654,9 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 	public void setText(int row, int col, String text) {
 		VkAbsolutePanel panel = (VkAbsolutePanel)getWidget(row, col);
 		panel.clear();
-		VkStateHelper.getInstance().getEngine().addWidget(VkStateHelper.getInstance().getEngine().getWidget(VkLabel.NAME), panel);
+		VkLabel label = (VkLabel)VkStateHelper.getInstance().getEngine().getWidget(VkLabel.NAME);
+		label.setText(text);
+		VkStateHelper.getInstance().getEngine().addWidget(label, panel);
 	}
 	@Override
 	@Export

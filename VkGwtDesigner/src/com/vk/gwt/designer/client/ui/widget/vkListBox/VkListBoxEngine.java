@@ -115,15 +115,16 @@ public class VkListBoxEngine extends VkAbstractWidgetEngine<VkListBox> {
 		saveButton.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				String text = textTextBox.getText();
-				String value = valueTextBox.getText();
-				int index;
 				try{
-					index = Integer.parseInt(indexTextBox.getText());
+					String text = textTextBox.getText();
+					String value = valueTextBox.getText();
+					int index = 0;
+					String indexText = indexTextBox.getText();
+					if(!indexText.isEmpty())
+						index = Integer.parseInt(indexText);
 					origDialog.hide();
 					invokingWidget.insertItem(text, value, index);
-				}catch(NumberFormatException e)
-				{
+				} catch(NumberFormatException e) {
 					Window.alert("index cannot be non-numeric");
 				}
 			}

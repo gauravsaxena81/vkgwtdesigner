@@ -49,11 +49,15 @@ public class MoveHelper implements IMoveHelper{
 			DOM.setCapture(draggingWidget.getElement());
 			VkStateHelper.getInstance().getSnapHelper().setIgnoreWidget(invokingWidget);
 			//setCapture(draggingWidget);
+			final Widget scrollingParentFinal = getScrollingParent((Widget) widget);
 			draggingWidget.addMouseMoveHandler(new MouseMoveHandler() {
 				@Override
 				public void onMouseMove(MouseMoveEvent event) {
-					DOM.setStyleAttribute(draggingWidget.getElement(), "top", VkStateHelper.getInstance().getSnapHelper().getSnappedTop(event.getClientY() +  RootPanel.getBodyElement().getScrollTop(), draggingWidget.getOffsetHeight()) + "px");
+					int top = VkStateHelper.getInstance().getSnapHelper().getSnappedTop(event.getClientY() +  RootPanel.getBodyElement().getScrollTop(), draggingWidget.getOffsetHeight());
+					DOM.setStyleAttribute(draggingWidget.getElement(), "top",  top + "px");
 					DOM.setStyleAttribute(draggingWidget.getElement(), "left", VkStateHelper.getInstance().getSnapHelper().getSnappedLeft(event.getClientX(), draggingWidget.getOffsetWidth()) + "px");
+					if(scrollingParentFinal != null && scrollingParentFinal.getElement().getScrollTop() + scrollingParentFinal.getElement().getClientHeight() < scrollingParentFinal.getElement().getScrollHeight())
+						scrollingParentFinal.getElement().setScrollTop(Math.max(0, top - 10));
 					event.preventDefault();
 				}
 			});
@@ -79,8 +83,9 @@ public class MoveHelper implements IMoveHelper{
 							}}, new Command(){
 									@Override
 									public void execute() {
-										DOM.setStyleAttribute(invokingWidget.getElement(), "top", initialTop + "px"); 
+										DOM.setStyleAttribute(invokingWidget.getElement(), "top", initialTop + "px");
 										DOM.setStyleAttribute(invokingWidget.getElement(), "left", initialLeft + "px");
+										VkStateHelper.getInstance().getToolbarHelper().showToolbar(invokingWidget);
 									}});
 					}
 					DOM.releaseCapture(draggingWidget.getElement());
@@ -93,6 +98,11 @@ public class MoveHelper implements IMoveHelper{
 				}
 			});
 		}
+	}
+	private Widget getScrollingParent(Widget scrollingParent) {
+		while(scrollingParent != null && scrollingParent.getElement().getScrollHeight() <= scrollingParent.getElement().getClientHeight() + 10)
+			scrollingParent = ((Widget)scrollingParent).getParent();
+		return scrollingParent;
 	}
 	@Override
 	public void moveWidgetLeft(IVkWidget widget){

@@ -15,16 +15,24 @@
  */
 package com.vk.gwt.designer.client.ui.widget.table.vkFlextable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.designer.UndoHelper;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
@@ -83,45 +91,105 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 		else
 			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
-	private void splitCells(VkFlexTable table) {
-		A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
-			for(int j = 0, colCount = table.getCellCount(i); j < colCount; j++) {
-				if(table.getFlexCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
-					int rowSpan = table.getRowSpan(i, j);
-					int colSpan = table.getColSpan(i, j);
-					table.removeCell(i, j);
-					for(int k = i, rows = i + rowSpan; k < rows; k++)
-						for(int l = j, cols = j + colSpan; l < cols; l++)
-							table.insertCell(k, l);
-					break A;
-				}
-			}
-		}
-	}
-	private void removeSelectedColumns(VkFlexTable table) {
-		boolean isAnyCellSelected = false;
-		for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
-			for(int j = 0, colCount = table.getCellCount(i); j < colCount; j++) {
-				if(table.getFlexCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
-					isAnyCellSelected = true;
-					int loopLimit = table.getColSpan(i, j) + j;
-					for(int l = j; l < loopLimit; l++) {
-						removeCol(table, i, l);
-						l--;
-						loopLimit--;
-						colCount--;
-						table.setInitialColumnCount(table.getInitialColumnCount() - 1);
+	private void splitCells(final VkFlexTable table) {
+		final VkFlexTable oldTable = new VkFlexTable();
+		this.deepClone(table, oldTable);
+		UndoHelper.getInstance().doCommand(new Command(){
+			@Override
+			public void execute() {
+				A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
+					for(int j = 0, colCount = table.getCellCount(i); j < colCount; j++) {
+						if(table.getFlexCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
+							int rowSpan = table.getRowSpan(i, j);
+							int colSpan = table.getColSpan(i, j);
+							table.removeCell(i, j);
+							for(int k = i, rows = i + rowSpan; k < rows; k++)
+								for(int l = j, cols = j + colSpan; l < cols; l++)
+									table.insertCell(k, l);
+							break A;
+						}
 					}
-					j--;
 				}
+			}}, new Command(){
+					@Override
+					public void execute() {
+						restoreOldTable(table, oldTable);
+					}});
+	}
+	protected void restoreOldTable(VkFlexTable table, VkFlexTable oldTable) {
+		table.clear();
+		table.removeAllRows();
+		for(int i = 0, rowCount = oldTable.getRowCount(); i < rowCount; i++) {
+			table.insertRow(i);
+			for(int j = 0, colCount = oldTable.getCellCount(i), maxCols = table.getCellCount(i); j < colCount; j++) {
+				if(j == maxCols)
+					table.insertCell(i, j);
+				if(oldTable.getWidget(i, j) != null) {
+					Widget widget = oldTable.getWidget(i, j);
+					table.setWidget(i, j, widget);
+				}
+				table.getFlexCellFormatter().setRowSpan(i, j, oldTable.getFlexCellFormatter().getRowSpan(i, j));
+				table.getFlexCellFormatter().setColSpan(i, j, oldTable.getFlexCellFormatter().getColSpan(i, j));
 			}
 		}
-		if(isAnyCellSelected) {
-			table.clearCellSelection();
-			VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+		VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+	}
+	private void removeSelectedColumns(final VkFlexTable table) {
+		final ArrayList<int[]> cells = getSelectedCells(table);
+		Collections.sort(cells, new Comparator<int[]>() {
+			@Override
+			public int compare(int[] o1, int[] o2) {
+				return o1[1] - o2[1];
+			}
+		});
+		for(Iterator<int[]> i = cells.iterator(); i.hasNext();) {
+			int[] next = i.next();
+			while(i.hasNext() && i.next()[1] == next[1])
+				i.remove();
 		}
-		else
+		if(cells.isEmpty()) 
 			Window.alert("Please select cells before applying cell operations");
+		else {
+			final VkFlexTable oldTable =(VkFlexTable) this.deepClone(table, new VkFlexTable());
+			UndoHelper.getInstance().doCommand(new Command(){
+				@Override
+				public void execute() {
+					int cellsExecuted = 0;
+					A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
+						for(int j = 0, colCount = table.getCellCount(i); j < colCount; j++) {
+							for(int[] k : cells) {
+								if(Arrays.equals(k, new int[]{i, j})) {
+									int loopLimit = table.getColSpan(i, j) + j;
+									for(int l = j; l < loopLimit; l++) {
+										removeCol(table, i, l);
+										cellsExecuted++;
+										l--;
+										loopLimit--;
+										colCount--;
+										table.setInitialColumnCount(table.getInitialColumnCount() - 1);
+										if(cellsExecuted == cells.size())
+											break A;
+									}
+									j--;
+									break;
+								}
+							}
+						}
+					}
+				}}, new Command(){
+						@Override
+						public void execute() {
+							restoreOldTable(table, oldTable);
+						}});
+		} 
+	}
+	private ArrayList<int[]> getSelectedCells(VkFlexTable table) {
+		ArrayList<int[]> cells = new ArrayList<int[]>();
+		for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++)
+			for(int j = 0, colCount = table.getCellCount(i); j < colCount; j++)
+				if(table.getFlexCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1)
+					cells.add(new int[]{i, j});
+		return cells;
 	}
 	private void removeCol(VkFlexTable table, int startRow, int startCol) {
 		int origCol = Integer.parseInt(DOM.getElementAttribute(table.getFlexCellFormatter().getElement(startRow, startCol), "col"));
@@ -143,37 +211,60 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 			for(int j = 0; j < colCount; j++) {
 				int col = Integer.parseInt(DOM.getElementAttribute(table.getFlexCellFormatter().getElement(i, j), "col"));
 				if(origCol < col)
-					DOM.setElementAttribute(table.getFlexCellFormatter().getElement(i, j)
-						, "col", Integer.toString(col - 1));
+					DOM.setElementAttribute(table.getFlexCellFormatter().getElement(i, j), "col", Integer.toString(col - 1));
 			}
 		}
 		table.getColumnFormatter().getElement(startCol).removeFromParent();
 	}
-	private void removeSelectedRows(VkFlexTable table) {
-		int rowCount = table.getRowCount();
-		boolean isAnyCellSelected = false;
-		for(int i = 0; i < rowCount; i++) {
-			for(int j = 0, colCount = table.getCellCount(i); j < colCount; j++) {
-				if(table.getFlexCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
-					isAnyCellSelected = true;
-					for(int k = i, loopLimit = table.getRowSpan(i,j) + i; k < loopLimit; k++)
-					{
-						removeRow(table, k);
-						rowCount--;
-						k--;
-						loopLimit--;
-					}
-					i--;
-					break;
-				}
+	private void removeSelectedRows(final VkFlexTable table) {
+		final ArrayList<int[]> cells = getSelectedCells(table);
+		Collections.sort(cells, new Comparator<int[]>() {
+			@Override
+			public int compare(int[] o1, int[] o2) {
+				return o1[0] - o2[0];
 			}
+		});
+		for(Iterator<int[]> i = cells.iterator(); i.hasNext();) {
+			int[] next = i.next();
+			while(i.hasNext() && i.next()[0] == next[0])
+				i.remove();
 		}
-		if(isAnyCellSelected) {
-			table.clearCellSelection();
-			VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
-		}
-		else
+		if(cells.isEmpty()) 
 			Window.alert("Please select cells before applying cell operations");
+		else {
+			final VkFlexTable oldTable = new VkFlexTable();
+			this.deepClone(table, oldTable);
+			UndoHelper.getInstance().doCommand(new Command(){
+				@Override
+				public void execute() {
+					int cellsExecuted = 0;
+					A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
+						for(int j = 0, colCount = table.getCellCount(i); j < colCount; j++) {
+							for(int[] k : cells) {
+								if(Arrays.equals(k, new int[]{i, j})) {
+									for(int l = i, loopLimit = table.getRowSpan(i,j) + i; l < loopLimit; l++) {
+										removeRow(table, l);
+										cellsExecuted++;
+										rowCount--;
+										l--;
+										loopLimit--;
+										if(cellsExecuted == cells.size())
+											break A;
+									}
+									i--;
+									break;
+								}
+							}
+						}
+					}
+					table.clearCellSelection();
+					VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+				}}, new Command(){
+				@Override
+				public void execute() {
+					restoreOldTable(table, oldTable);
+				}});
+		}
 	}
 	private void removeRow(VkFlexTable table, int row) {
 		int colCount = table.getCellCount(row);
@@ -207,23 +298,25 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 		}
 	}
 	private void addNewColumn(final VkFlexTable table) {
-		boolean isAnyCellSelected = false;
-		A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
-			for(int j = 0, colCount = table.getCellCount(i); j < colCount; j++) {
-				if(table.getFlexCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
-					isAnyCellSelected = true;
-					insertColumn(Integer.parseInt(DOM.getElementAttribute(table.getFlexCellFormatter().getElement(i, j), "col")) + table.getColSpan(i, j), table);
-					break A;
+		final VkFlexTable oldTable = new VkFlexTable();
+		this.deepClone(table, oldTable);
+		final ArrayList<int[]> cells = getSelectedCells(table);
+		UndoHelper.getInstance().doCommand(new Command(){
+			@Override
+			public void execute() {
+				if(cells.isEmpty()) 
+					for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++)
+						table.insertCell(i, table.getCellCount(i));
+				 else {
+					insertColumn(Integer.parseInt(DOM.getElementAttribute(table.getFlexCellFormatter().getElement(cells.get(0)[0], cells.get(0)[1]), "col")) + table.getColSpan(cells.get(0)[0], cells.get(0)[1]), table);
+					table.clearCellSelection();
+					VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
 				}
-			}
-		}
-		if(isAnyCellSelected) {
-			table.clearCellSelection();
-			VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
-		}
-		else
-			for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++)
-				table.insertCell(i, table.getCellCount(i));
+			}}, new Command(){
+			@Override
+			public void execute() {
+				restoreOldTable(table, oldTable);
+			}});
 	}
 	private void insertColumn(int actualColumnNumber, VkFlexTable table) {
 		table.setInitialColumnCount(table.getInitialColumnCount() + 1);
@@ -257,24 +350,25 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 		table.getColumnFormatter().setWidth(actualColumnNumber, "80px");
 	}
 	private void addNewRow(final VkFlexTable table) {
-		boolean isAnyCellSelected = false;
-		A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
-			for(int j = 0, colCount = table.getCellCount(i); j < colCount; j++) {
-				if(table.getFlexCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
-					isAnyCellSelected = true;
-					table.insertRow(i + Math.max(1, table.getRowSpan(i, j)));
+		final VkFlexTable oldTable = new VkFlexTable();
+		this.deepClone(table, oldTable);
+		final ArrayList<int[]> cells = getSelectedCells(table);
+		UndoHelper.getInstance().doCommand(new Command(){
+			@Override
+			public void execute() {
+				if(cells.isEmpty()) 
+					table.insertRow(table.getRowCount());
+				 else {
+					table.insertRow(cells.get(0)[0] + Math.max(1, table.getRowSpan(cells.get(0)[0], cells.get(0)[1])));
 					table.setInitialRowCount(table.getInitialRowCount() + 1);
-					break A;
+					VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
 				}
-			}
-		}
-		if(isAnyCellSelected) {
-			table.clearCellSelection();
-			VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
-		}
-		else
-			table.insertRow(table.getRowCount());
-				
+				table.clearCellSelection();
+			}}, new Command(){
+			@Override
+			public void execute() {
+				restoreOldTable(table, oldTable);
+			}});
 	}
 	private void addSpan(final VkFlexTable table) {
 		boolean isFirstCellSpared = false;
@@ -441,23 +535,30 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 		VkFlexTable sourceTable = (VkFlexTable)widgetSource;
 		VkFlexTable targetTable = (VkFlexTable)widgetTarget;
 		int rowCount = sourceTable.getRowCount();
+		VkStateHelper.getInstance().setDesignerMode(true);
 		for(int i = 0; i < rowCount; i++) {
-			int columnCount = sourceTable.getCellCount(i);
-			for(int j = 0, colNum = 0; j < columnCount; j++) {
+			for(int j = 0, colNum = 0, columnCount = sourceTable.getCellCount(i); j < columnCount; j++) {
 				targetTable.makeCell(i, j , colNum);
+				Panel sourcePanel = (Panel) sourceTable.getWidget(i, j);
+				Panel targetPanel = (Panel) targetTable.getWidget(i, j);
+				for(Widget k : sourcePanel) {
+					IVkWidget currentWidget = ((IVkWidget) k);
+					Widget newWidget = VkStateHelper.getInstance().getEngine().getWidget(currentWidget.getWidgetName());
+					VkStateHelper.getInstance().getWidgetEngineMapping().getEngineMap().get(currentWidget.getWidgetName()).deepClone((Widget) currentWidget, newWidget);
+					targetPanel.add(newWidget);
+				}
 				int colspan = sourceTable.getColSpan(i, j);
 				colNum += colspan;
 				targetTable.setRowSpan(i, j, sourceTable.getRowSpan(i, j));
 				targetTable.setColSpan(i, j, colspan);
 			}
-			DOM.setElementAttribute(targetTable.getRowFormatter().getElement(i), "height"
-					, DOM.getElementAttribute(sourceTable.getRowFormatter().getElement(i), "height"));
+			DOM.setElementAttribute(targetTable.getRowFormatter().getElement(i), "height", DOM.getElementAttribute(sourceTable.getRowFormatter().getElement(i), "height"));
 		}
+		VkStateHelper.getInstance().setDesignerMode(false);//because it would be false when this would be called from VkAbstractWidgetEngine#deepClone
 		int numberOfCols = 0;
 		for(int i = 0; i < rowCount; i++)
 			numberOfCols = Math.max(numberOfCols, sourceTable.getCellCount(i));
 		for(int i = 0; i < numberOfCols; i++)
-			targetTable.getColumnFormatter().setWidth(i
-					, DOM.getElementAttribute(sourceTable.getColumnFormatter().getElement(i), "width"));
+			targetTable.getColumnFormatter().setWidth(i, DOM.getElementAttribute(sourceTable.getColumnFormatter().getElement(i), "width"));
 	}
 }
