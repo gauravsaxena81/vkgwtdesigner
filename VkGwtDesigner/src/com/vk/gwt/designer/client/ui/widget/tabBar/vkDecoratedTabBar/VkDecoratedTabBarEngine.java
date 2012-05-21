@@ -19,6 +19,7 @@ import java.util.List;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TabBar;
@@ -28,6 +29,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkBeforeSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkEventHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.designer.UndoHelper;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
@@ -61,47 +63,83 @@ public class VkDecoratedTabBarEngine extends VkAbstractWidgetEngine<VkDecoratedT
 	public void applyAttribute(String attributeName, Widget invokingWidget) {
 		final VkDecoratedTabBar tabbar = (VkDecoratedTabBar)invokingWidget;
 		if(attributeName.equals(ADD_TAB))
-		{
-			final TextArea ta = new TextArea();
-			ta.setSize("300px", "100px");
-			VkDesignerUtil.showAddTextAttributeDialog("Please provide HTML for tab name", ta
-				, new IDialogCallback() {
-				@Override
-				public void save(String js) {
-					tabbar.addTab(ta.getText(), true);
-				}
-			});
-		}
+			addTab(tabbar);
 		else if (attributeName.equals(EDIT_TAB))
-		{
-			if(tabbar.getSelectedTab() < 0)
-				Window.alert("Select a tab before this operation");
-			else
-			{
-				final TextArea ta = new TextArea();
-				ta.setText(tabbar.getTabHTML(tabbar.getSelectedTab()));
-				ta.setSize("300px", "100px");
-				VkDesignerUtil.showAddTextAttributeDialog("Please provide HTML for tab name", ta
-					, new IDialogCallback() {
-					@Override
-					public void save(String js) {
-						tabbar.setTabHTML(tabbar.getSelectedTab(), ta.getText());
-					}
-				});
-			}
-		}
+			editTab(tabbar);
 		else if(attributeName.equals(REMOVE_TAB))
-		{
-			if(tabbar.getSelectedTab() < 0)
-				Window.alert("Select a tab before this operation");
-			else
-				tabbar.removeTab(tabbar.getSelectedTab());
-		}
+			removeTab(tabbar);
 		else if(attributeName.equals(DISABLE_TAB))
 			enableTab(tabbar, false);
 		else if(attributeName.equals(ENABLE_TAB))
 			enableTab(tabbar, true);
 		VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
+	}
+	private void editTab(final VkDecoratedTabBar tabbar) {
+		if(tabbar.getSelectedTab() < 0)
+			Window.alert("Select a tab before this operation");
+		else {
+			final TextArea ta = new TextArea();
+			ta.setText(tabbar.getTabHTML(tabbar.getSelectedTab()));
+			ta.setSize("300px", "100px");
+			VkDesignerUtil.showAddTextAttributeDialog("Please provide HTML for tab name", ta
+				, new IDialogCallback() {
+				@Override
+				public void save(String js) {
+					final int tabNumber = tabbar.getSelectedTab();
+					final String html = ta.getText();
+					final String priorHtml = tabbar.getTabHTML(tabNumber);
+					UndoHelper.getInstance().doCommand(new Command(){
+						@Override
+						public void execute() {
+							tabbar.setTabHTML(tabNumber, html);
+						}}, new Command(){
+						@Override
+						public void execute() {
+							tabbar.setTabHTML(tabNumber, priorHtml);
+						}});
+				}
+			});	
+		}
+	}
+	private void addTab(final VkDecoratedTabBar tabbar) {
+		final TextArea ta = new TextArea();
+		ta.setSize("300px", "100px");
+		VkDesignerUtil.showAddTextAttributeDialog("Please provide HTML for tab name", ta
+			, new IDialogCallback() {
+			@Override
+			public void save(String js) {
+				final int tabNumber = tabbar.getTabCount();
+				final String html = ta.getText();
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						tabbar.addTab(html, true);
+					}}, new Command(){
+					@Override
+					public void execute() {
+						tabbar.removeTab(tabNumber);
+					}});
+			}
+		});		
+	}
+	private void removeTab(final VkDecoratedTabBar tabbar) {
+		if(tabbar.getSelectedTab() < 0)
+			Window.alert("Select a tab before this operation");
+		else {
+			final int tabNumber = tabbar.getSelectedTab();
+			final String priorHtml = tabbar.getTabHTML(tabNumber);
+			final boolean enabled = tabbar.isTabEnabled(tabNumber);
+			UndoHelper.getInstance().doCommand(new Command(){
+				@Override
+				public void execute() {
+					tabbar.removeTab(tabbar.getSelectedTab());
+				}}, new Command(){
+				@Override
+				public void execute() {
+					tabbar.insertTab(priorHtml, tabNumber);
+					tabbar.setTabEnabled(tabNumber, enabled);
+				}});
+		}
 	}
 	private void enableTab(final VkDecoratedTabBar tabbar, final boolean enable) {
 		if(tabbar.getTabCount() == 0)
@@ -116,7 +154,17 @@ public class VkDecoratedTabBarEngine extends VkAbstractWidgetEngine<VkDecoratedT
 				VkDesignerUtil.showAddListDialog("Add Tab number to enable", listBox, new IDialogCallback() {
 					@Override
 					public void save(String text) {
-						tabbar.setTabEnabled(Integer.parseInt(text), enable);
+						final int tabNumber = Integer.parseInt(text);
+						final boolean priorEnabled = tabbar.isTabEnabled(tabNumber);
+						UndoHelper.getInstance().doCommand(new Command(){
+							@Override
+							public void execute() {
+								tabbar.setTabEnabled(tabNumber, enable);
+							}}, new Command(){
+							@Override
+							public void execute() {
+								tabbar.setTabEnabled(tabNumber, priorEnabled);
+							}});
 					}
 				});
 			} else {

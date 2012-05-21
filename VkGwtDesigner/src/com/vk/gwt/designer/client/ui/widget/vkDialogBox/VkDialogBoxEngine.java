@@ -37,17 +37,6 @@ public class VkDialogBoxEngine extends VkAbstractWidgetEngine<VkDialogBox> {
 		widget.setPixelSize(200, 100);
 		return widget;
 	}
-	/*@Override
-	public void applyAttribute(String attributeName, Widget invokingWidget) {
-		final VkDialogBox widget = (VkDialogBox)invokingWidget;
-		if(attributeName.equals(SET_POSITION))
-		{
-			widget.setPopupPosition(widget.getAbsoluteLeft(), widget.getAbsoluteTop());
-			Window.alert("Position of Panel is saved. Panel will appear at this position when it shows.");
-		}
-		else
-			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
-	}*/
 	@Override
 	public List<String> getAttributesList(Widget invokingWidget)
 	{

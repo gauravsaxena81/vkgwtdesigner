@@ -38,7 +38,7 @@ public class UndoHelper implements IUndoHelper{
 		@Override
 		public UndoAbleCommand push(UndoAbleCommand c) {
 			if(size() == 10)
-				remove(9);
+				remove(0);
 			UndoAbleCommand push = super.push(c);
 			return push;
 		}
@@ -56,7 +56,7 @@ public class UndoHelper implements IUndoHelper{
 		@Override
 		public UndoAbleCommand push(UndoAbleCommand c) {
 			if(size() == 10)
-				remove(9);
+				remove(0);
 			UndoAbleCommand push = super.push(c);
 			return push;
 		}

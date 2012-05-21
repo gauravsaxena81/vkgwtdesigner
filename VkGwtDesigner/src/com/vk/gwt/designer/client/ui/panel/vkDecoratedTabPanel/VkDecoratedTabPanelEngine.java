@@ -24,6 +24,7 @@ import com.google.gwt.json.client.JSONNumber;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,6 +36,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkSelectionHandler;
 import com.vk.gwt.designer.client.api.attributes.HasVkSwitchNumberedWidget;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.designer.UndoHelper;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
@@ -61,35 +63,59 @@ public class VkDecoratedTabPanelEngine extends VkAbstractWidgetEngine<VkDecorate
 	@Override
 	public void applyAttribute(String attributeName, Widget invokingWidget) {
 		final VkDecoratedTabPanel widget = (VkDecoratedTabPanel)invokingWidget;
-		if(attributeName.equals(ENABLE_TAB)) {
-			ListBox listBox = new ListBox();
-			for(int i = 0, len = widget.getTabCount(); i < len; i++)
-				listBox.addItem(widget.getTabHeaderText(i), Integer.toString(i));
-			listBox.setWidth("300px");
-			VkDesignerUtil.showAddListDialog("Add Tab number to enable", listBox, new IDialogCallback() {
-				@Override
-				public void save(String text) {
-					int tabNumber = Integer.parseInt(text);
-					widget.setTabEnabled(tabNumber, true);
-					widget.selectTab(tabNumber);
-				}
-			});
-		} else if(attributeName.equals(DISABLE_TAB)) {
-			ListBox listBox = new ListBox();
-			for(int i = 0, len = widget.getTabCount(); i < len; i++)
-				listBox.addItem(widget.getTabHeaderText(i), Integer.toString(i));
-			listBox.setWidth("300px");
-			VkDesignerUtil.showAddListDialog("Add Tab number to disable", listBox, new IDialogCallback() {
-				@Override
-				public void save(String text) {
-					widget.setTabEnabled(Integer.parseInt(text), false);
-				}
-			});
-		}
+		if(attributeName.equals(ENABLE_TAB))
+			enableTab(widget);
+		else if(attributeName.equals(DISABLE_TAB)) 
+			disableTab(widget);
 		else
 			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
 	
+	private void enableTab(final VkDecoratedTabPanel widget) {
+		ListBox listBox = new ListBox();
+		for(int i = 0, len = widget.getTabCount(); i < len; i++)
+			listBox.addItem(widget.getTabHeaderText(i), Integer.toString(i));
+		listBox.setWidth("300px");
+		VkDesignerUtil.showAddListDialog("Add Tab number to enable", listBox, new IDialogCallback() {
+			@Override
+			public void save(String text) {
+				final int tabNumber = Integer.parseInt(text);
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						widget.setTabEnabled(tabNumber, true);
+					}}, new Command() {
+					@Override
+					public void execute() {
+						widget.setTabEnabled(tabNumber, false);
+					}
+				});
+			}
+		});		
+	}
+	private void disableTab(final VkDecoratedTabPanel widget) {
+		ListBox listBox = new ListBox();
+		for(int i = 0, len = widget.getTabCount(); i < len; i++)
+			listBox.addItem(widget.getTabHeaderText(i), Integer.toString(i));
+		listBox.setWidth("300px");
+		VkDesignerUtil.showAddListDialog("Add Tab number to disable", listBox, new IDialogCallback() {
+			@Override
+			public void save(String text) {
+				final int tabNumber = Integer.parseInt(text);
+				UndoHelper.getInstance().doCommand(new Command(){
+					@Override
+					public void execute() {
+						widget.setTabEnabled(tabNumber, false);
+						widget.selectTab(tabNumber);
+					}}, new Command() {
+					@Override
+					public void execute() {
+						widget.setTabEnabled(tabNumber, true);
+					}
+				});
+			}
+		});		
+	}
 	@Override
 	public String serialize(IVkWidget widget)
 	{

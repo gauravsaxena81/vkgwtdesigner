@@ -286,10 +286,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler, IVkTab
 		boolean isVkDesignerMode = VkStateHelper.getInstance().isDesignerMode();
 		VkStateHelper.getInstance().setDesignerMode(false);//important as call routes to inserRow here instead of super's
 		setWidget(row, col, l2);
-		if(col != 0)
-			DOM.setStyleAttribute(super.getWidget(row, col - 1).getElement(), "borderRight", "solid 1px gray");
-		if(row != 0)
-			DOM.setStyleAttribute(super.getWidget(row - 1, col).getElement(), "borderBottom", "solid 1px gray");
+		DOM.setStyleAttribute(l2.getElement(), "border", "solid 1px gray");
 		l2.setVkParent(this);
 		VkStateHelper.getInstance().setDesignerMode(isVkDesignerMode);
 		//DOM.setStyleAttribute(getCellFormatter().getElement(row, col), "height", "inherit");
@@ -443,13 +440,15 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler, IVkTab
 	 public int getRowCount() {
 		return super.getRowCount();
 	}
-	@Override
 	@Export
-	public void insertCell(int beforeRow, int beforeColumn)
+	public void insertColumn(int beforeColumn)
 	{
-		super.insertCell(beforeRow, beforeColumn);
+		for(int i = 0, rows = getRowCount(); i < rows; i++)
+			super.insertCell(i, beforeColumn);
+		super.numColumns++;
 		if(VkStateHelper.getInstance().isDesignerMode())
-			makeCell(beforeRow, beforeColumn);
+			for(int i = 0, rows = getRowCount(); i < rows; i++)
+				makeCell(i, beforeColumn);
 	}
 	@Override
 	@Export
@@ -471,10 +470,11 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler, IVkTab
 	public void removeAllRows() {
 		super.resizeRows(0);
 	}
-	@Override
 	@Export
-	public void removeCell(int row, int col) {
-		 super.removeCell(row, col);
+	public void removeColumn(int col) {
+		 for(int i = 0, rows = getRowCount(); i < rows; i++)
+			 super.removeCell(i, col);
+		 super.numColumns--;
 	}
 	@Export
 	public void setVisible(int row, int column, boolean isVisible)
