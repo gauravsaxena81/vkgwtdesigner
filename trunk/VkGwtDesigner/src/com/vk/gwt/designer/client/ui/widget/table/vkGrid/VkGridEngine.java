@@ -15,15 +15,21 @@
  */
 package com.vk.gwt.designer.client.ui.widget.table.vkGrid;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
+import com.vk.gwt.designer.client.designer.UndoHelper;
 import com.vk.gwt.designer.client.designer.VkAbstractWidgetEngine;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil.IDialogCallback;
@@ -75,26 +81,70 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 		else
 			VkStateHelper.getInstance().getEngine().applyAttribute(attributeName, invokingWidget);
 	}
-	private void removeSelectedColumns(VkGrid table) {
-		int rowCount = table.getRowCount();
-		boolean isAnyCellSelected = false;
-		for(int i = 0; i < rowCount; i++) {
-			int colCount = table.getCellCount(i);
-			for(int j = 0; j < colCount; j++) {
-				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
-					isAnyCellSelected = true;
-					for(int l = 0; l < rowCount; l++)
-						table.removeCell(l, j);
-					table.getColumnFormatter().getElement(j).removeFromParent();
-					j--;
-					colCount--;
+	private void removeSelectedColumns(final VkGrid table) {
+		final ArrayList<int[]> cells = getSelectedCells(table);
+		Collections.sort(cells, new Comparator<int[]>() {
+			@Override
+			public int compare(int[] o1, int[] o2) {
+				return o2[1] - o1[1];
+			}
+		});
+		for(Iterator<int[]> i = cells.iterator(); i.hasNext();) {
+			int[] last = i.next();
+			while(i.hasNext()) {
+				int[] temp = i.next();				
+				if(temp[1] == last[1])
+					i.remove();
+				else
+					last = temp;
+			}
+			break;
+		}
+		if(cells.isEmpty()) 
+			Window.alert("Please select cells before applying cell operations");
+		else {
+			VkGrid vkGrid = new VkGrid();
+			vkGrid.resize(table.getRowCount(), table.getColumnCount());
+			final VkGrid oldTable =(VkGrid) this.deepClone(table, vkGrid);
+			UndoHelper.getInstance().doCommand(new Command(){
+				@Override
+				public void execute() {
+					for(int[] i : cells) {
+						table.removeColumn(i[1]);
+						table.getColumnFormatter().getElement(i[1]).removeFromParent();
+					}
+					VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+				}}, new Command(){
+				@Override
+				public void execute() {
+					restoreOldTable(table, oldTable);
+				}});
+		}
+		clearAndStopCellSelection(table);
+	}
+	private void restoreOldTable(VkGrid table, VkGrid oldTable) {
+		table.resize(0, 0);
+		for(int i = 0, rowCount = oldTable.getRowCount(); i < rowCount; i++)
+			table.insertRow(i);
+		for(int i = 0, colCount = oldTable.getColumnCount(); i < colCount; i++)
+			table.insertColumn(i);
+		for(int i = 0, rowCount = oldTable.getRowCount(); i < rowCount; i++) {
+			for(int j = 0, colCount = oldTable.getCellCount(i); j < colCount; j++) {
+				if(oldTable.getWidget(i, j) != null) {
+					Widget widget = oldTable.getWidget(i, j);
+					table.setWidget(i, j, widget);
 				}
 			}
 		}
-		if(isAnyCellSelected)
-			Window.alert("Please select cells before applying cell operations");
-		clearAndStopCellSelection(table);
 		VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+	}
+	private ArrayList<int[]> getSelectedCells(VkGrid table) {
+		ArrayList<int[]> cells = new ArrayList<int[]>();
+		for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++)
+			for(int j = 0, colCount = table.getCellCount(i); j < colCount; j++)
+				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1)
+					cells.add(new int[]{i, j});
+		return cells;
 	}
 	private void removeSelectedRows(VkGrid table) {
 		boolean isAnyCellSelected = false;
@@ -130,10 +180,8 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
 					isAnyCellSelected = true;
 					columnNumber = j;
-					for(int k = 0; k < rowCount; k++) {
-						table.removeCell(k, colCount - 1);
-						table.insertCell(k, j + 1);
-					}
+					table.removeColumn(colCount - 1);
+					table.insertColumn(j + 1);
 					break A;
 				}
 			}

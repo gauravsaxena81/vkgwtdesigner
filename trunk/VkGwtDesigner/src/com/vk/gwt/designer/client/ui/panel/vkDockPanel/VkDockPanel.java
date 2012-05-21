@@ -20,6 +20,7 @@ import java.util.List;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
@@ -38,6 +39,7 @@ import com.vk.gwt.designer.client.api.attributes.HasVkVerticalAlignment;
 import com.vk.gwt.designer.client.api.component.IVkPanel;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
 import com.vk.gwt.designer.client.api.widgets.HasVkWidgets;
+import com.vk.gwt.designer.client.designer.UndoHelper;
 import com.vk.gwt.designer.client.designer.VkDesignerUtil;
 import com.vk.gwt.designer.client.designer.VkStateHelper;
 
@@ -73,8 +75,21 @@ public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalA
 			listBox.setWidth("100px");
 			showSetCellAlignmentDialog(listBox, new IAlignment() {
 				@Override
-				public void doAlignment(int widgetIndex, String align) {
-					setCellHorizontalAlignment(widgetIndex, align);
+				public void doAlignment(final int widgetIndex, final String align) {
+					final String prior = DOM.getElementProperty((Element) getWidget(widgetIndex).getElement().getParentElement(), "align");
+					UndoHelper.getInstance().doCommand(new Command(){
+						@Override
+						public void execute() {
+							setCellHorizontalAlignment(widgetIndex, align);
+						}}, new Command() {
+						@Override
+						public void execute() {
+							if(prior.isEmpty())
+								setCellHorizontalAlignment(widgetIndex, "left");
+							else
+								setCellHorizontalAlignment(widgetIndex, prior);
+						}
+					});
 				}
 			});
 		}
@@ -89,8 +104,21 @@ public class VkDockPanel extends DockPanel implements IVkPanel, HasVkHorizontalA
 			listBox.setWidth("100px");
 			showSetCellAlignmentDialog(listBox, new IAlignment() {
 				@Override
-				public void doAlignment(int widgetIndex, String align) {
-					setCellVerticalAlignment(widgetIndex, align);
+				public void doAlignment(final int widgetIndex, final String align) {
+					final String prior = DOM.getStyleAttribute((Element) getWidget(widgetIndex).getElement().getParentElement(), "verticalAlign");
+					UndoHelper.getInstance().doCommand(new Command(){
+						@Override
+						public void execute() {
+							setCellVerticalAlignment(widgetIndex, align);
+						}}, new Command() {
+						@Override
+						public void execute() {
+							if(prior.isEmpty())
+								setCellVerticalAlignment(widgetIndex, "top");
+							else
+								setCellVerticalAlignment(widgetIndex, prior);
+						}
+					});
 				}
 			});
 		}

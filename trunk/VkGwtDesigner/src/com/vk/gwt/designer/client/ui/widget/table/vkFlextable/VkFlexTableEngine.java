@@ -116,8 +116,8 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 						restoreOldTable(table, oldTable);
 					}});
 	}
-	protected void restoreOldTable(VkFlexTable table, VkFlexTable oldTable) {
-		table.clear();
+	private void restoreOldTable(VkFlexTable table, VkFlexTable oldTable) {
+		table.clear(true);
 		table.removeAllRows();
 		for(int i = 0, rowCount = oldTable.getRowCount(); i < rowCount; i++) {
 			table.insertRow(i);
@@ -371,46 +371,90 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 			}});
 	}
 	private void addSpan(final VkFlexTable table) {
-		boolean isFirstCellSpared = false;
-		int rowSpan = 0;
-		int colspan = 0;
-		int firstCellRow = -1;
-		int firstCellCol = -1;
-		int rowCount = table.getRowCount();
-		int firstSelectionRow = -1;
-		int firstSelectionCol = -1;
-		boolean selectedCellFound = false;
-		for(int i = 0, l = 0; i < rowCount; i++) {
-			for(int j = 0, k = 0, colCount = table.getCellCount(i);j < colCount; j++, k++) {
-				if(table.getFlexCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
-					selectedCellFound = true;
-					if(firstSelectionRow == -1)
-						firstSelectionRow = i;
-					if(firstSelectionRow == i)
-						colspan += table.getColSpan(i, j);
-					if(firstSelectionCol == -1)
-						firstSelectionCol = Integer.parseInt(DOM.getElementAttribute(table.getFlexCellFormatter().getElement(i, j), "col"));
-					if(firstSelectionCol == Integer.parseInt(DOM.getElementAttribute(table.getFlexCellFormatter().getElement(i, j), "col")))
-						rowSpan += table.getRowSpan(i, j);
-					if(isFirstCellSpared) {
-						table.removeCell(i, j);//do not delete upper left most cell
-						colCount--;
-						j--;
-					} else {
-						isFirstCellSpared = true;
-						firstCellRow = i;
-						firstCellCol = j;
-					}
+		final VkFlexTable oldTable = new VkFlexTable();
+		this.deepClone(table, oldTable);
+		final ArrayList<int[]> cells = getSelectedCells(table);
+		UndoHelper.getInstance().doCommand(new Command(){
+			@Override
+			public void execute() {
+				int rowSpan = 0;
+				int colspan = 0;
+				int firstSelectionCol = -1;
+				/*int firstSelectionRow = -1;
+				boolean isFirstCellSpared = false;*/
+				int firstCellRow = -1;
+				int firstCellCol = -1;
+				/*int rowCount = table.getRowCount();
+				boolean selectedCellFound = false;*/
+				
+				if(cells.isEmpty()) {
+					Window.alert("Please select cells before applying cell operations");
+					return;
 				}
+				//firstSelectionRow = cells.get(0)[0];
+				for(int[] i : cells) {
+					if(i[0] == cells.get(0)[0])
+						colspan += table.getColSpan(i[0], i[1]);
+					else
+						break;
+				}
+				firstSelectionCol = Integer.parseInt(DOM.getElementAttribute(table.getFlexCellFormatter().getElement(cells.get(0)[0], cells.get(0)[1]), "col"));
+				for(int[] i : cells) {
+					if(firstSelectionCol == Integer.parseInt(DOM.getElementAttribute(table.getFlexCellFormatter().getElement(i[0], i[1]), "col")))
+						rowSpan += table.getRowSpan(i[0], i[1]);
+				}
+				firstCellRow = cells.get(0)[0];
+				firstCellCol = cells.get(0)[1];
+				Collections.sort(cells, new Comparator<int[]>() {
+					@Override
+					public int compare(int[] o1, int[] o2) {
+						if(o1[0] == o2[0])
+							return o2[1] - o1[1];
+						else
+							return o2[0] - o1[0];
+					}
+				});
+				cells.remove(cells.size() - 1);
+				for(int[] i : cells)
+					table.removeCell(i[0], i[1]);
+				/*for(int i = 0, l = 0; i < rowCount; i++) {
+					for(int j = 0, k = 0, colCount = table.getCellCount(i);j < colCount; j++, k++) {
+						if(table.getFlexCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
+							selectedCellFound = true;
+							if(firstSelectionRow == -1)
+								firstSelectionRow = i;
+							if(firstSelectionRow == i)
+								colspan += table.getColSpan(i, j);
+							if(firstSelectionCol == -1)
+								firstSelectionCol = Integer.parseInt(DOM.getElementAttribute(table.getFlexCellFormatter().getElement(i, j), "col"));
+							if(firstSelectionCol == Integer.parseInt(DOM.getElementAttribute(table.getFlexCellFormatter().getElement(i, j), "col")))
+								rowSpan += table.getRowSpan(i, j);
+							if(isFirstCellSpared) {
+								table.removeCell(i, j);//do not delete upper left most cell
+								colCount--;
+								j--;
+							} else {
+								isFirstCellSpared = true;
+								firstCellRow = i;
+								firstCellCol = j;
+							}
+						}
+					}
+					if(selectedCellFound)
+						l++;
+				}
+				if(!selectedCellFound)
+					Window.alert("Please select cells before applying cell operations");*/
+				table.getFlexCellFormatter().setRowSpan(firstCellRow, firstCellCol, rowSpan);
+				table.getFlexCellFormatter().setColSpan(firstCellRow, firstCellCol, colspan);
+				table.clearCellSelection();		
 			}
-			if(selectedCellFound)
-				l++;
-		}
-		if(!selectedCellFound)
-			Window.alert("Please select cells before applying cell operations");
-		table.getFlexCellFormatter().setRowSpan(firstCellRow, firstCellCol, rowSpan);
-		table.getFlexCellFormatter().setColSpan(firstCellRow, firstCellCol, colspan);
-		table.clearCellSelection();		
+			
+		}, new Command(){
+			@Override
+			public void execute() {
+				restoreOldTable(table, oldTable);
+			}});
 	}
 	private void addCellPadding(final VkFlexTable table) {
 		TextBox tb = new TextBox();
@@ -418,12 +462,24 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IDialogCallback() {
 			@Override
 			public void save(String text) {
+				int padding = 0;
+				final int priorPadding = table.getCellPadding();
 				try{
-					table.setCellPadding(Integer.parseInt(text.trim()));
-					VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+					padding = Integer.parseInt(text.trim());
+					final int finalPadding = padding;
+					UndoHelper.getInstance().doCommand(new Command(){
+						@Override
+						public void execute() {
+							table.setCellPadding(finalPadding);
+							VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+						}}, new Command(){
+						@Override
+						public void execute() {
+							table.setCellPadding(priorPadding);
+							VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+						}});
 				} catch(NumberFormatException e)	{
 					Window.alert("Cell Padding cannot be non-numeric");
-					addCellPadding(table);
 				}
 			}
 		});
@@ -434,12 +490,24 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IDialogCallback() {
 			@Override
 			public void save(String text) {
+				int spacing = 0;
+				final int priorSpacing = table.getCellSpacing();
 				try{
-					table.setCellSpacing(Integer.parseInt(text.trim()));
-					VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+					spacing = Integer.parseInt(text.trim());
+					final int finalSpacing = spacing;
+					UndoHelper.getInstance().doCommand(new Command(){
+						@Override
+						public void execute() {
+							table.setCellSpacing(finalSpacing);
+							VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+						}}, new Command(){
+						@Override
+						public void execute() {
+							table.setCellSpacing(priorSpacing);
+							VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+						}});
 				} catch(NumberFormatException e)	{
 					Window.alert("Cell Spacing cannot be non-numeric");
-					addCellSpacing(table);
 				}
 			}
 		});
