@@ -442,7 +442,6 @@ public class VkFlexTable extends FlexTable implements IVkWidget, HasVkClickHandl
 				}
 			}, MouseOverEvent.getType());
 			((IVkWidget)widget).setVkParent(this);
-			DOM.setStyleAttribute(widget.getElement(), "border", "solid 1px gray");
 			DOM.setStyleAttribute(widget.getElement(), "overflow", "");
 		}
 	}

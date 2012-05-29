@@ -26,6 +26,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.vk.gwt.designer.client.api.component.IVkWidget;
@@ -109,10 +110,8 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 			UndoHelper.getInstance().doCommand(new Command(){
 				@Override
 				public void execute() {
-					for(int[] i : cells) {
+					for(int[] i : cells)
 						table.removeColumn(i[1]);
-						table.getColumnFormatter().getElement(i[1]).removeFromParent();
-					}
 					VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
 				}}, new Command(){
 				@Override
@@ -146,89 +145,122 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 					cells.add(new int[]{i, j});
 		return cells;
 	}
-	private void removeSelectedRows(VkGrid table) {
-		boolean isAnyCellSelected = false;
-		int rowCount = table.getRowCount();
-		for(int i = 0; i < rowCount; i++) {
-			int colCount = table.getCellCount(i);
-			for(int j = 0; j < colCount; j++) {
-				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
-					isAnyCellSelected = true;
-					table.removeRow(i);
-					i--;
-					rowCount--;
-					break;
-				}
+	private void removeSelectedRows(final VkGrid table) {
+		final ArrayList<int[]> cells = getSelectedCells(table);
+		Collections.sort(cells, new Comparator<int[]>() {
+			@Override
+			public int compare(int[] o1, int[] o2) {
+				return o2[0] - o1[0];
 			}
+		});
+		for(Iterator<int[]> i = cells.iterator(); i.hasNext();) {
+			int[] last = i.next();
+			while(i.hasNext()) {
+				int[] temp = i.next();				
+				if(temp[0] == last[0])
+					i.remove();
+				else
+					last = temp;
+			}
+			break;
 		}
-		if(isAnyCellSelected)
+		if(cells.isEmpty()) 
 			Window.alert("Please select cells before applying cell operations");
+		else {
+			VkGrid vkGrid = new VkGrid();
+			vkGrid.resize(table.getRowCount(), table.getColumnCount());
+			final VkGrid oldTable =(VkGrid) this.deepClone(table, vkGrid);
+			UndoHelper.getInstance().doCommand(new Command(){
+				@Override
+				public void execute() {
+					for(int[] i : cells)
+						table.removeRow(i[0]);
+					VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+				}}, new Command(){
+				@Override
+				public void execute() {
+					restoreOldTable(table, oldTable);
+				}});
+		}
 		clearAndStopCellSelection(table);
-		VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
 	}
 	
-	private void addNewColumn(VkGrid table) {
-		boolean isAnyCellSelected = false;
-		int columnNumber = 0;
-		boolean isDesignerMode = VkStateHelper.getInstance().isDesignerMode();
-		VkStateHelper.getInstance().setDesignerMode(false);
-		table.resizeColumns(table.getColumnCount() + 1);
-		VkStateHelper.getInstance().setDesignerMode(isDesignerMode);
-		A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
-			int colCount = table.getColumnCount();
-			for(int j = 0; j < colCount; j++) {
-				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
-					isAnyCellSelected = true;
-					columnNumber = j;
-					table.removeColumn(colCount - 1);
-					table.insertColumn(j + 1);
-					break A;
-				}
-			}
-		}
-		for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++)
-			for(int j = 0, colCount = table.getColumnCount(); j < colCount; j++)
-				DOM.setElementAttribute(table.getCellFormatter().getElement(i, j), "col", Integer.toString(j));
-		
-		for(int i = columnNumber + 2, len = table.getColumnCount(); i < len; i++)
-			table.getColumnFormatter().setWidth(i, DOM.getElementAttribute(table.getColumnFormatter().getElement(i - 1), "width"));
-		if(isAnyCellSelected) {
+	private void addNewColumn(final VkGrid table) {
+		final ArrayList<int[]> cells = getSelectedCells(table);
+		if(cells.isEmpty()) 
+			Window.alert("Please select cells before applying cell operations");
+		else {
+			VkGrid vkGrid = new VkGrid();
+			vkGrid.resize(table.getRowCount(), table.getColumnCount());
+			final VkGrid oldTable =(VkGrid) this.deepClone(table, vkGrid);
+			UndoHelper.getInstance().doCommand(new Command(){
+				@Override
+				public void execute() {
+					int columnNumber = 0;
+					table.resizeColumns(table.getColumnCount() + 1);
+					columnNumber = cells.get(0)[1];
+					table.removeColumn(table.getColumnCount() - 1);
+					table.insertColumn(columnNumber + 1);
+					for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++)
+						for(int j = 0, colCount = table.getColumnCount(); j < colCount; j++)
+							DOM.setElementAttribute(table.getCellFormatter().getElement(i, j), "col", Integer.toString(j));
+					
+					for(int i = columnNumber + 2, len = table.getColumnCount(); i < len; i++)
+						table.getColumnFormatter().setWidth(i, DOM.getElementAttribute(table.getColumnFormatter().getElement(i - 1), "width"));
+				}}, new Command(){
+				@Override
+				public void execute() {
+					restoreOldTable(table, oldTable);
+				}});
 			clearAndStopCellSelection(table);
 			VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
-		} else
-			Window.alert("Please select cells before applying cell operations");
+		}
 	}
-	private void addNewRow(VkGrid table) {
-		boolean isAnyCellSelected = false;
-		A: for(int i = 0, rowCount = table.getRowCount(); i < rowCount; i++) {
-			int colCount = table.getCellCount(i);
-			for(int j = 0; j < colCount; j++) {
-				if(table.getCellFormatter().getStyleName(i, j).indexOf("vkflextable-cell-selected") > -1) {
-					isAnyCellSelected = true;
-					table.insertRow(i + 1);
-					break A;
-				}
-			}
-		}
-		if(isAnyCellSelected) {
+	private void addNewRow(final VkGrid table) {
+		final ArrayList<int[]> cells = getSelectedCells(table);
+		if(cells.isEmpty()) 
+			Window.alert("Please select cells before applying cell operations");
+		else {
+			VkGrid vkGrid = new VkGrid();
+			vkGrid.resize(table.getRowCount(), table.getColumnCount());
+			final VkGrid oldTable =(VkGrid) this.deepClone(table, vkGrid);
+			UndoHelper.getInstance().doCommand(new Command(){
+				@Override
+				public void execute() {
+					table.insertRow(cells.get(0)[0] + 1);
+				}}, new Command(){
+				@Override
+				public void execute() {
+					restoreOldTable(table, oldTable);
+				}});
 			clearAndStopCellSelection(table);
 			VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
 		}
-		else
-			Window.alert("Please select cells before applying cell operations");
 	}
 	private void addCellPadding(final VkGrid table) {
 		TextBox tb = new TextBox();
-		tb.setWidth("100px");
+		tb.setWidth("300px");
 		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IDialogCallback() {
 			@Override
 			public void save(String text) {
+				int padding = 0;
+				final int priorPadding = table.getCellPadding();
 				try{
-					table.setCellPadding(Integer.parseInt(text.trim()));
-					VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+					padding = Integer.parseInt(text.trim());
+					final int finalPadding = padding;
+					UndoHelper.getInstance().doCommand(new Command(){
+						@Override
+						public void execute() {
+							table.setCellPadding(finalPadding);
+							VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+						}}, new Command(){
+						@Override
+						public void execute() {
+							table.setCellPadding(priorPadding);
+							VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+						}});
 				} catch(NumberFormatException e) {
 					Window.alert("Cell Padding cannot be non-numeric");
-					addCellPadding(table);
 				}
 			}
 		});
@@ -239,12 +271,24 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 		VkDesignerUtil.showAddTextAttributeDialog("Add Cell Spacing", tb, new IDialogCallback() {
 			@Override
 			public void save(String text) {
+				int spacing = 0;
+				final int priorSpacing = table.getCellSpacing();
 				try{
-					table.setCellSpacing(Integer.parseInt(text.trim()));
-					VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
-				}catch(NumberFormatException e)	{
+					spacing = Integer.parseInt(text.trim());
+					final int finalSpacing = spacing;
+					UndoHelper.getInstance().doCommand(new Command(){
+						@Override
+						public void execute() {
+							table.setCellSpacing(finalSpacing);
+							VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+						}}, new Command(){
+						@Override
+						public void execute() {
+							table.setCellSpacing(priorSpacing);
+							VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
+						}});
+				} catch(NumberFormatException e)	{
 					Window.alert("Cell Spacing cannot be non-numeric");
-					addCellSpacing(table);
 				}
 			}
 		});
@@ -334,27 +378,33 @@ public class VkGridEngine extends VkAbstractWidgetEngine<VkGrid> {
 					, heightArray.get(i).isNumber().doubleValue() + "px");
 	}
 	@Override
+	public Widget deepClone(Widget sourceWidget, Widget targetWidget) {
+		((VkGrid)targetWidget).resize(((VkGrid)sourceWidget).getRowCount(), ((VkGrid)sourceWidget).getColumnCount());
+		return super.deepClone(sourceWidget, targetWidget);
+	}
+	@Override
 	public void copyAttributes(Widget widgetSource, Widget widgetTarget){
 		super.copyAttributes(widgetSource, widgetTarget);
 		VkGrid sourceTable = (VkGrid)widgetSource;
 		VkGrid targetTable = (VkGrid)widgetTarget;
 		int rowCount = sourceTable.getRowCount();
-		for(int i = 0; i < rowCount; i++)
-		{
-			int columnCount = sourceTable.getCellCount(i);
-			for(int j = 0, colNum = 0; j < columnCount; j++)
-			{
+		VkStateHelper.getInstance().setDesignerMode(true);
+		for(int i = 0; i < rowCount; i++) {
+			for(int j = 0, colNum = 0, columnCount = sourceTable.getCellCount(i); j < columnCount; j++, colNum++) {
 				targetTable.makeCell(i, j);
-				colNum++;
+				Panel sourcePanel = (Panel) sourceTable.getWidget(i, j);
+				Panel targetPanel = (Panel) targetTable.getWidget(i, j);
+				for(Widget k : sourcePanel) {
+					IVkWidget currentWidget = ((IVkWidget) k);
+					Widget newWidget = VkStateHelper.getInstance().getEngine().getWidget(currentWidget.getWidgetName());
+					VkStateHelper.getInstance().getWidgetEngineMapping().getEngineMap().get(currentWidget.getWidgetName()).deepClone((Widget) currentWidget, newWidget);
+					targetPanel.add(newWidget);
+				}
 			}
-			DOM.setElementAttribute(targetTable.getRowFormatter().getElement(i), "height"
-					, DOM.getElementAttribute(sourceTable.getRowFormatter().getElement(i), "height"));
+			DOM.setElementAttribute(targetTable.getRowFormatter().getElement(i), "height", DOM.getElementAttribute(sourceTable.getRowFormatter().getElement(i), "height"));
 		}
-		int numberOfCols = 0;
-		for(int i = 0; i < rowCount; i++)
-			numberOfCols = Math.max(numberOfCols, sourceTable.getCellCount(i));
-		for(int i = 0; i < numberOfCols; i++)
-			targetTable.getColumnFormatter().setWidth(i
-					, DOM.getElementAttribute(sourceTable.getColumnFormatter().getElement(i), "width"));
+		VkStateHelper.getInstance().setDesignerMode(false);//because it would be false when this would be called from VkAbstractWidgetEngine#deepClone
+		for(int i = 0, colCount = sourceTable.getColumnCount(); i < colCount; i++)
+			targetTable.getColumnFormatter().setWidth(i, DOM.getElementAttribute(sourceTable.getColumnFormatter().getElement(i), "width"));
 	}
 }
