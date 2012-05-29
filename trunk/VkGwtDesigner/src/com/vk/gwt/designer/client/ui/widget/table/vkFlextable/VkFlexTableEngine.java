@@ -478,7 +478,7 @@ public class VkFlexTableEngine extends VkAbstractWidgetEngine<VkFlexTable> {
 							table.setCellPadding(priorPadding);
 							VkStateHelper.getInstance().getToolbarHelper().showToolbar(table);
 						}});
-				} catch(NumberFormatException e)	{
+				} catch(NumberFormatException e) {
 					Window.alert("Cell Padding cannot be non-numeric");
 				}
 			}

@@ -141,33 +141,35 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler, IVkTab
 		this.columnFormatter = new VkGridColumnFormatter();
 		setColumnFormatter(columnFormatter);
 		DOM.setStyleAttribute(getElement(), "tableLayout", "fixed");
-		this.addDomHandler(new MouseDownHandler() {
-			@Override
-			public void onMouseDown(MouseDownEvent event) {
-				if(event.getNativeButton() == Event.BUTTON_LEFT){
-					startSelection = true;
-					firstSelection = true;
-					clearAllStyles();
-					Element td = getEventTargetCell(Event.as(event.getNativeEvent()));
-					if(td != null) {
-					    /*int row = TableRowElement.as(td.getParentElement()).getSectionRowIndex();
-					    int column = TableCellElement.as(td).getCellIndex();
-						VkFlexTable.this.getFlexCellFormatter().setStyleName(cell.getRowIndex(), cell.getCellIndex(), "vkflextable-cell-selected first");*/
-						td.setClassName("vkflextable-cell-selected first");
+		if(VkStateHelper.getInstance().isDesignerMode()) {
+			this.addDomHandler(new MouseDownHandler() {
+				@Override
+				public void onMouseDown(MouseDownEvent event) {
+					if(event.getNativeButton() == Event.BUTTON_LEFT){
+						startSelection = true;
+						firstSelection = true;
+						clearAllStyles();
+						Element td = getEventTargetCell(Event.as(event.getNativeEvent()));
+						if(td != null) {
+						    /*int row = TableRowElement.as(td.getParentElement()).getSectionRowIndex();
+						    int column = TableCellElement.as(td).getCellIndex();
+							VkFlexTable.this.getFlexCellFormatter().setStyleName(cell.getRowIndex(), cell.getCellIndex(), "vkflextable-cell-selected first");*/
+							td.setClassName("vkflextable-cell-selected first");
+						}
 					}
 				}
-			}
-		}, MouseDownEvent.getType());
-		this.addDomHandler(new MouseUpHandler() {
-			@Override
-			public void onMouseUp(MouseUpEvent event) {
-				if(event.getNativeButton() == Event.BUTTON_LEFT){
-					startSelection = false;
-					firstSelection = false;
-					VkDesignerUtil.clearSelection();
+			}, MouseDownEvent.getType());
+			this.addDomHandler(new MouseUpHandler() {
+				@Override
+				public void onMouseUp(MouseUpEvent event) {
+					if(event.getNativeButton() == Event.BUTTON_LEFT){
+						startSelection = false;
+						firstSelection = false;
+						VkDesignerUtil.clearSelection();
+					}
 				}
-			}
-		}, MouseUpEvent.getType());
+			}, MouseUpEvent.getType());
+		}
 	}
 	@Override
 	public void onLoad()
@@ -472,6 +474,7 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler, IVkTab
 	}
 	@Export
 	public void removeColumn(int col) {
+		getColumnFormatter().getElement(col).removeFromParent();
 		 for(int i = 0, rows = getRowCount(); i < rows; i++)
 			 super.removeCell(i, col);
 		 super.numColumns--;
@@ -627,5 +630,27 @@ public class VkGrid extends Grid implements IVkWidget, HasVkClickHandler, IVkTab
 	@Override
 	public void setVkParent(IVkWidget panel) {
 		this.vkParent = panel;
+	}
+	@Override
+	public void setWidget(int row, int col, Widget widget){
+		if(row >= 0 && row < getRowCount() && col >=0 && col < getCellCount(row) && widget instanceof IVkWidget){
+			super.setWidget(row, col, widget);
+			widget.addDomHandler(new MouseOverHandler() {
+				@Override
+				public void onMouseOver(MouseOverEvent event) {
+					if(startSelection){
+						clearSelectedCells();
+						Element td = getEventTargetCell(Event.as(event.getNativeEvent()));
+						if(td != null) {
+							if(td.getClassName().indexOf("first") == -1)
+								td.setClassName("vkflextable-cell-selected");
+							selectAll();
+						}
+					}
+				}
+			}, MouseOverEvent.getType());
+			((IVkWidget)widget).setVkParent(this);
+			DOM.setStyleAttribute(widget.getElement(), "overflow", "");
+		}
 	}
 }
