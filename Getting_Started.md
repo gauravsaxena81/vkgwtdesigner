@@ -1,0 +1,36 @@
+### Getting Started ###
+
+#### 1. Include the following line in your project.gwt.xml file ####
+```
+<inherits name="com.vk.gwt.designer.VkGwtDesigner"/>
+```
+
+#### 2. Include the following lines in your _onModuleLoad_ function ####
+```
+RootPanel.get().add(VkDesignerUtil.getDrawingPanel());//Mandatory
+//VkDesignerUtil.setEngineMap() -- only if you want to use custom widgets of your own
+//VkDesignerUtil.setEngine(); -- if you would like to change attributes and their application to widgets
+//VkDesignerUtil.setMenu(vkMenu) -- in case you would like to change the Menu items
+```
+
+#### 3. Dependencies ####
+
+Do remember to include [JsBridge](http://code.google.com/p/gwt-structs/downloads/list), [Gwt Slider Bar](http://code.google.com/p/gwt-slider-bar/downloads/list) and [Autocompleter](http://code.google.com/p/gwt-structs/downloads/list) in your classpath
+
+For Event handling UI, it requires codemirror library be placed in war. Check out from the following location [codemirror](http://code.google.com/p/vkgwtdesigner/source/browse/#svn%2Ftrunk%2FVkGwtDesigner%2Fwar%2Fcodemirror%253Fstate%253Dclosed)
+
+#### 4. Run the application ####
+
+NB: Currently, the uploaded version only works with **Mozilla FF** predictably.
+
+1. Click on the widget to change the menu attributes at the top of the page
+
+2. To add javascript for event handlers,
+
+> a. click on a widget, to popoulate its id in the textarea e.g. (&4)
+
+> b. Treat this id as element and invoke javascript functions or attributes e.g. (&4).innerHTML = new Date();
+
+> c. Start typing and press Ctrl + space for the event handler text area to show options. Click on any option for it to be populated in the textarea.
+
+3. Style dialog applies styles as and when it changes to give a WYSIWYG feel.

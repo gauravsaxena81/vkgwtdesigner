@@ -1,0 +1,113 @@
+## VkGWT Designer ##
+
+### Vision: ###
+1.The product should design applications in browser. The real power of VkGWT Designer lies in the fact that new UIs can be made / edited / deleted without having to compile the code. The generated UI can be saved as json and from the same json they can be remade along with the event handling code. Thus, it can be used as a hosted service as well.
+
+2.VkGWT Designer should be extendable. When VkGWTDesigner is used as a plugin, it offers easy interfaces to extend its functionalities. Thus newer components can be added by adding a few classes and attributes of existing components can be exposed or hidden.
+
+### Goals: ###
+
+1.To provide interface in the browser to add / remove the components.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/makeComponents.PNG http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/deleteComponents.PNG
+
+
+2.It should be possible to maintain hierarchies of components (just like in DOM) so that attributes and behaviours like drag and drop, styles etc. could be cascaded. As shown in the figure, the outside rectangle is an _AbsolutePanel_ which contains a _VerticalPanel_, which in turn contains the _button_ and _textbox_.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/hierarchy.PNG
+
+
+3.To provide an interface to specify event handlers using JavaScript. As show in the figure, a pop up opens to define clickHandler. Here the handler can be written in javascript.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/events.PNG
+
+4.Ability to make higher level abstractions to promote code reuse. As shown in the figure, _changeIndex_ is a user defined function in GWT which is being directly accessed from javascript code.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/customHandlers.PNG
+
+
+5.Easy extendibility so that new components / events / functions can be added seamlessly.
+_Sample code inclusion under progress_
+
+6.Provide avenues to style components within the application and also using css. As shown in the figure below it is possible to add css _classname_ as an attribute. This class can then be defined in the application css file.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/classname.PNG
+
+Also, as shown below, it is possible to style the component using the style dialog. The styles are applied to the component as soon as it is provided in the dialog. Thus it provides instant preview of the changes.
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/styledialog.PNG
+
+<font color='red'>------Change Starts-----</font>
+
+7. Provide a toolbar available, which opens on request, having a few more common functions including common styles, undo-redo, copy styles(paint brush), copy-paste etc
+
+http://vkgwtdesigner.googlecode.com/svn/trunk/wiki-images/toolbar.PNG
+
+<font color='red'>------Change Ends-----</font>
+
+### Use Cases: ###
+
+#### 1. Components ####
+> a.Introduce new components maintaining the hierarchy
+
+> b.Re-position the components
+
+> c.Re-size the components
+
+> d.Removal of components
+
+> e.Styling of components
+
+> f.Attributes manipulation on components
+
+> g.Developers are able to make new Components and add it to the designer
+
+
+#### 2. Styling ####
+> a.Style components using a dialog
+
+> b.Css styling by adding class names as attributes
+
+> c.User assistance modules for each style type
+> > i.Colour picker for background and foreground colour
+> > ii.Font picker for fonts
+> > iii.Html constants e.g. small, medium etc for font-size should be available as combo boxes / drop downs
+
+
+> d.Preview of the affect of style on the component
+
+> e.At any time the style dialog is opened, it reflects the current state of styling of the component
+
+#### 3.Events ####
+> a.Use user-defined functions either in GWT or JavaScript
+
+> b.An easy way to address the components
+
+> c.Write simple JavaScript for event handlers
+
+> d.JavaScript interface allows code prettification
+
+> e.Developers are able to extend the platform to include more event handlers and to expose more attributes for manipulation of events
+
+<font color='red'>------Change Starts-----</font>
+> f. Although these events can be defined in UI but they will not work there. They will only work when application is saved and reproduced or in 'quick preview'
+<font color='red'>------Change Ends-----</font>
+
+#### 4.Saving and reproducing Application ####
+> a. When "Save" is pressed, designer produces a json
+
+> b. Interfaces to store this json as a database object, file etc
+
+> c.Interfaces to render the application using the json from database, files etc.
+> > i.The reader module will be an independent application which can be used with or without designers
+> > ii.The reader module will be made available both as a GWT module and a javascript file which can be used in non-GWT application
+
+#### 5.Toolbar for rapid application development ####
+
+> a. Contains more common functions like copy-paste, copy style(paint-bush), common styles, undo-redo etc.
+> b. It is brought forth by request and hides when dismissed
+<font color='red'>------Change Starts-----</font>
+#### 6.Quick preview of the application ####
+> a. To view the currently designed application a new window shows the application designed so far.
+> b. In this view, designing will not be possible
+<font color='red'>------Change Ends-----</font>
