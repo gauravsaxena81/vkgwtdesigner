@@ -7,7 +7,7 @@ NB: To comment please go to [wiki](http://code.google.com/p/vkgwtdesigner/wiki/P
 
 ### Demo(Mozilla FF only) ###
 
-Do have a look at the first [demo](http://vkgwtdesigner.googlecode.com/svn/trunk/VkGwtDesigner/war/index.html) and please provide your comments at the [wiki](http://code.google.com/p/vkgwtdesigner/wiki/Project_Discussion) and bugs at the [issues list](https://code.google.com/p/vkgwtdesigner/issues/list)
+Do have a look at the first [demo](http://vkgwtdesigner.googlecode.com/svn/trunk/VkGwtDesigner/war/index.html) and please provide your comments at the [wiki](https://github.com/gauravsaxena81/vkgwtdesigner/wiki/Project_Discussion) and bugs at the [issues list](https://github.com/gauravsaxena81/vkgwtdesigner/issues)
 
 #### Instructions ####
 
@@ -22,4 +22,4 @@ Do have a look at the first [demo](http://vkgwtdesigner.googlecode.com/svn/trunk
 3. Style dialog applies styles as and when it changes to give a WYSIWYG feel.
 
 ### Goals: ###
-http://code.google.com/p/vkgwtdesigner/wiki/Project_Discussion
+https://github.com/gauravsaxena81/vkgwtdesigner/wiki/Project_Discussion
