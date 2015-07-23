@@ -7,7 +7,7 @@ NB: To comment please go to [wiki](http://code.google.com/p/vkgwtdesigner/wiki/P
 
 ### Demo(Mozilla FF only) ###
 
-Do have a look at the first [demo](http://vkgwtdesigner.googlecode.com/svn/trunk/VkGwtDesigner/war/index.html) and please provide your comments at the [wiki](https://github.com/gauravsaxena81/vkgwtdesigner/wiki/Project_Discussion) and bugs at the [issues list](https://github.com/gauravsaxena81/vkgwtdesigner/issues)
+Do have a look at the first [demo](http://vkgwtdesigner.googlecode.com/svn/trunk/VkGwtDesigner/war/index.html) and please provide your comments and bugs on the [issues list](https://github.com/gauravsaxena81/vkgwtdesigner/issues)
 
 #### Instructions ####
 
